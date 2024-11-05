@@ -14,10 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            // Agregar la columna role_id con valor por defecto 4
-            $table->unsignedBigInteger('role_id')->default(4)->nullable();
+            // Crear la columna 'role_id' en la tabla 'users', como llave foránea que puede ser null
+            $table->unsignedBigInteger('role_id')->nullable();
 
-            // Agregar la clave foránea que referencia a la tabla roles
+            // Definir la clave foránea que referencia a la tabla 'roles' y a la columna 'id'
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
         });
     }
@@ -30,8 +30,10 @@ return new class extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            // Eliminar la clave foránea y la columna role_id
+            // Eliminar la clave foránea
             $table->dropForeign(['role_id']);
+
+            // Eliminar la columna 'role_id'
             $table->dropColumn('role_id');
         });
     }

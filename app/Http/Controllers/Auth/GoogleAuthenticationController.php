@@ -17,7 +17,7 @@ class GoogleAuthenticationController extends Controller
     public function AuthCallback()
     {
         $admins = User::whereHas('roles', function ($query) {
-            $query->where('name', 'Administrador')->orWhere('name', 'Super Administrador');
+            $query->where('id', 2)->orWhere('id', 1);
         })->get();
         
         $user = Socialite::driver('google')->user();
@@ -33,6 +33,8 @@ class GoogleAuthenticationController extends Controller
                 'google_access_token' => $user->token,
                 'google_refresh_token' => $user->refreshToken,
             ]);
+            $roleId = 4; // El ID del rol por defecto
+            $newUserByGoogleAuth->role_id = $roleId; // Asignar el rol por defecto al usuario
 
             $newUserByGoogleAuth->assignRole('Usuario corriente');
             $newUserByGoogleAuth->save();

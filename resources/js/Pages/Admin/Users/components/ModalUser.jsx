@@ -24,8 +24,8 @@ export const ModalUser = ({ modal, closeModal, dataModal, roles }) => {
       if (data.role === '') {
         throw new Error('El campo de Seleccionar Rol no puede ir vacio')
       } else {
-        put(`/users/${data.id}`, data)
-
+        put(`/users/${data.id}`, { role_id: data.role });
+        
         Toastify({
           text: 'Rol Actualizado',
           duration: 3000,

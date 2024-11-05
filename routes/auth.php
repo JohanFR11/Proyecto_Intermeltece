@@ -40,7 +40,7 @@ Route::middleware('guest')->group(function () {
         return Socialite::driver('google')->with(['hd' => 'meltec.com.co'])->redirect();
     })->name('auth.redirectGoogle');
 
-    Route::get('/auth-callback', [GoogleAuthenticationController::class, 'AuthCallback']);
+    Route::get('/auth/callback', [GoogleAuthenticationController::class, 'AuthCallback']);
 });
 
 Route::middleware('auth')->group(function () {
