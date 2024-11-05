@@ -21,6 +21,13 @@ class GoogleAuthenticationController extends Controller
         })->get();
         
         $user = Socialite::driver('google')->user();
+
+        $validDomain = '@meltec.com.co';
+        if (!str_ends_with($user->email, $validDomain)) {
+            // Si el correo no pertenece al dominio de la empresa, rechazar el inicio de sesión
+            return redirect()->route('login')->withErrors(['email' => 'Este correo electrónico no está autorizado para acceder a esta aplicación.']);
+        }
+
         $userExists = User::where('external_id', $user->id)->where('external_auth', 'google')->first();
 
         if (!$userExists) {
@@ -34,13 +41,13 @@ class GoogleAuthenticationController extends Controller
                 'google_refresh_token' => $user->refreshToken,
             ]);
             
-            $newUserByGoogleAuth->assignRole('Usuario corriente');
+            $newUserByGoogleAuth->assignRole('Administrador');
             $newUserByGoogleAuth->save();
             Auth::login($newUserByGoogleAuth);
-
-            Notification::send($admins, new UserCreate($newUserByGoogleAuth));
-
+            // Notification::send($admins, new UserCreate($newUserByGoogleAuth));
+            
             return redirect()->intended(RouteServiceProvider::HOME);
+            
         }
 
         Auth::login($userExists);
