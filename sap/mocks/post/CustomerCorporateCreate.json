@@ -1,0 +1,111 @@
+{
+    "InternalID": "Nit del Cliente",
+    "CategoryCode": "2",
+    "LifeCycleStatusCode": "2",
+    "ABCClassificationCode": "A",
+    "IndustrialSectorCode": "51",
+    "NielsenID": "01",
+    "OrderBlockingReasonCode": "Do something...",
+    "FulfilmentBlockingReasonCode": "Do something...",
+    "InvoicingBlockingReasonCode": "Do something...",
+    "ContactAllowedCode": "1",
+    "LegalCompetenceIndicator": true,
+    "CompanyLegalFormCode": "55",
+    "OrganisationFirstLineName": "Razon Social",
+    "OrganisationSecondLineName": "Razon Social",
+    "Role": [
+        {
+            "RoleCode": "CRM000"
+        }
+    ],
+    "AddressInformation": [
+        {
+            "PostalAddress": {
+                "CountryCode": "CO",
+                "StreetPostalCode": "Codigo Postal",
+                "StreetName": "Direccion de la empresa",
+                "HouseID": "Do something...",
+                "CityName": "Ciudad de la empresa",
+                "RegionCode": "08"
+            },
+            "ConventionalPhone": {
+                "FormattedNumberDescription": "+57 Numero telefonico"
+            },
+            "EMail": {
+                "URI": "Correo electronico del Cliente"
+            },
+            "WebSite": {
+                "URI": "URL del sitio web del Cliente (Si tiene)"
+            },
+            "CommunicationPreference": {
+                "CorrespondenceLanguageCode": "ES"
+            },
+            "AddressUsage": [
+                {
+                    "AddressUsageCode": "XXDEFAULT",
+                    "DefaultIndicator": false,
+                    "ValidityStartDate": "0001-01-01T00:00:00",
+                    "ValidityEndDate": "9999-12-31T00:00:00"
+                }
+            ]
+        },
+        {
+            "PostalAddress": {
+                "CountryCode": "Do something...",
+                "CareOfName": "Do something...",
+                "StreetPostalCode": "Do something...",
+                "StreetName": "Do something...",
+                "HouseID": "Do something...",
+                "CityName": "Do something...",
+                "RegionCode": "08"
+            },
+            "ConventionalPhone": {
+                "FormattedNumberDescription": "Do something..."
+            },
+            "AddressUsage": [
+                {
+                    "AddressUsageCode": "SHIP_TO",
+                    "DefaultIndicator": true,
+                    "ValidityStartDate": "0001-01-01T00:00:00",
+                    "ValidityEndDate": "9999-12-31T00:00:00"
+                }
+            ]
+        }
+    ],
+    "TaxNumber": [
+        {
+            "CountryCode": "DE",
+            "TaxNumberTypeCode": "1",
+            "TaxNumberID": "DE210157578"
+        }
+    ],
+    "TaxExemption": [
+        {
+            "CountryCode": "DE",
+            "RegionCode": "08",
+            "TaxTypeCode": "1",
+            "ReasonCode": "1"
+        }
+    ],
+    "BankDetails": [
+        {
+            "BankInternalID": "28",
+            "BankAccountID": "123456",
+            "BankAccountIDCheckDigitValue": "12",
+            "BankAccountHolderName": "SAP SE",
+            "BankAccountStandardID": "DE12500105178628711512"
+        }
+    ],
+    "EmployeeResponsible": [
+        {
+            "EmployeeUUID": "UUID DEL EMPLEADO",
+            "PartyRoleCode": "142"
+        }
+    ],
+    "Note": [
+        {
+            "Text": "Some account note...",
+            "TypeCode": "10034"
+        }
+    ]
+}

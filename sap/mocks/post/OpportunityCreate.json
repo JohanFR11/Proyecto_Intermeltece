@@ -1,0 +1,22 @@
+{	
+    "CreationDateTime": "/Date(1550506396695)/",
+	"Description": "{{OpportunityDescription}}",
+	"ClassificationCategoryCode": "{{OpportunityQualificationCode}}",
+	"SourceCode": "{{OpportunitySourceCode}}",
+	"PriorityCode": "3",
+	"SalesCycleCode": "001",
+	"SalesPhaseCode": "{{OpportunitySalesPhaseCode}}",
+	"ResultReasonCode": "",
+	"ChanceOfSuccessPercent": "{{OpportunityChanceOfSuccessPercent}}",
+	"ExpectedRevenueAmount": "{{OpportunityExpectedRevenueAmount}}",
+	"ExpectedRevenueAmountCurrencyCode": "USD",
+	"SalesRevenueForecastRelevanceIndicator": true,
+	"EmployeeResponsible": 
+		{
+			"PartyID": "{{SalesEmployeeID}}"
+		},
+	"ProspectParty": 
+		{
+			"PartyID": "{{CustomerID2}}"
+		}
+}    	

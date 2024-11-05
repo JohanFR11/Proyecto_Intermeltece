@@ -1,0 +1,21 @@
+{	
+	"Description": "Nueva OPP Desde API 3",
+	"ClassificationCategoryCode": "Z8",
+	"SourceCode": "001",
+	"PriorityCode": "3",
+	"SalesCycleCode": "001",
+	"SalesPhaseCode": "003",
+	"ResultReasonCode": "",
+	"ChanceOfSuccessPercent": "50",
+	"ExpectedRevenueAmount": "4500000.000000",
+	"ExpectedRevenueAmountCurrencyCode": "COP",
+	"SalesRevenueForecastRelevanceIndicator": true,
+	"EmployeeResponsible": 
+		{
+			"PartyID": "8000000142"
+		},
+	"ProspectParty": 
+		{
+			"PartyID": "1001436"
+		}
+}    	

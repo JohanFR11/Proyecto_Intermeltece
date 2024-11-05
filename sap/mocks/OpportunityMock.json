@@ -1,0 +1,497 @@
+{
+    "__metadata": {
+        "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/OpportunityCollection('00163E6A5A681ED98CF27728F6D16191')",
+        "type": "cust.Opportunity"
+    },
+    "ObjectID": "00163E6A5A681ED98CF27728F6D16191",
+    "ID": "8",
+    "Description": "SOT-SFW-18-02-2019-INGEOMEGA",
+    "CreationDateTime": "/Date(1550506396695)/",
+    "ClassificationCategoryCode": "Z11",
+    "ClassificationCategoryCodeText": "SUMINISTRO",
+    "SourceCode": "001",
+    "SourceCodeText": "REFERIDO INTERNO",
+    "PriorityCode": "3",
+    "PriorityCodeText": "Normal",
+    "SalesCycleStartDate": "/Date(1556582400000)/",
+    "SalesCycleCode": "001",
+    "SalesCycleCodeText": "Oportunidad Meltec",
+    "SalesPhaseCode": "003",
+    "SalesPhaseCodeText": "",
+    "ConsistencyStatusCode": "2",
+    "ConsistencyStatusCodeText": "Inconsistente",
+    "LifeCycleStatusCode": "4",
+    "LifeCycleStatusCodeText": "Ganada",
+    "PhaseProgressEvaluationStatusCode": "4",
+    "PhaseProgressEvaluationStatusCodeText": "No relevante",
+    "ProcessStatusValidSinceDate": "/Date(1558483200000)/",
+    "ResultReasonCode": "009",
+    "ResultReasonCodeText": "Aceptado por alta probabilidad de éxito",
+    "ChanceOfSuccessPercent": "100.000000",
+    "ExpectedRevenueAmount": "3200000.000000",
+    "ExpectedRevenueAmountCurrencyCode": "COP",
+    "ExpectedRevenueAmountCurrencyCodeText": "Peso colombiano",
+    "WeightedExpectedNetAmount": "3200000.000000",
+    "WeightedExpectedNetAmountCurrencyCode": "COP",
+    "WeightedExpectedNetAmountCurrencyCodeText": "Peso colombiano",
+    "TotalExpectedNetAmount": "0.000000",
+    "TotalExpectedNetAmountCurrencyCode": "COP",
+    "TotalExpectedNetAmountCurrencyCodeText": "Peso colombiano",
+    "SalesRevenueForecastRelevanceIndicator": false,
+    "LastChangeDateTime": "/Date(1656021781638)/",
+    "ProspectParty": {
+        "__metadata": {
+            "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ProspectPartyCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%201')",
+            "type": "cust.ProspectParty"
+        },
+        "ObjectID": "00163E6A5A681ED98CF27728F6D16191                                    1",
+        "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+        "PartyID": "1001436",
+        "RoleCategoryCode": "31",
+        "RoleCategoryCodeText": "Cliente potencial",
+        "RoleCode": "31",
+        "RoleCodeText": "Cliente",
+        "MainIndicator": true,
+        "Opportunity": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ProspectPartyCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%201')/Opportunity"
+            }
+        },
+        "ProspectPartyName": [
+            {
+                "__metadata": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ProspectPartyNameCollection('00163E6A5A681EE98CF1BCEB06AE5E25')",
+                    "type": "cust.ProspectPartyName"
+                },
+                "ObjectID": "00163E6A5A681EE98CF1BCEB06AE5E25",
+                "FormattedName": "INGEOMEGA"
+            }
+        ],
+        "ProspectPartyEmail": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ProspectPartyCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%201')/ProspectPartyEmail"
+            }
+        },
+        "ProspectPartyTelephone": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ProspectPartyCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%201')/ProspectPartyTelephone"
+            }
+        },
+        "ProspectPartyFormattedAddress": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ProspectPartyCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%201')/ProspectPartyFormattedAddress"
+            }
+        },
+        "ProspectPartyWebSite": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ProspectPartyCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%201')/ProspectPartyWebSite"
+            }
+        },
+        "ProspectPartyPostalAddress": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ProspectPartyCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%201')/ProspectPartyPostalAddress"
+            }
+        },
+        "ProspectPartyContact": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ProspectPartyCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%201')/ProspectPartyContact"
+            }
+        }
+    },
+    "EmployeeResponsible": {
+        "__metadata": {
+            "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/EmployeeResponsibleCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%205')",
+            "type": "cust.EmployeeResponsible"
+        },
+        "ObjectID": "00163E6A5A681ED98CF27728F6D16191                                    5",
+        "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+        "PartyID": "8000000142",
+        "Opportunity": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/EmployeeResponsibleCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%205')/Opportunity"
+            }
+        },
+        "EmployeeResponsibleName": [
+            {
+                "__metadata": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/EmployeeResponsibleNameCollection('00163E6A5A681EE99CCE2CA183E3BD07')",
+                    "type": "cust.EmployeeResponsibleName"
+                },
+                "ObjectID": "00163E6A5A681EE99CCE2CA183E3BD07",
+                "FormattedName": "JAIME ALEJANDRO ARANGO AYALA"
+            }
+        ]
+    },
+    "SalesUnit": {
+        "__metadata": {
+            "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/SalesUnitCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%206')",
+            "type": "cust.SalesUnit"
+        },
+        "ObjectID": "00163E6A5A681ED98CF27728F6D16191                                    6",
+        "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+        "PartyID": "M2OP01MED",
+        "Opportunity": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/SalesUnitCollection('00163E6A5A681ED98CF27728F6D16191%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%206')/Opportunity"
+            }
+        },
+        "SalesUnitName": [
+            {
+                "__metadata": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/SalesUnitNameCollection('00163E955D4F1EDAA7EC317A68DC102A')",
+                    "type": "cust.SalesUnitName"
+                },
+                "ObjectID": "00163E955D4F1EDAA7EC317A68DC102A",
+                "FormattedName": "Medellín"
+            }
+        ]
+    },
+    "SalesBusinessArea": {
+        "__metadata": {
+            "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/SalesBusinessAreaCollection('00163E6A5A681ED98CF27728F6D16191')",
+            "type": "cust.SalesBusinessArea"
+        },
+        "ObjectID": "00163E6A5A681ED98CF27728F6D16191",
+        "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+        "SalesOrganisationID": "M2OP01",
+        "DistributionChannelCode": "01",
+        "DistributionChannelCodeText": "Venta Directa",
+        "Opportunity": {
+            "__deferred": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/SalesBusinessAreaCollection('00163E6A5A681ED98CF27728F6D16191')/Opportunity"
+            }
+        }
+    },
+    "Competitor": {
+        "__deferred": {
+            "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/OpportunityCollection('00163E6A5A681ED98CF27728F6D16191')/Competitor"
+        }
+    },
+    "ExternalParty": {
+        "__deferred": {
+            "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/OpportunityCollection('00163E6A5A681ED98CF27728F6D16191')/ExternalParty"
+        }
+    },
+    "Text": [
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/TextCollection('00163E6A5A681ED98CF27728F6DC219100163E6A5A681ED98CF2FCB0703703EDT00001')",
+                "type": "cust.Text"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6DC219100163E6A5A681ED98CF2FCB0703703EDT00001",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "Text": "Cliente requiere 54 licencias SOTI en servidor Meltec para celulares Motorol - Moto G6 play . Pide poder facturar en USD 4.1 por licencia mensual",
+            "LanguageCode": "",
+            "LanguageCodeText": "",
+            "TypeCode": "10001",
+            "TypeCodeText": "Nota externa adicional",
+            "AuthorUUID": null,
+            "AuthorName": "",
+            "CreatedOn": "/Date(1550506396695)/",
+            "CreatedBy": "JAIME ALEJANDRO ARANGO AYALA",
+            "UpdatedOn": "/Date(1550506396695)/",
+            "LastUpdatedBy": "JAIME ALEJANDRO ARANGO AYALA",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/TextCollection('00163E6A5A681ED98CF27728F6DC219100163E6A5A681ED98CF2FCB0703703EDT00001')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/TextCollection('00163E6A5A681ED98CF27728F6DC219100163E6A5A681ED98CF3B52869854750T00002')",
+                "type": "cust.Text"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6DC219100163E6A5A681ED98CF3B52869854750T00002",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "Text": "SOT-SFW-18-02-2019-INGEOMEGA",
+            "LanguageCode": "",
+            "LanguageCodeText": "",
+            "TypeCode": "10001",
+            "TypeCodeText": "Nota externa adicional",
+            "AuthorUUID": null,
+            "AuthorName": "",
+            "CreatedOn": "/Date(1550508785457)/",
+            "CreatedBy": "JAIME ALEJANDRO ARANGO AYALA",
+            "UpdatedOn": "/Date(1550508785457)/",
+            "LastUpdatedBy": "JAIME ALEJANDRO ARANGO AYALA",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/TextCollection('00163E6A5A681ED98CF27728F6DC219100163E6A5A681ED98CF3B52869854750T00002')/Opportunity"
+                }
+            }
+        }
+    ],
+    "Campaign": {
+        "__deferred": {
+            "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/OpportunityCollection('00163E6A5A681ED98CF27728F6D16191')/Campaign"
+        }
+    },
+    "DocumentReference": [
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98CF27728F6D18191')",
+                "type": "cust.DocumentReference"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98CF27728F6D18191",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "RelationshipRoleCode": "1",
+            "RelationshipRoleCodeText": "Predecesor",
+            "ID": "1",
+            "TypeCode": "86",
+            "TypeCodeText": "Llamada telefónica",
+            "UUID": "00163E6A-5A68-1EE9-8CF2-0EF36AE7FFA4",
+            "LeadDescription": "",
+            "QuoteDescription": "",
+            "CampaignDescription": "",
+            "SalesOrderDescription": "",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98CF27728F6D18191')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98CF3032E43DE03F5')",
+                "type": "cust.DocumentReference"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98CF3032E43DE03F5",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "RelationshipRoleCode": "2",
+            "RelationshipRoleCodeText": "Sucesor",
+            "ID": "20",
+            "TypeCode": "542",
+            "TypeCodeText": "Tarea de actividad",
+            "UUID": "00163E6A-5A68-1ED9-8CF3-032E43DDE3F5",
+            "LeadDescription": "",
+            "QuoteDescription": "",
+            "CampaignDescription": "",
+            "SalesOrderDescription": "",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98CF3032E43DE03F5')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB14C995232290')",
+                "type": "cust.DocumentReference"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB14C995232290",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "RelationshipRoleCode": "2",
+            "RelationshipRoleCodeText": "Sucesor",
+            "ID": "371",
+            "TypeCode": "542",
+            "TypeCodeText": "Tarea de actividad",
+            "UUID": "00163E6A-5A68-1ED9-8DDB-14C995230290",
+            "LeadDescription": "",
+            "QuoteDescription": "",
+            "CampaignDescription": "",
+            "SalesOrderDescription": "",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB14C995232290')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB1872845CA2D5')",
+                "type": "cust.DocumentReference"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB1872845CA2D5",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "RelationshipRoleCode": "2",
+            "RelationshipRoleCodeText": "Sucesor",
+            "ID": "372",
+            "TypeCode": "542",
+            "TypeCodeText": "Tarea de actividad",
+            "UUID": "00163E6A-5A68-1ED9-8DDB-1872845C82D5",
+            "LeadDescription": "",
+            "QuoteDescription": "",
+            "CampaignDescription": "",
+            "SalesOrderDescription": "",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB1872845CA2D5')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB2F86B8ACA32C')",
+                "type": "cust.DocumentReference"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB2F86B8ACA32C",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "RelationshipRoleCode": "2",
+            "RelationshipRoleCodeText": "Sucesor",
+            "ID": "377",
+            "TypeCode": "542",
+            "TypeCodeText": "Tarea de actividad",
+            "UUID": "00163E6A-5A68-1ED9-8DDB-2F86B8AC832C",
+            "LeadDescription": "",
+            "QuoteDescription": "",
+            "CampaignDescription": "",
+            "SalesOrderDescription": "",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB2F86B8ACA32C')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB2F86B8B1C32C')",
+                "type": "cust.DocumentReference"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB2F86B8B1C32C",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "RelationshipRoleCode": "2",
+            "RelationshipRoleCodeText": "Sucesor",
+            "ID": "378",
+            "TypeCode": "542",
+            "TypeCodeText": "Tarea de actividad",
+            "UUID": "00163E6A-5A68-1ED9-8DDB-2F86B8B1A32C",
+            "LeadDescription": "",
+            "QuoteDescription": "",
+            "CampaignDescription": "",
+            "SalesOrderDescription": "",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681ED98DDB2F86B8B1C32C')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681EE98FD7CF1F806623A9')",
+                "type": "cust.DocumentReference"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6D1619100163E6A5A681EE98FD7CF1F806623A9",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "RelationshipRoleCode": "2",
+            "RelationshipRoleCodeText": "Sucesor",
+            "ID": "881",
+            "TypeCode": "542",
+            "TypeCodeText": "Tarea de actividad",
+            "UUID": "00163E6A-5A68-1EE9-8FD7-CF1F806603A9",
+            "LeadDescription": "",
+            "QuoteDescription": "",
+            "CampaignDescription": "",
+            "SalesOrderDescription": "",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681EE98FD7CF1F806623A9')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681EE98FD7CF1F806B43A9')",
+                "type": "cust.DocumentReference"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6D1619100163E6A5A681EE98FD7CF1F806B43A9",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "RelationshipRoleCode": "2",
+            "RelationshipRoleCodeText": "Sucesor",
+            "ID": "882",
+            "TypeCode": "542",
+            "TypeCodeText": "Tarea de actividad",
+            "UUID": "00163E6A-5A68-1EE9-8FD7-CF1F806B23A9",
+            "LeadDescription": "",
+            "QuoteDescription": "",
+            "CampaignDescription": "",
+            "SalesOrderDescription": "",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681EE98FD7CF1F806B43A9')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681EE98FD7CF1F807023A9')",
+                "type": "cust.DocumentReference"
+            },
+            "ObjectID": "00163E6A5A681ED98CF27728F6D1619100163E6A5A681EE98FD7CF1F807023A9",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "RelationshipRoleCode": "2",
+            "RelationshipRoleCodeText": "Sucesor",
+            "ID": "883",
+            "TypeCode": "542",
+            "TypeCodeText": "Tarea de actividad",
+            "UUID": "00163E6A-5A68-1EE9-8FD7-CF1F807003A9",
+            "LeadDescription": "",
+            "QuoteDescription": "",
+            "CampaignDescription": "",
+            "SalesOrderDescription": "",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/DocumentReferenceCollection('00163E6A5A681ED98CF27728F6D1619100163E6A5A681EE98FD7CF1F807023A9')/Opportunity"
+                }
+            }
+        }
+    ],
+    "Item": [
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ItemCollection('00163ECB80831EECB8ABC1EED2A10610')",
+                "type": "cust.Item"
+            },
+            "ObjectID": "00163ECB80831EECB8ABC1EED2A10610",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "ID": "10",
+            "ProductID": "20001",
+            "ProductTypeCode": "2",
+            "ProductTypeCodeText": "Servicio",
+            "Description": "REVISORIA FISCAL",
+            "ProductCategoryInternalID": "2000-20",
+            "Quantity": "1.00000000000000",
+            "UnitCode": "HUR",
+            "UnitCodeText": "Hora(s)",
+            "ExpectedNetAmount": "0.000000",
+            "ExpectedNetAmountCurrencyCode": "COP",
+            "ExpectedNetAmountCurrencyCodeText": "Peso colombiano",
+            "NetAmount": "0.000000",
+            "NetAmountCurrencyCode": "COP",
+            "NetAmountCurrencyCodeText": "Peso colombiano",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ItemCollection('00163ECB80831EECB8ABC1EED2A10610')/Opportunity"
+                }
+            }
+        },
+        {
+            "__metadata": {
+                "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ItemCollection('00163ECB80831EECB8ABC2A947B70624')",
+                "type": "cust.Item"
+            },
+            "ObjectID": "00163ECB80831EECB8ABC2A947B70624",
+            "ParentObjectID": "00163E6A5A681ED98CF27728F6D16191",
+            "ID": "20",
+            "ProductID": "20012",
+            "ProductTypeCode": "2",
+            "ProductTypeCodeText": "Servicio",
+            "Description": "INCENDIO",
+            "ProductCategoryInternalID": "2000-25",
+            "Quantity": "1.00000000000000",
+            "UnitCode": "HUR",
+            "UnitCodeText": "Hora(s)",
+            "ExpectedNetAmount": "0.000000",
+            "ExpectedNetAmountCurrencyCode": "COP",
+            "ExpectedNetAmountCurrencyCodeText": "Peso colombiano",
+            "NetAmount": "0.000000",
+            "NetAmountCurrencyCode": "COP",
+            "NetAmountCurrencyCodeText": "Peso colombiano",
+            "Opportunity": {
+                "__deferred": {
+                    "uri": "https://my344023.sapbydesign.com/sap/byd/odata/cust/v1/khopportunity/ItemCollection('00163ECB80831EECB8ABC2A947B70624')/Opportunity"
+                }
+            }
+        }
+    ]
+}
