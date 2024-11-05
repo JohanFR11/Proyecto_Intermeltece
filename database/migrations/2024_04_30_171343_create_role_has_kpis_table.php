@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('role_has_kpis', function (Blueprint $table) {
-            $table->uuid('UUID_kpi');
-            $table->unsignedBigInteger('role_id');
-            $table->foreign('role_id')->references('id')->on('roles');
-            $table->foreign('UUID_kpi')->references('id')->on('kpi_reports')->onDelete('cascade');
-        });
+        if (!Schema::hasTable('role_has_kpis')) {
+            Schema::create('role_has_kpis', function (Blueprint $table) {
+                $table->uuid('UUID_kpi');
+                $table->unsignedBigInteger('role_id');
+                $table->foreign('role_id')->references('id')->on('roles');
+                $table->foreign('UUID_kpi')->references('id')->on('kpi_reports')->onDelete('cascade');
+            });
+        }
     }
+
 
     /**
      * Reverse the migrations.

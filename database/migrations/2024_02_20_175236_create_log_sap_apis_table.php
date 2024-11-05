@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection('logs')->create('log_sap_apis', function (Blueprint $table) {
-            $table->id();
-            $table->string('type_phase');
-            $table->json('request');
-            $table->json('response');
-            $table->string('code');
-            $table->string('uuid_sap');
-            $table->timestamps();
-        });
+        if (!Schema::connection('logs')->hasTable('log_sap_apis')) {
+            Schema::connection('logs')->create('log_sap_apis', function (Blueprint $table) {
+                $table->id();
+                $table->string('type_phase');
+                $table->json('request');
+                $table->json('response');
+                $table->string('code');
+                $table->string('uuid_sap');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
