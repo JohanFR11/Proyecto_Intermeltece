@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('kpi_reports', function (Blueprint $table) {
-            $column = $table->unsignedBigInteger('category_id');
-
-            if($column) {
-                $table->foreign('category_id')->references('id')->on('kpi_categories');
-            }
-
+        Schema::table('hseqs', function (Blueprint $table) {
+            $table->foreign('category')->references('id')->on('folders')->onDelete('cascade');
         });
     }
 
@@ -26,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('kpi_reports', function (Blueprint $table) {
-            //
+        Schema::table('hseqs', function (Blueprint $table) {
+            $table->dropForeign(['category']);
         });
     }
 };

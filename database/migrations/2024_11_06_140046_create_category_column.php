@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hseqs', function (Blueprint $table) {
-            $table->id();
-            $table->string('hseqFilename');
-            $table->string('filename');
-            $table->timestamps();
+        Schema::table('hseqs', function (Blueprint $table) {
+            $table->string('category')->nullable(false);
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hseqs');
+        Schema::table('hseqs', function (Blueprint $table) {
+            $table->dropColumn('category');
+        });
     }
 };
