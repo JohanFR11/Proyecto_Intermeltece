@@ -47,7 +47,8 @@ class KpiReportsController extends Controller
                 'roles' => 'required|array',
                 'category' => 'required',
             ]);
-
+            
+            $category=$validator['category'];
 
             if (!$validator) {
                 throw new Exception('Error en los campos ingresados');
@@ -89,6 +90,15 @@ class KpiReportsController extends Controller
         $rolesReport = $data->roles;
 
         if (!$rolesReport->contains($userRol)) abort(403, 'Usuario no autorizado para este Informe');
+
+        $category = $data->category;
+
+        if ($category=='Ventas' || $category=='1') {
+            return Inertia::render('Commercial/Show', [
+                'data' => $data,
+                'roles' => $data->roles
+            ]);
+        }
 
         return Inertia::render('Admin/Kpis/Show', [
             'data' => $data,

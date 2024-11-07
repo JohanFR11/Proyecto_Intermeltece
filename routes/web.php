@@ -87,6 +87,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/kpis', [KpiReportsController::class, 'store'])->name('kpi.reports.store');
     Route::get('/kpis/{kpi}', [KpiReportsController::class, 'show'])->name('kpi.reports.show');
     Route::delete('/kpis/delete/{kpi}',[KpiReportsController::class, 'destroy'])->name('kpi.reports.destroy');
+    Route::get('/commercial/{kpi}', [KpiReportController::class, 'show'])->name('commercial.kpis.show');
 
     Route::post('/revokePermission', [UserController::class, 'revokePermission'])->name('api.permission.revoke');
     Route::post('/storePermission', [UserController::class, 'storePermission'])->name('api.permission.sync');
