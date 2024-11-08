@@ -10,4 +10,9 @@ class Hseq extends Model
     use HasFactory;
 
     protected $fillable = ['hseqFilename', 'filename'];
+
+    public function folder()
+    {
+        return $this->belongsTo(Folder::class, 'category', 'folder_id');
+    }
 }

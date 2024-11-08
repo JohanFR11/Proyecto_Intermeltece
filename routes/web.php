@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::post('hseq', [HseqController::class, 'store'])->name('resources.hseq.store');
     Route::get('/hseq/{id}', [HseqController::class, 'download'])->name('resources.hseq.download');
     Route::delete('/hseq/delete/{id}', [HseqController::class, 'destroy'])->name('resources.hseq.destroy');
+    Route::get('/hseq/filter/{folder_id}', [HseqController::class, 'filterDocuments'])->name('resources.hseq.filter');
 
     Route::post('/uploadFile', UploadFilesController::class);
 

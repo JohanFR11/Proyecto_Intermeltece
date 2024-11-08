@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Hseq;
+use App\Models\Folder;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -16,8 +17,11 @@ class HseqController extends Controller
      */
     public function index()
     {
+        $folders = Folder::all();
         $documents = Hseq::paginate(10);
+
         return Inertia::render('Hseq/Index', [
+            'folders' => $folders, 
             'documents' => $documents
         ]);
     }
@@ -58,14 +62,36 @@ class HseqController extends Controller
         dd($request->all());
     }
 
+    public function filterDocuments(Request $request)
+    {
+        $folderId = Folder::where('name', $request->folder_id)->value('folder_id');
+
+        $documents = Hseq::where('category', $folderId)
+        ->select('hseqFilename', 'filename')
+        ->paginate(10);
+    
+        // Devuelve los documentos filtrados a la vista
+        return Inertia::render('Hseq/Index', [
+            'documents' => $documents,
+            'folders' => Folder::all()
+        ]);
+    }
+
     /**
      * Download the specified resource.
      */
     public function download(string $id)
     {
         $resource = Hseq::find($id);
-        $url = public_path('storage/'. $resource->filename);
-        return response()->download($url);
+
+        // dd($id, $resource);
+        
+        // if (!$resource) {
+        //     return abort(404, 'Documento no encontrado');
+        // }
+        //$url = public_path('storage/'. $resource->filename);
+        //return response()->download($url);
+        return $resource;
     }
     /**
      * Remove the specified resource from storage.

@@ -9,5 +9,8 @@ export default defineConfig({
       refresh: true
     }),
     react()
-  ]
+  ],
+  optimizeDeps: {
+    include: ['@inertiajs/inertia']
+  }
 })

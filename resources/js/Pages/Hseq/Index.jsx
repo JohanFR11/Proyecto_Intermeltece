@@ -3,8 +3,9 @@ import { Head } from '@inertiajs/react'
 import CardList from './Fragments/CardList'
 import ModalComponent from './Fragments/Modal'
 import { ROLES_CONSTANTS } from '@/constants/initialValues'
+import FolderDropdown from './Fragments/FolderDropdown';
 
-export default function Index ({ auth, unreadNotifications }) {
+export default function Index ({ auth, unreadNotifications,folders }) {
   const roleName = auth.user.roles[0].name
   return (
     <AuthenticatedLayout
@@ -19,10 +20,10 @@ export default function Index ({ auth, unreadNotifications }) {
           <div className='bg-white overflow-hidden shadow-sm sm:rounded-lg'>
             <div className='flex justify-between m-5'>
               <h2 className='text-center font-bold text-2xl'>Documentos HSEQ</h2>
+              <FolderDropdown folders={folders} />
               {
                 roleName.includes(ROLES_CONSTANTS.Admin) ? <ModalComponent /> : roleName.includes(ROLES_CONSTANTS.Hseq) ? <ModalComponent /> : ' '
               }
-
             </div>
             <CardList user={roleName} />
           </div>
