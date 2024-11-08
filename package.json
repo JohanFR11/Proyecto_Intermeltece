@@ -35,7 +35,7 @@
         "cors": "^2.8.5",
         "dotenv": "^16.3.1",
         "express": "^4.18.2",
-        "filepond": "^4.30.4",
+        "filepond": "^4.32.1",
         "filepond-plugin-file-validate-type": "^1.2.8",
         "font-awesome": "^4.7.0",
         "framer-motion": "^10.16.1",

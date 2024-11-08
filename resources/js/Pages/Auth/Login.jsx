@@ -18,7 +18,7 @@ export default function Login () {
                   Bienvenido a la intranet de Meltec Comunicaciones S.A
                 </h1>
                 <div className='flex justify-center gap-5'>
-                  <a className='w-full text-center text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 ' href={route('auth.redirectGoogle')}>Iniciar Sesion con Google</a>
+                  <a className='w-full text-center text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 ' href='/auth/redirect'>Iniciar Sesion con Google</a>
 
                   <a className='w-full text-center text-white bg-danger-600 hover:bg-danger-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 ' href='/'>Volver al inicio</a>
                 </div>
