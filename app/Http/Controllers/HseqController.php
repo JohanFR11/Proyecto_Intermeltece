@@ -67,7 +67,7 @@ class HseqController extends Controller
         $folderId = Folder::where('name', $request->folder_id)->value('folder_id');
 
         $documents = Hseq::where('category', $folderId)
-        ->select('hseqFilename', 'filename')
+        ->select('id','hseqFilename', 'filename')
         ->paginate(10);
     
         // Devuelve los documentos filtrados a la vista
@@ -84,14 +84,8 @@ class HseqController extends Controller
     {
         $resource = Hseq::find($id);
 
-        // dd($id, $resource);
-        
-        // if (!$resource) {
-        //     return abort(404, 'Documento no encontrado');
-        // }
-        //$url = public_path('storage/'. $resource->filename);
-        //return response()->download($url);
-        return $resource;
+        $url = public_path('storage/'. $resource->filename);
+        return response()->download($url);
     }
     /**
      * Remove the specified resource from storage.
