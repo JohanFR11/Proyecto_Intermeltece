@@ -9,6 +9,8 @@ use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+
 
 class HseqController extends Controller
 {
@@ -31,17 +33,24 @@ class HseqController extends Controller
      */
     public function store(Request $request)
     {
+        //Log::info('Entrando al método store');
+        //Log::info('Datos recibidos: ', $request->all());
+
         try {
             $request->validate([
                 'hseqFilename' => 'required|string',
                 'filename' => 'required|string',
+                'category'=> 'required|int|exists:folders,folder_id',
             ]);
 
             $fileStrug = Str::slug($request->filename, '_') . '.' .'pdf';
 
             $fileStore = 'documents/' . $fileStrug;
 
+            $categoryId=$request->category;
+
             $hseq = Hseq::create([
+                'category' => $categoryId,
                 'hseqFilename' => $request->hseqFilename,
                 'filename' => $fileStore
             ]);
@@ -59,16 +68,26 @@ class HseqController extends Controller
                 'code' => $e->getCode(),
             ], 500);
         }
+        
         dd($request->all());
+        
     }
 
     public function filterDocuments(Request $request)
     {
-        $folderId = Folder::where('name', $request->folder_id)->value('folder_id');
 
-        $documents = Hseq::where('category', $folderId)
-        ->select('id','hseqFilename', 'filename')
-        ->paginate(10);
+        //Log::info('Datos recibidos: ', $request->all());
+
+        $folderId =$request->folder_id;
+
+        if ($folderId == '1') {
+            $documents = Hseq::paginate(10);
+        } else {
+            $documents = Hseq::where('category', $folderId)->paginate(10);
+        }
+        // $documents = Hseq::where('category', $folderId)
+        // ->select('id','hseqFilename', 'filename')
+        // ->paginate(10);
     
         // Devuelve los documentos filtrados a la vista
         return Inertia::render('Hseq/Index', [

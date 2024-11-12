@@ -9,7 +9,7 @@ class Hseq extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['hseqFilename', 'filename'];
+    protected $fillable = ['hseqFilename', 'filename', 'category'];
 
     public function folder()
     {
