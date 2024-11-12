@@ -96,6 +96,22 @@ class HseqController extends Controller
         ]);
     }
 
+    public function CreateFolder(Request $request) 
+    { 
+        try{
+            $request->validate([ 'name' => 'required|string|max:255', ]); 
+            $folder = Folder::create([ 'name' => $request->input('name'), ]); 
+            return response()->json([
+                'message' => 'Carpeta creada correctamente',
+            ], 201);
+        }catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ], 500);
+        }
+    }
+
     /**
      * Download the specified resource.
      */

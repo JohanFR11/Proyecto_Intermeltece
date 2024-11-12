@@ -36,7 +36,6 @@ export default function ModalComponent () {
   }
   const handleSubmitForm = async (e) => {
     e.preventDefault()
-    console.log('Data enviada:', data)
     try {
       const response = await axios.post(route('resources.hseq.store'), data)
       if (response.status !== 201) {
