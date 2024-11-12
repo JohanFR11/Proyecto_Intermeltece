@@ -31,7 +31,6 @@ export default function ModalComponent () {
   const handleFileUpload = (fileItem) => setData((prevData) => ({ ...prevData, filename: fileItem[0].file.name }))
   const handleFolderChange = (e) => {
     const selectedFolderId = parseInt(e.target.value, 10);
-    console.log('ID de carpeta seleccionada:',selectedFolderId);
     setData((prevData) => ({ ...prevData, category: selectedFolderId}))
   }
   const handleSubmitForm = async (e) => {
