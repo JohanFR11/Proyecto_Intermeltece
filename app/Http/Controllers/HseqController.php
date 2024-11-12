@@ -44,6 +44,7 @@ class HseqController extends Controller
             ]);
 
             $fileStrug = Str::slug($request->filename, '_') . '.' .'pdf';
+            $fileStrug = Str::slug($request->filename, '_') . '.' .'doc';
 
             $fileStore = 'documents/' . $fileStrug;
 
