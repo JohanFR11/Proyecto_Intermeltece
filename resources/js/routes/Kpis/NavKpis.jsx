@@ -7,7 +7,7 @@ import Dropdown from '@/Components/Dropdown'
 
 export default function NavKpis () {
   const { ziggy } = usePage().props
-  const { kpis } = ziggy
+  const { kpis } = ziggy ?? []
   return (
     <>
       {kpis.map((kpi, i) => {

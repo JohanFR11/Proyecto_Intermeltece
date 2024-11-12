@@ -101,6 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/epayco-payments', [EpaycoController::class, 'index'])->name('payments.index');
     Route::post('/transactions-epayco', [EpaycoController::class, 'getTransactions']);
     Route::get('/transactions-epayco/{id}', [EpaycoController::class, 'getTransactionsById'])->name('payment.details');
+    
 });
 
 require __DIR__ . '/auth.php';

@@ -60,7 +60,7 @@ class HseqController extends Controller
     }
 
     /**
-     * Download the specified resource.
+     * Download the specified resource. 
      */
     public function download(string $id)
     {

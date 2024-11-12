@@ -11,7 +11,7 @@ export default function NavDropdown ({ menu, children }) {
         </button>
       </Dropdown.Trigger>
 
-      <Dropdown.Content>
+      <Dropdown.Content align='left'>
         {children}
       </Dropdown.Content>
 

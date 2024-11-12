@@ -47,7 +47,8 @@ class KpiReportsController extends Controller
                 'roles' => 'required|array',
                 'category' => 'required',
             ]);
-
+            
+            $category=$validator['category'];
 
             if (!$validator) {
                 throw new Exception('Error en los campos ingresados');
@@ -79,7 +80,7 @@ class KpiReportsController extends Controller
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
-        dd($request->all());
+
     }
 
     public function show(String $uuid)
@@ -90,10 +91,10 @@ class KpiReportsController extends Controller
 
         if (!$rolesReport->contains($userRol)) abort(403, 'Usuario no autorizado para este Informe');
 
-        return Inertia::render('Admin/Kpis/Show', [
+        return Inertia::render('Commercial/kpis/Commercial', [
             'data' => $data,
             'roles' => $data->roles
-        ]);
+        ]);        
     }
 
     public function destroy($uuid)
@@ -114,6 +115,5 @@ class KpiReportsController extends Controller
         return response()->json(['error' => 'Error al eliminar el KPI'], 400);
     }
 }
-
 
 }
