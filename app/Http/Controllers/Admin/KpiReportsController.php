@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\KpiCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class KpiReportsController extends Controller
@@ -83,22 +84,17 @@ class KpiReportsController extends Controller
         dd($request->all());
     }
 
-    public function show(String $uuid)
+    public function show(String $uuid )
     {
         $userRol = Auth::user()->roles->first();
         $data = KpiReport::where('id', $uuid)->first();
+
+        Log::info('Datos del KPI: ', ['data' => $data]);
         $rolesReport = $data->roles;
 
         if (!$rolesReport->contains($userRol)) abort(403, 'Usuario no autorizado para este Informe');
 
-        $category = $data->category;
-
-        if ($category=='Ventas' || $category=='1') {
-            return Inertia::render('Commercial/Show', [
-                'data' => $data,
-                'roles' => $data->roles
-            ]);
-        }
+        
 
         return Inertia::render('Admin/Kpis/Show', [
             'data' => $data,

@@ -5,12 +5,17 @@ import { ReportIcon } from '@/Components/icons/Icons'
 import NavDropdown from '@/Components/NavDropdown'
 import Dropdown from '@/Components/Dropdown'
 
-export default function NavKpis () {
+export default function NavKpis ({category}) {
   const { ziggy } = usePage().props
   const { kpis } = ziggy
+  const filteredKpis = kpis.filter(kpi => kpi.id === category);
+
+  console.log(filteredKpis)
+
+
   return (
     <>
-      {kpis.map((kpi, i) => {
+      {filteredKpis.map((kpi, i) => {
         if (kpi.kpi.length !== 0) {
           return (
             <div key={i} className='relative flex items-center py-2 px-3 my-1 ml-14 font-medium rounded-md cursor-pointertransition-colors'>

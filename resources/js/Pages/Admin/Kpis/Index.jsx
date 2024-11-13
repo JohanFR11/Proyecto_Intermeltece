@@ -33,7 +33,7 @@ export default function Index ({ auth }) {
           <div className='p-6'>
             <div className='flex justify-between m-5'>
               <h2 className='font-bold text-2xl'>Kpis en Vivo</h2>
-              {auth?.permissions?.includes('admin.kpis.create') ? (<KpiModalFragment />) : ''}
+              {auth?.permissions? (<KpiModalFragment />) : ''}
             </div>
             <KpisTable />
           </div>
