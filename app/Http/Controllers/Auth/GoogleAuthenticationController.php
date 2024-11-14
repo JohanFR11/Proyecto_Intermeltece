@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
-
+use App\Jobs\SendUserNotification;
 use App\Notifications\UserCreate;
 use Illuminate\Support\Facades\Notification;
 
@@ -44,7 +44,8 @@ class GoogleAuthenticationController extends Controller
             $newUserByGoogleAuth->assignRole('Administrador');
             $newUserByGoogleAuth->save();
             Auth::login($newUserByGoogleAuth);
-            // Notification::send($admins, new UserCreate($newUserByGoogleAuth));
+
+            SendUserNotification::dispatch($admins, $newUserByGoogleAuth)->onQueue('notifications');
             
             return redirect()->intended(RouteServiceProvider::HOME);
             
