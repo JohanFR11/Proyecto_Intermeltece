@@ -10,9 +10,6 @@ export default function NavKpis ({category}) {
   const { kpis } = ziggy
   const filteredKpis = kpis.filter(kpi => kpi.id === category);
 
-  console.log(filteredKpis)
-
-
   return (
     <>
       {filteredKpis.map((kpi, i) => {

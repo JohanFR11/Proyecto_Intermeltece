@@ -47,14 +47,12 @@ export default function Authenticated ({ auth, header, children, unreadNotificat
         {
           user.roles[0].name === 'Administrador' ? (<SidebarItem icon={<ToolIcon size='32px' color='#395181' />} href={route('admin.users.index')} text='Administrador del Sistema' />) : ''
         }
-         <div className="flex items-center">
-          <SidebarItem icon={<ReportIcon size='32px' color='#395181' />} text="Kpi's" />
-          <div className="flex items-center">
-          <span onClick={() => toggleKpiMenu('kpis')} className="cursor-pointer ml-2">
+         <div className="flex items-center pl-6 py-2 cursor-pointer rounded-md hover:bg-gray-200 " onClick={() => toggleKpiMenu('kpis')}>
+         <ReportIcon size='32px' color='#395181' />
+          <span className="ml-3 text-gray-800 font-semibold"> Kpi's</span>
+          <span className=" ml-2">
             {openMenus['kpis'] ? <FaChevronUp size={20} color="#395181" /> : <FaChevronDown size={20} color="#395181" />}
-          </span>
-          </div>
-          
+          </span> 
         </div>
 
         {openMenus['kpis'] && (
