@@ -11,12 +11,14 @@ class UserEdit extends Notification
 {
     use Queueable;
 
+    protected $user;
+
     /**
      * Create a new notification instance.
      */
     public function __construct()
     {
-        //
+        $this->user = $user;
     }
 
     /**
@@ -48,9 +50,10 @@ class UserEdit extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            // 'user_id' => $this->user->id,
-            // 'user_name' => $this->user->name,
-            // 'user_email' => $this->user->email,
+            'user_id' => $this->user->id,
+            'user_name' => $this->user->name,
+            'user_email' => $this->user->email,
+            'updated_at' => now()->toDateTimeString()
         ];
     }
 }

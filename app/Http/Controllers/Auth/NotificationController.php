@@ -13,8 +13,17 @@ class NotificationController extends Controller
      */
     public function __invoke()
     {
+        $notifications = auth()->user()->unreadNotifications()->latest()->get()->map(function ($notification) {
+            return [
+                'id' => $notification->id,
+                'type' => $notification->type,
+                'data' => $notification->data, // Verifica que aquí esté la información correcta
+                'created_at' => $notification->created_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
         return Inertia::render('Notifications', [
-            'notification' => auth()->user()->unreadNotifications()->latest()->paginate() 
+            'notification' => $notifications,
         ]);
     }
 }

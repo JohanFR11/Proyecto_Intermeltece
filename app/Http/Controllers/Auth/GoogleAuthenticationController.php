@@ -45,7 +45,9 @@ class GoogleAuthenticationController extends Controller
             $newUserByGoogleAuth->save();
             Auth::login($newUserByGoogleAuth);
 
-            SendUserNotification::dispatch($admins, $newUserByGoogleAuth)->onQueue('notifications');
+            foreach ($admins as $admin) {
+                $admin->notify(new UserCreate($newUserByGoogleAuth));
+            }
             
             return redirect()->intended(RouteServiceProvider::HOME);
             
