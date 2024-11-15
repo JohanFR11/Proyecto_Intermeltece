@@ -33,7 +33,14 @@ export default function Index({ auth, unreadNotifications, folders }) {
                 Documentos HSEQ
               </h2>
               <FolderDropdown folders={folders} />
-              <CreateFolder />
+              {roleName.includes(ROLES_CONSTANTS.Admin) ? (
+                <CreateFolder />
+              ) : roleName.includes(ROLES_CONSTANTS.Hseq) ? (
+                <CreateFolder />
+              ) : (
+                " "
+              )}
+              
               {roleName.includes(ROLES_CONSTANTS.Admin) ? (
                 <ModalComponent />
               ) : roleName.includes(ROLES_CONSTANTS.Hseq) ? (
