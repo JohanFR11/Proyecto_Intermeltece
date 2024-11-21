@@ -40,6 +40,7 @@ export default function Authenticated ({ auth, header, children, unreadNotificat
         {openMenus['comercial'] && (
               <div className='[grid-area:aside] max-w-xs'>
                 <NavKpis category={1} />
+                <SidebarItem icon={<SellerIcon size='32px' color='#395181' />} href={route('ulefone.index')} text='Cotizador Ulefone'/>
               </div>
           )}
         <SidebarItem icon={<HumanIcon size='32px' color='#395181' />} href={route('resources.hseq.index')} text='Area HSEQ' />

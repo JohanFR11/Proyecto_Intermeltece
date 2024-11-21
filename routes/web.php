@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\EpaycoController;
 use App\Http\Controllers\Api\Sap\MasterDataController;
 use App\Http\Controllers\Auth\PersonalAccessTokensController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PreciosUlefoneController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('generatetokens', PersonalAccessTokensController::class)->names('profile.generatetokens');
 
     Route::get('/commercial', CommercialQuoterController::class)->name('commercial.quoter');
+    Route::get('/precios-ulefone', [PreciosUlefoneController::class, 'index'])->name('ulefone.index');
 
     Route::get('hseq', [HseqController::class, 'index'])->name('resources.hseq.index');
     Route::post('hseq', [HseqController::class, 'store'])->name('resources.hseq.store');
