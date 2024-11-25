@@ -13,8 +13,8 @@ class PreciosUlefoneController extends Controller
     protected function conn(){
 
         $dsn = 'YourDSNName';  
-        $username = 'intranet';
-        $password = 'meltec2024*';
+        $username = 'username';
+        $password = 'password';
 
 
         $conn = odbc_connect($dsn, $username, $password);
@@ -88,10 +88,10 @@ class PreciosUlefoneController extends Controller
         }
     
         $CREDENTIALS = [
-            'url' => 'https://my345513.sapbydesign.com',
+            'url' => 'odataurl',
             'auth' => [
-                'username' => 'SEIDORFUNCIONAL',
-                'password' => 'S31d0r*2o24_'
+                'username' => 'username',
+                'password' => 'password'
             ]
         ];
 
