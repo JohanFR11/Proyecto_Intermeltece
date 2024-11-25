@@ -35,10 +35,10 @@ class PreciosUlefoneController extends Controller
         }
     
         $CREDENTIALS = [
-            'url' => 'https://my345513.sapbydesign.com',
+            'url' => 'url',
             'auth' => [
-                'username' => 'SEIDORFUNCIONAL',
-                'password' => 'S31d0r*2o24_'
+                'username' => 'username',
+                'password' => 'password'
             ]
         ];
 
