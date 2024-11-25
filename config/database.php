@@ -115,6 +115,14 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'odbc_remote' => [
+        'driver'   => 'odbc',
+        'dsn'      => env('DB_ODBC_DSN', 'YourDSNName'), 
+        'database' => env('DB_REMOTE_DATABASE', 'forge'),
+        'username' => env('DB_REMOTE_USERNAME', 'forge'),
+        'password' => env('DB_REMOTE_PASSWORD', ''),
+        'prefix'   => '',
+        ],
     ],
 
     /*

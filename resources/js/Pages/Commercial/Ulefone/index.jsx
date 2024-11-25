@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PreciosUlefone from "./PreciosUlefone";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
-const Index = ({auth, unreadNotifications, data}) => {
+const Index = ({auth, unreadNotifications, data, odata}) => {
   console.log(data)
 
     return (
@@ -14,7 +14,7 @@ const Index = ({auth, unreadNotifications, data}) => {
         }
         >
              <div>
-                <PreciosUlefone data={data} />
+                <PreciosUlefone data={data} odata={odata}/>
             </div>
 
         </AuthenticatedLayout>
