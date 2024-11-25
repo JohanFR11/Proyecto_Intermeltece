@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\EpaycoController;
 use App\Http\Controllers\Api\Sap\MasterDataController;
 use App\Http\Controllers\Auth\PersonalAccessTokensController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PreciosUlefoneController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +94,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/partsedit', [PartsController::class, 'index'])->name('admin.partsedit.index');
     Route::put('/partsedit/{id}', [PartsController::class, 'update'])->name('admin.partsedit.update');
+
+    Route::get('/precios-ulefone', [PreciosUlefoneController::class, 'index'])->name('ulefone.index');
+    Route::get('/ulefone/odata', [PreciosUlefoneController::class, 'Odata']);
+
 
     Route::get('/products', function () {
         return Inertia::render('Products/Index');

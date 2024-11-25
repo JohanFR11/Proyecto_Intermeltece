@@ -18,6 +18,7 @@ export default function Authenticated ({ auth, header, children, unreadNotificat
         }
 
         <SidebarItem icon={<SellerIcon size='32px' color='#395181' />} href={route('commercial.quoter')} text='Area Comercial' />
+        <SidebarItem icon={<SellerIcon size='32px' color='#395181' />} href={route('ulefone.index')} text='Cotizador Ulefone'/>
         <SidebarItem icon={<HumanIcon size='32px' color='#395181' />} href={route('resources.hseq.index')} text='Area HSEQ' />
         <SidebarItem icon={<AccountingIcon size='32px' color='#395181' />} href={route('payments.index')} text='Area Contable' />
         {
