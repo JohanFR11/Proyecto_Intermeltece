@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/hseq/delete/{id}', [HseqController::class, 'destroy'])->name('resources.hseq.destroy');
     Route::get('/hseq/filter/{folder_id}', [HseqController::class, 'filterDocuments'])->name('resources.hseq.filter');
     Route::post('hseq/CreateFolder', [HseqController::class, 'CreateFolder'])->name('resources.hseq.create');
+    Route::get('/hseq/preview/{id}', [HseqController::class, 'previewFile'])->name('resources.hseq.filepreview');
 
     Route::post('/uploadFile', UploadFilesController::class);
 

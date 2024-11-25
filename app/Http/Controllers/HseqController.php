@@ -154,4 +154,25 @@ class HseqController extends Controller
             ], 400);
         }
     }
+
+    public function previewFile($id)
+    {
+        // Define la ruta donde están guardados tus archivos
+        $file = Hseq::find($id);
+
+        if (!$file) {
+            abort(404, "El archivo no existe.");
+        }
+
+        // Obtén la ruta completa del archivo
+        $path = public_path("storage/". $file->filename);
+
+        // Verifica si el archivo físico existe
+        if (!file_exists($path)) {
+            abort(404, "El archivo no existe en el almacenamiento.");
+        }
+
+        // Devuelve el archivo para previsualización
+        return response()->file($path);
+    }
 }
