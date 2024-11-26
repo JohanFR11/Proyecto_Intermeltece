@@ -1,22 +1,38 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import axios from 'axios';
+
 
 const PreviewButton = ({ fileId, fileName }) => {
-  const handlePreview = () => {
-    // Construye la URL para el archivo basado en el ID
-    const fileUrl = `/hseq/preview/${fileId}`;
-
+  const handlePreview = async () => {
+    // Llama al backend para obtener la URL pública
+    const response = await axios.get(route("resources.hseq.filepreview", { id: fileId }));
+    const fileUrl = response.data.url;
+    console.log(fileUrl)
+    
     if (fileName.endsWith('.pdf')) {
-      // Abrir PDF directamente en el navegador
+    // Abrir PDF directamente en el navegador
       window.open(fileUrl, '_blank');
     } else if (fileName.endsWith('.docx') || fileName.endsWith('.xlsx')) {
-      const googleDocsUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
-      window.open(googleDocsUrl, '_blank');
-
-    }else if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png') || fileName.endsWith('.gif')) {
+      const googleDocsUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+      console.log(`Google Docs Viewer URL: ${googleDocsUrl}`);
+      // Abrir la previsualización en una nueva ventana
+      window.open(googleDocsUrl, "_blank");
+    } else if (
+      fileName.endsWith('.jpg') ||
+      fileName.endsWith('.jpeg') ||
+      fileName.endsWith('.png') ||
+      fileName.endsWith('.gif')
+    ) {
       // Previsualización de imágenes
       const imageWindow = window.open('', '_blank');
-      imageWindow.document.write(`<img src="${fileUrl}" alt="Imagen" style="width:100%; height:auto;">`);
-    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.webm') || fileName.endsWith('.ogg')) {
+      imageWindow.document.write(
+        `<img src="${fileUrl}" alt="Imagen" style="width:100%; height:auto;">`
+      );
+    } else if (
+      fileName.endsWith('.mp4') ||
+      fileName.endsWith('.webm') ||
+      fileName.endsWith('.ogg')
+    ) {
       // Previsualización de videos
       const videoWindow = window.open('', '_blank');
       videoWindow.document.write(`
@@ -29,11 +45,12 @@ const PreviewButton = ({ fileId, fileName }) => {
       alert('Tipo de archivo no soportado para previsualización.');
     }
   };
-
   return (
-    <button className="btn btn-primary" onClick={handlePreview}>
-      Previsualizar
-    </button>
+    <React.Fragment>
+      <button className="btn btn-primary" onClick={handlePreview}>
+        Previsualizar
+      </button>
+    </React.Fragment>
   );
 };
 

@@ -10,6 +10,9 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpWord\IOFactory;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 
 class HseqController extends Controller
@@ -33,21 +36,24 @@ class HseqController extends Controller
      */
     public function store(Request $request)
     {
-        //Log::info('Entrando al método store');
-        //Log::info('Datos recibidos: ', $request->all());
-
         try {
             $request->validate([
                 'hseqFilename' => 'required|string',
-                'filename' => 'required|string',
-                'category'=> 'required|int|exists:folders,folder_id',
+                'filename' => '',
+                'category'=> 'required|int|exists:folders,folder_id'
             ]);
 
-            $fileStrug = Str::slug($request->filename, '_') . '.' .'pdf';
-            $fileStrug = Str::slug($request->filename, '_') . '.' .'doc';
+           $fileStrug = $request-> filename;
 
-            $fileStore = 'documents/' . $fileStrug;
 
+            $filearray = explode('.',$fileStrug);
+
+            $fileStrug2 = Str::slug($request-> filename,'_');
+
+
+            $fileStore = 'documents/' . $fileStrug2 . '.' . $filearray[1];
+
+            
             $categoryId=$request->category;
 
             $hseq = Hseq::create([
@@ -69,7 +75,6 @@ class HseqController extends Controller
                 'code' => $e->getCode(),
             ], 500);
         }
-        
         dd($request->all());
         
     }
@@ -155,24 +160,10 @@ class HseqController extends Controller
         }
     }
 
-    public function previewFile($id)
+    public function previewFileUrl($id)
     {
-        // Define la ruta donde están guardados tus archivos
-        $file = Hseq::find($id);
-
-        if (!$file) {
-            abort(404, "El archivo no existe.");
-        }
-
-        // Obtén la ruta completa del archivo
-        $path = public_path("storage/". $file->filename);
-
-        // Verifica si el archivo físico existe
-        if (!file_exists($path)) {
-            abort(404, "El archivo no existe en el almacenamiento.");
-        }
-
-        // Devuelve el archivo para previsualización
-        return response()->file($path);
+        $file = Hseq::findOrFail($id);
+        $url = asset('storage/' . $file->filename); 
+        return response()->json(['url' => $url]);
     }
 }

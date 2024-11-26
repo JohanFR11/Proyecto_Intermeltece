@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { handleSwalSuccess, handleSwalError } from '@/helpers/swalHelper'
 import { usePage } from '@inertiajs/react'
 
-const ACCEPTFILES = ['application/pdf','application/msword', 'text/plain']
+const ACCEPTFILES = ['application/pdf','application/msword', 'text/plain','video/mp4','application/vnd.openxmlformats-officedocument.wordprocessingml.document','audio/x-generic','image/jpeg','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','image/png']
 registerPlugin(FilePondPluginFileValidateType)
 
 export default function ModalComponent () {
