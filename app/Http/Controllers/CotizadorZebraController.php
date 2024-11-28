@@ -17,7 +17,7 @@ class CotizadorZebraController extends Controller
             $data =DB::connection('mysql')->select("SELECT * FROM subcategoriaszebra");
 
             // Registrar la información obtenida
-            Log::info("Los datos obtenidos son:", ['data' => $data]);
+            //Log::info("Los datos obtenidos son:", ['data' => $data]);
 
             // Verificar si los datos están vacíos
             if (empty($data)) {
@@ -69,5 +69,58 @@ class CotizadorZebraController extends Controller
             ], 500);
         }
     }
+
+    public function PrecioLista(Request $request)
+{
+    try {
+        // Obtener los números de parte seleccionados desde la solicitud
+        $selectedParts = $request->input('selectedParts');
+
+        // Asegurarse de que al menos un número de parte haya sido seleccionado
+        if (empty($selectedParts)) {
+            return response()->json([
+                'error' => 'No se han seleccionado números de parte.',
+            ], 400);
+        }
+
+        // Inicializar el precio total
+        $totalListPrice = 0;
+
+        // Recorrer cada número de parte seleccionado y calcular su precio
+        foreach ($selectedParts as $partNumber) {
+            // Obtener el precio de lista para cada número de parte
+            $price = DB::connection('mysql')->select("SELECT List_Price FROM catalogo_zebra_espanol WHERE Part_Number = ?", [$partNumber]);
+
+            // Si no se encuentra el número de parte, continuar con el siguiente
+            if (empty($price)) {
+                continue;
+            }
+
+            // Obtener el porcentaje de flete
+            $flete = DB::connection('mysql')->select("SELECT Porcentaje_Flete FROM a4_flete");
+
+            // Calcular el precio total con flete
+            $listPriceWithFlete = $price[0]->List_Price * $flete[0]->Porcentaje_Flete;
+
+            // Sumar el precio calculado al total
+            $totalListPrice += $listPriceWithFlete;
+        }
+
+        // Registrar el precio total calculado en los logs
+        Log::info("Precio total calculado: {$totalListPrice}");
+
+        // Devolver el precio total calculado
+        return response()->json([
+            'totalListPrice' => number_format($totalListPrice, 2), // Mostrar con 2 decimales
+        ], 200);
+    } catch (\Exception $e) {
+        // Registrar el error en el log
+        Log::error("Error al calcular el precio de lista: {$e->getMessage()}");
+
+        return response()->json([
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
 
 }

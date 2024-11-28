@@ -15,7 +15,6 @@ const CategoryComponent = ({ data,onCategorySelect }) => {
 
   return (
     <div>
-      <h1>Selecciona una Categoría</h1>
       <CategoryDropdown 
         categories={categories} 
         onCategorySelect={handleCategorySelect} 

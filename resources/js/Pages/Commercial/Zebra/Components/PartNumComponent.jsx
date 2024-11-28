@@ -1,24 +1,39 @@
-import React from 'react';
-import PartNumDropdown from '../Fragments/PartNumDropdown';
+import React, { useEffect, useState } from "react";
+import './css/PartNumComponent.css'
 
-const PartNumComponent = ({ partNums }) => {
-  // Mapear números de parte
-  const Nums = partNums?.map((item) => item.Part_Number) || [];
-
-  // Manejar la selección de un número de parte
-  const handlePartNumSelect = (selectedPartNum) => {
-    console.log('Número de parte seleccionado:', selectedPartNum);
-  };
-
+const PartNumComponent = ({ partNums, onPartNumSelect, listPrice, selectedParts }) => {
   return (
-    <div>
-      <h1>Selecciona un número de parte</h1>
-      <PartNumDropdown 
-        PartNum={Nums} 
-        onPartNumSelect={handlePartNumSelect} 
-      />
+    <div className="partnum-container">
+    {/* Título */}
+    <h1>números de parte</h1>
+
+    {/* Contenedor con barra de desplazamiento */}
+    <div className="checkbox-container">
+      {partNums.map((part) => (
+        <div key={part.Part_Number} className="checkbox-item">
+          <input
+            type="checkbox"
+            id={part.Part_Number}
+            value={part.Part_Number}
+            checked={selectedParts.includes(part.Part_Number)} // Verifica si el número de parte está seleccionado
+            onChange={() => onPartNumSelect(part.Part_Number)} // Maneja la selección
+            className="checkbox-input"
+          />
+          <label htmlFor={part.Part_Number} className="checkbox-label">{part.Part_Number}</label>
+        </div>
+      ))}
     </div>
-  );
+
+     {/* Este contenedor será independiente y flotará a la derecha de la pantalla */}
+      {listPrice && (
+        <div className="price-container">
+          <h3>Precio Total: ${listPrice}</h3>
+        </div>
+      )}
+    </div>
+);
 };
+
+
 
 export default PartNumComponent;
