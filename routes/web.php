@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\Sap\MasterDataController;
 use App\Http\Controllers\Auth\PersonalAccessTokensController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PreciosUlefoneController;
-
+use App\Http\Controllers\CotizadorZebraController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -77,6 +77,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/commercial', CommercialQuoterController::class)->name('commercial.quoter');
     Route::get('/commercial/ulefone', [PreciosUlefoneController::class, 'index'])->name('ulefone.index');
+    Route::get('/commercial/zebra', [CotizadorZebraController::class, 'index'])->name('zebra.index');    
+    Route::get('/commercial/zebra/{categorySelected}', [CotizadorZebraController::class, 'FilterPartNum'])->name('zebra.filter.partnum');
 
     Route::get('hseq', [HseqController::class, 'index'])->name('resources.hseq.index');
     Route::post('hseq', [HseqController::class, 'store'])->name('resources.hseq.store');

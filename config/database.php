@@ -117,7 +117,7 @@ return [
 
         'odbc_remote' => [
         'driver'   => 'odbc',
-        'dsn'      => env('DB_ODBC_DSN', 'YourDSNName'), 
+        'dsn'      => env('DB_ODBC_DSN', 'odbc sqlserver'), 
         'database' => env('DB_REMOTE_DATABASE', 'forge'),
         'username' => env('DB_REMOTE_USERNAME', 'forge'),
         'password' => env('DB_REMOTE_PASSWORD', ''),
