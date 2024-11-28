@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\KpiReportsController;
 use App\Http\Controllers\Auth\NotificationController;
 use App\Http\Controllers\MarkReadNotificationController;
 use App\Http\Controllers\Functions\UploadFilesController;
+use App\Http\Controllers\Functions\DeleteFilesController;
 use App\Http\Controllers\Pdf\QuoteServerReportController;
 use App\Http\Controllers\View\CommercialQuoterController;
 use App\Http\Controllers\Admin\PermissionsStoreController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Api\Sap\MasterDataController;
 use App\Http\Controllers\Auth\PersonalAccessTokensController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PreciosUlefoneController;
+use App\Http\Controllers\CotizadorZebraController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,6 +78,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('generatetokens', PersonalAccessTokensController::class)->names('profile.generatetokens');
 
     Route::get('/commercial', CommercialQuoterController::class)->name('commercial.quoter');
+    Route::get('/commercial/zebra', [CotizadorZebraController::class, 'index'])->name('zebra.index');
+    Route::get('/commercial/zebra/{categorySelected}', [CotizadorZebraController::class, 'FilterPartNum'])->name('zebra.filter.partnum');
 
     Route::get('hseq', [HseqController::class, 'index'])->name('resources.hseq.index');
     Route::post('hseq', [HseqController::class, 'store'])->name('resources.hseq.store');

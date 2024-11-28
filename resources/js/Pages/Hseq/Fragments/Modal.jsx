@@ -15,18 +15,48 @@ export default function ModalComponent () {
   const { csrfToken } = usePage().props
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const server = {
-    url: '/uploadFile',
-    headers: {
-      'x-csrf-token': csrfToken
-    }
-  }
+    process: {
+      url: '/uploadFile',
+      headers: {
+        'x-csrf-token': csrfToken,
+      },
+    },
+  };
+    
+  
   const [data, setData] = useState({
     hseqFilename: '',
     filename: ''
   })
 
   const handleInputChange = (e) => setData((prevData) => ({ ...prevData, hseqFilename: e.target.value }))
-  const handleFileUpload = (fileItem) => setData((prevData) => ({ ...prevData, filename: fileItem[0].file.name }))
+  const handleFileUpload = (fileItems) => {
+    if (fileItems && fileItems.length > 0) {
+      const file = fileItems[0]?.file;
+      if (file) {
+        // Solo procesar el archivo si está correctamente seleccionado
+        setData((prevData) => ({
+          ...prevData,
+          filename: file.name,
+        }));
+        console.log("Nombre del archivo cargado: ", file.name);
+      } else {
+        // No permitir archivo vacío
+        console.log("No se ha seleccionado un archivo válido.");
+        setData((prevData) => ({
+          ...prevData,
+          filename: '',
+        }));
+      }
+    } else {
+      // Si no hay archivos, vaciar el estado
+      setData((prevData) => ({
+        ...prevData,
+        filename: '',
+      }));
+    }
+  };
+  
   const handleSubmitForm = async (e) => {
     e.preventDefault()
     try {
