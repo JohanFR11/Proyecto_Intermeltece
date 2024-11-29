@@ -1,50 +1,35 @@
-import React, { useState } from "react";
+import React from "react";
 
-export default function NumberList({ numeros, onCategorySelect }) {
-    const [selectedCategory, setSelectedCategory] = useState([]);
-
-    const handleChange = (event) => {
-        const selectedNum = event.target.value;
-
-        // Actualiza la lista de números seleccionados
-        const updatedSelection = selectedCategory.includes(selectedNum)
-            ? selectedCategory.filter((num) => num !== selectedNum)
-            : [...selectedCategory, selectedNum];
-
-        setSelectedCategory(updatedSelection);
-
-        // Llama al callback proporcionado por el padre con los números seleccionados
-        if (onCategorySelect) {
-            onCategorySelect(updatedSelection);
-        }
-    };
-
-    return (
-        <div>
-            <label htmlFor="NumberList" className="block text-sm font-semibold text-gray-700">
-                Número de parte
-            </label>
-            {/* Cambié max-h-52 por max-h-32 para hacer el contenedor más corto */}
-            <div style={{ maxHeight: '150px', maxWidth: '340px',overflowY: 'auto', padding: '8px', border: '1px solid #ccc' }}>
-                <ul className="list-none p-0">
-                    {numeros && numeros.length > 0 ? (
-                        numeros.map((partNumber, index) => (
-                            <li key={index} className="mb-2">
-                                <input
-                                    type="checkbox"
-                                    value={partNumber} // Usa el número de parte directamente
-                                    onChange={handleChange}
-                                    checked={selectedCategory.includes(partNumber)} // Marca como seleccionado si ya está en `selectedCategory`
-                                    className="mr-2"
-                                />
-                                {partNumber} {/* Muestra el número de parte */}
-                            </li>
-                        ))
-                    ) : (
-                        <li>No hay números de parte disponibles.</li>
-                    )}
-                </ul>
-            </div>
-        </div>
-    );
+export default function NumberList({ numeros, onPartNumSelect, selectedParts, listPrice }) {
+  return (
+    <div>
+      <label htmlFor="NumberList" className="block text-sm font-semibold text-gray-700">
+        Número de parte
+      </label>
+      <div style={{ maxHeight: '200px', maxWidth: '340px', overflowY: 'auto', padding: '8px', border: '1px solid #ccc' }}>
+        <ul className="list-none p-0">
+          {numeros && numeros.length > 0 ? (
+            numeros.map((partNumber, index) => (
+              <li key={index} className="mb-2">
+                <input
+                  id={partNumber} // Aquí solo usas 'partNumber' porque es solo el valor de Part_Number
+                  type="checkbox"
+                  value={partNumber} // Usa el valor directamente
+                  onChange={() => onPartNumSelect(partNumber)} // Llama a onPartNumSelect con el número de parte
+                  checked={selectedParts.includes(partNumber)} // Marca el checkbox si 'selectedParts' incluye el número
+                  className="mr-2"
+                />
+                {partNumber} {/* Aquí solo muestras el número de parte */}
+              </li>
+            ))
+          ) : (
+            <li>No hay números de parte disponibles.</li>
+          )}
+        </ul>
+      </div>
+      <div>
+        <h3>Precio Total: ${listPrice}</h3>
+      </div>
+    </div>
+  );
 }

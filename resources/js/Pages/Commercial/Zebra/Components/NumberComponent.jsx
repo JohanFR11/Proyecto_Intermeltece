@@ -2,26 +2,21 @@ import React from "react";
 import NumberList from "../Fragments/NumberList";
 
 
-const NumeroComponente = ({number})=>{
-    
-    const numeros = number.map((item) => item.Part_Number);
+const NumeroComponente = ({number, onPartNumSelect, listPrice, selectedParts}) => {
+    const numeros = number.map((item) => item.Part_Number); // Asegúrate de que 'Part_Number' exista en cada item
 
-    const handleCategorySelect = (selectedCategory) =>{
-        console.log('Los numeros de partes son: ', selectedCategory)
-    }
-
-    return(
+    return (
         <div>
-            <h1>
-                Selecciona el numero de parte
-            </h1>
+            <h1>Selecciona el numero de parte</h1>
             <NumberList
-                numeros={numeros}
-                onCategorySelect = {handleCategorySelect}
+                numeros={numeros} // Pasa solo los números de parte al componente hijo
+                onPartNumSelect={onPartNumSelect}
+                selectedParts={selectedParts}
+                listPrice={listPrice}
             />
         </div>
-    )
-
+    );
 }
+
 
 export default NumeroComponente;

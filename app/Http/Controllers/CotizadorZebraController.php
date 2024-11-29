@@ -33,32 +33,72 @@ class CotizadorZebraController extends Controller
     }
 
     public function FilterPartNum($categorySelected)
-{
-    try {
-        Log::info("Categoría seleccionada: " . $categorySelected);  // Para verificar el valor recibido
-        $numberfilter = DB::connection('sqlsrv')->select("
-            SELECT [Part Number] AS [Part_Number] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol']
-            WHERE [Product Sub Category] = ?
-        ", [$categorySelected]);
+    {
+        try {
+            Log::info("Categoría seleccionada: " . $categorySelected);  // Para verificar el valor recibido
+            $numberfilter = DB::connection('sqlsrv')->select("
+                SELECT TOP (20700) [Part Number] AS [Part_Number] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol']
+                WHERE [Product Sub Category] = ?
+            ", [$categorySelected]);
 
-        if (empty($numberfilter)) {
+            if (empty($numberfilter)) {
+                return response()->json([
+                    'numberfilter' => [],
+                    'message' => 'No se encontraron resultados para la categoría seleccionada.',
+                ], 200);
+            }
+
             return response()->json([
-                'numberfilter' => [],
-                'message' => 'No se encontraron resultados para la categoría seleccionada.',
+                'numberfilter' => $numberfilter, 
             ], 200);
+        } catch (\Exception $e) {
+            Log::error("Error al filtrar números de parte: {$e->getMessage()}");
+
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    
+    public function PrecioLista(Request $request)
+    {
+        try {
+        $selectedParts = $request->input('selectedParts');
+
+        if(empty($selectedParts))
+        {
+            return response()->json([
+                'error' => 'No se han seleccionado numero de partes.',
+            ],400);
+        }
+
+        $totalPrice = 0;
+
+        foreach($selectedParts as $partNumber)
+        {
+            $price = DB::connection('sqlsrv')->select("SELECT [List Price] AS [List_Price] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] WHERE [Part Number] = ?", [$partNumber]);
+            
+            if(empty($price))
+            {
+                continue;
+            }
+
+            $flate = DB::connection('sqlsrv')->select("SELECT [PORCENTAJE FLETE] AS [PORCENTAJE_FLETE] FROM [COTIZADOR].[dbo].[A4_FLETE (Parametro)]");
+
+            $listPriceANDFlete = $price[0]-> List_Price * $flate[0]-> PORCENTAJE_FLETE;
+    
+            $totalPrice += $listPriceANDFlete;
+
         }
 
         return response()->json([
-            'numberfilter' => $numberfilter, 
-        ], 200);
-    } catch (\Exception $e) {
-        Log::error("Error al filtrar números de parte: {$e->getMessage()}");
+            'totalPrice' => number_format($totalPrice, 2),
+        ],200);
 
+    } catch(\Exception $e){
         return response()->json([
-            'error' => $e->getMessage(),
-        ], 500);
+            'error'=>$e -> getMessage(),
+        ],500);
     }
-}
-
-
+    }
 }
