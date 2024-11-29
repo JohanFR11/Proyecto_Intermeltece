@@ -8,6 +8,8 @@ export default function Index({ auth, unreadNotifications, data }) {
     const [PartNums, setPartNums] = useState([]);
     const [selectedParts, setSelectedParts] = useState([]); // Para almacenar los números de parte seleccionados
     const [listPrice, setListPrice] = useState('');
+    const [finalPrice, setFinalPrice]= useState('');
+    const [percentage, setPercentage]= useState('');
 
     const handleCategorySelect = async (selectedCategory) => {
         try {
@@ -32,15 +34,25 @@ export default function Index({ auth, unreadNotifications, data }) {
 
         setSelectedParts(updatedSelectedParts);
 
+        if (updatedSelectedParts.length === 0) {
+            setListPrice(0);
+            setFinalPrice(0);
+        }
+
         // Enviar los números de parte seleccionados al backend
         try {
-            const response = await axios.post(
-                route("zebra.listprice"),
-                { selectedParts: updatedSelectedParts }
-            );
-            setListPrice(response.data.totalListPrice); // Actualizar el precio total
+            // Realizar ambas solicitudes al backend en paralelo
+            const [listPriceResponse, finalPriceResponse] = await Promise.all([
+                axios.post(route("zebra.listprice"), { selectedParts: updatedSelectedParts }),
+                axios.post(route("zebra.finalprice"), { selectedParts: updatedSelectedParts }),
+            ]);
+    
+            // Actualizar el precio total y el precio final
+            setListPrice(listPriceResponse.data.totalListPrice);
+            setFinalPrice(finalPriceResponse.data.totalFinalPrice);
+            setPercentage(finalPriceResponse.data.descuento)
         } catch (error) {
-            console.error("Error al obtener el precio de lista:", error);
+            console.error("Error al obtener precios:", error);
         }
     };
 
@@ -60,7 +72,9 @@ export default function Index({ auth, unreadNotifications, data }) {
                 partNums={PartNums} 
                 selectedParts={selectedParts} 
                 onPartNumSelect={handlePartNumSelect} 
-                listPrice={listPrice} 
+                listPrice={listPrice}
+                finalPrice={finalPrice}
+                porcentaje={percentage} 
             />
         </AuthenticatedLayout>
     );

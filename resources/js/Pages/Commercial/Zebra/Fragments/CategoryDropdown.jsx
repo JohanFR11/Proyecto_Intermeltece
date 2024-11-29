@@ -21,7 +21,8 @@ export function CategoryDropdown({ categories, onCategorySelect }) {
                 value={selectedCategory}
                 onChange={handleChange}
             >
-                <option value="">-- Selecciona una categoría --</option>
+                <option value="" disabled>-- Selecciona una categoría --</option>
+                <option value="1"></option>
                 {categories.map((category, index) => (
                     <option key={index} value={category}>
                         {category}

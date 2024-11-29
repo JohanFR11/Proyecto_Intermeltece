@@ -64,4 +64,23 @@
     height: 25vh; /* Acomoda el precio al tamaño de la pantalla */
     min-width: 200px; /* Para asegurar que no se colapse en tamaños pequeños */
   }
+  .finalPrice-container {
+    position: fixed; /* Lo coloca de forma fija en la parte derecha */
+    top: 20%; 
+    right: 20px; /* Lo coloca en la esquina derecha */
+    transform: translateY(-40%); /* Ajusta para centrarlo verticalmente */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    font-weight: bold;
+    color: #1e88e5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20vw; /* Ocupa un 20% del ancho de la pantalla */
+    height: 25vh; /* Acomoda el precio al tamaño de la pantalla */
+    min-width: 200px; /* Para asegurar que no se colapse en tamaños pequeños */
+  }
   

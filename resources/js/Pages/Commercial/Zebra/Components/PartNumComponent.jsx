@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './css/PartNumComponent.css'
 
-const PartNumComponent = ({ partNums, onPartNumSelect, listPrice, selectedParts }) => {
+const PartNumComponent = ({ partNums, onPartNumSelect, listPrice, selectedParts,finalPrice, porcentaje }) => {
   return (
     <div className="partnum-container">
     {/* Título */}
@@ -27,11 +27,23 @@ const PartNumComponent = ({ partNums, onPartNumSelect, listPrice, selectedParts 
      {/* Este contenedor será independiente y flotará a la derecha de la pantalla */}
       {listPrice && (
         <div className="price-container">
-          <h3>Precio Total: ${listPrice}</h3>
+          <h3>Precio Lista: ${listPrice}</h3>
+        </div>
+      )}
+
+      {finalPrice && (
+        <div className="finalPrice-container">
+          <h3>Precio Final: ${finalPrice}</h3>
+        </div>
+      )}
+
+      {porcentaje && (
+        <div className="discount-container">
+          <h3>Descuento: {porcentaje}%</h3>
         </div>
       )}
     </div>
-);
+  );
 };
 
 
