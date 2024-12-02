@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/commercial', CommercialQuoterController::class)->name('commercial.quoter');
     Route::get('/commercial/zebra', [CotizadorZebraController::class, 'index'])->name('zebra.index');
+    /* Route::get('/commercial/zebra/todo', [CotizadorZebraController::class, 'TodosPartNum'])->name('zebra.todospart'); */
     Route::get('/commercial/zebra/{categorySelected}', [CotizadorZebraController::class, 'FilterPartNum'])->name('zebra.filter.partnum');
     Route::post('/commercial/zebra/price', [CotizadorZebraController::class, 'PrecioLista'])->name('zebra.listprice');
 

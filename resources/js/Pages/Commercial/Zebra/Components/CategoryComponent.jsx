@@ -2,7 +2,7 @@ import React from "react";
 import { CategoryDropdown } from "../Fragments/CategoryDropdown";
 
 const CategoryComponent = ({ data, onCategorySelect }) => {
-  const categories = data.map((item) => item.subcategoria) || [];
+  const categories = data.map((item) => item.subcategoria);
 
   return (
     <div className="mb-4">

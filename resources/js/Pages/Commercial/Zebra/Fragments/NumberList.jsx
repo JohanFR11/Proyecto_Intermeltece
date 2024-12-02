@@ -28,7 +28,7 @@ export default function NumberList({ numeros, onPartNumSelect, selectedParts, li
         </ul>
       </div>
       <div>
-        <h3>Precio Total: ${listPrice}</h3>
+        <h3>Precio Lista: ${listPrice}</h3>
       </div>
     </div>
   );
