@@ -18,7 +18,7 @@ class CotizadorZebraController extends Controller
             
             // Segunda consulta: obtener Part Numbers
             $data2 = DB::connection('sqlsrv')->select("SELECT TOP (20700) [Part Number] AS [Part_Number] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol']");
-            Log::info("los datos obtenidos son data2:", ['data2' => json_encode($data2)]);
+            /* Log::info("los datos obtenidos son data2:", ['data2' => json_encode($data2)]); */
             
             // Retornar ambos conjuntos de datos a la vista
             return Inertia::render('Commercial/Zebra/Index', [
@@ -33,32 +33,49 @@ class CotizadorZebraController extends Controller
     }
 
     public function FilterPartNum($categorySelected)
-    {
-        try {
-            Log::info("Categoría seleccionada: " . $categorySelected);  // Para verificar el valor recibido
-            $numberfilter = DB::connection('sqlsrv')->select("
-                SELECT TOP (20700) [Part Number] AS [Part_Number] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol']
-                WHERE [Product Sub Category] = ?
-            ", [$categorySelected]);
+{
+    try {
+        // Separar las categorías seleccionadas por coma (si vienen como string)
+        $categories = explode(',', $categorySelected);
 
-            if (empty($numberfilter)) {
-                return response()->json([
-                    'numberfilter' => [],
-                    'message' => 'No se encontraron resultados para la categoría seleccionada.',
-                ], 200);
-            }
+        Log::info("Categorías seleccionadas: " . implode(', ', $categories));
 
-            return response()->json([
-                'numberfilter' => $numberfilter, 
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error("Error al filtrar números de parte: {$e->getMessage()}");
+        $numberfilter = [];
 
-            return response()->json([
-                'error' => $e->getMessage(),
-            ], 500);
+        // Iterar sobre cada categoría seleccionada
+        foreach ($categories as $category) {
+            $results = DB::connection('sqlsrv')->select(
+                "SELECT [Part Number] AS [Part_Number] 
+                 FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] 
+                 WHERE [Product Sub Category] = ?", [$category]
+            );
+
+            // Combinar los resultados de cada categoría
+            $numberfilter = array_merge($numberfilter, $results);
         }
+
+        Log::info("Los datos obtenidos son numberfilter:", ['numberfilter' => json_encode($numberfilter)]);
+
+        // Verificar si no hay resultados
+        if (empty($numberfilter)) {
+            return response()->json([
+                'numberfilter' => [],
+                'message' => 'No se encontraron resultados para las categorías seleccionadas.',
+            ], 200);
+        }
+
+        return response()->json([
+            'numberfilter' => $numberfilter,
+        ], 200);
+    } catch (\Exception $e) {
+        Log::error("Error al filtrar números de parte: {$e->getMessage()}");
+
+        return response()->json([
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
+
     
     public function PrecioLista(Request $request)
     {

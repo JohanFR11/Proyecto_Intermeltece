@@ -15,26 +15,26 @@ export default function Index({auth, unreadNotifications, data})
     console.log('esa vaiana', numberfilter)
 
     const handleCategorySelect = async (selectedCategory) => {
-        try {
-          // Si se selecciona la opción "-- Selecciona una categoría --", mostramos todos los números de parte
-          if (selectedCategory === "") {
-            setPartNums(data.number); // Establecer todos los números de parte en el estado
-            setSelectedParts([]); // Limpiar partes seleccionadas
-            setListPrice(""); // Limpiar precio
-          } else {
-            // Si se selecciona una categoría específica, filtramos los números de parte
-            const response = await axios.get(
-              route("zebra.filter.partnum", { categorySelected: selectedCategory })
-            );
-            setPartNums(response.data.numberfilter); // Establecer los números de parte filtrados
-            setSelectedParts([]); // Limpiar partes seleccionadas
-            setListPrice(""); // Limpiar precio
-          }
-        } catch (error) {
-          console.error("Error al obtener números de parte:", error);
-        }
-      };
-      
+  try {
+    // Si se selecciona la opción "-- Selecciona una categoría --", mostramos todos los números de parte
+    if (selectedCategory === "") {
+      setPartNums(data.numberfilter); // Establecer todos los números de parte en el estado
+      setSelectedParts([]); // Limpiar partes seleccionadas
+      setListPrice(""); // Limpiar precio
+    } else {
+      // Si se selecciona una categoría específica, filtramos los números de parte
+      const response = await axios.get(
+        route("zebra.filter.partnum", { categorySelected:  selectedCategory })
+      );
+      setPartNums(response.data.numberfilter); // Establecer los números de parte filtrados
+      setSelectedParts([]); // Limpiar partes seleccionadas
+      setListPrice(""); // Limpiar precio
+    }
+  } catch (error) {
+    console.error("Error al obtener números de parte:", error);
+  }
+};
+
 
     const handlePartNumSelect = async (selectedPart) => {
         const updatedSelectedParts = selectedParts.includes(selectedPart)
