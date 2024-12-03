@@ -168,4 +168,39 @@ class CotizadorZebraController extends Controller
             ], 500);
         }
     }
+
+    public function ImagenPart(Request $request)
+    {
+        try {
+            $selectedParts = $request->input('selectedParts');
+            $imagenpart = [];
+
+            foreach ($selectedParts as $partNumber) {
+                $result = DB::connection('sqlsrv')->select("SELECT [Image URL] AS [Image_URL] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] WHERE [Part Number] = ?", [$partNumber]);
+                if (!empty($result)) {
+                    $imagenpart[] = $result[0]->Image_URL; // Agregar la URL al array
+                }
+            }
+
+            // Verificar si no hay imágenes encontradas
+            if (empty($imagenpart)) {
+                return response()->json([
+                    'imagenpart' => [],
+                    'message' => 'No se encontraron imágenes para los números de parte seleccionados.',
+                ], 200);
+            }
+
+            return response()->json([
+                'imagenpart' => $imagenpart,
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error("Error al obtener imágenes: {$e->getMessage()}");
+
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }

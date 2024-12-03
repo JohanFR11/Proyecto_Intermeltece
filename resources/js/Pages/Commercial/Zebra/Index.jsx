@@ -12,6 +12,7 @@ export default function Index({auth, unreadNotifications, data, datosporsi})
     const [listPrice, setListPrice] = useState('');
     const [finalPrice, setFinalPrice]= useState('');
     const [percentage, setPercentage]= useState('');
+    const [imagen, setImagen] = useState([]);
 
     console.log('esa vaiana', numberfilter)
     console.log('datos xd ', datosporsi)
@@ -40,20 +41,23 @@ export default function Index({auth, unreadNotifications, data, datosporsi})
         setListPrice(0);
         setFinalPrice(0);
         setPercentage(0);
+        setImagen(0);
     }
 
     // Enviar los números de parte seleccionados al backend
     try {
         // Realizar ambas solicitudes al backend en paralelo
-        const [listPriceResponse, finalPriceResponse] = await Promise.all([
+        const [listPriceResponse, finalPriceResponse, imagenPartResponse] = await Promise.all([
             axios.post(route("zebra.listprice"), { selectedParts: updatedSelectedParts }),
             axios.post(route("zebra.finalprice"), { selectedParts: updatedSelectedParts }),
+            axios.post(route("zebra.imagenpart"), { selectedParts: updatedSelectedParts }),
         ]);
 
         // Actualizar el precio total y el precio final
         setListPrice(listPriceResponse.data.totalPrice);
         setFinalPrice(finalPriceResponse.data.totalPrice);
-        setPercentage(finalPriceResponse.data.descuento)
+        setPercentage(finalPriceResponse.data.descuento);
+        setImagen(imagenPartResponse.data.imagenpart);
     } catch (error) {
         console.error("Error al obtener precios:", error);
     }
@@ -61,64 +65,79 @@ export default function Index({auth, unreadNotifications, data, datosporsi})
 
 return (
     <AuthenticatedLayout
-      auth={auth}
-      unreadNotifications={unreadNotifications}
-      header={
-        <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-          Tabla de cotización de productos Zebra
-        </h2>
-      }
+        auth={auth}
+        unreadNotifications={unreadNotifications}
+        header={
+            <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                Tabla de cotización de productos Zebra
+            </h2>
+        }
     >
-      <div className="flex flex-col md:flex-row items-start gap-6 p-4">
-        {/* Panel izquierdo: Categorías y números de parte */}
-        <div className="w-full md:w-1/3 bg-white border border-gray-300 rounded-lg shadow p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Selección de Productos
-          </h3>
-          <CategoryComponent data={data} onCategorySelect={handleCategorySelect} />
-          <NumeroComponente
-            number={numberfilter}
-            datosporsi={datosporsi}
-            selectedParts={selectedParts}
-            onPartNumSelect={handlePartNumSelect}
-            listPrice={listPrice}
-            finalPrice={finalPrice}
-            porcentaje={percentage}
-          />
+        <div className="flex flex-col md:flex-row items-start gap-6 p-4">
+            {/* Panel izquierdo: Categorías y números de parte */}
+            <div className="w-full md:w-1/3 bg-white border border-gray-300 rounded-lg shadow p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Selección de Productos
+                </h3>
+                <CategoryComponent data={data} onCategorySelect={handleCategorySelect} />
+                <NumeroComponente
+                    number={numberfilter}
+                    datosporsi={datosporsi}
+                    selectedParts={selectedParts}
+                    onPartNumSelect={handlePartNumSelect}
+                    listPrice={listPrice}
+                    finalPrice={finalPrice}
+                    porcentaje={percentage}
+                />
+            </div>
+
+            {/* Panel derecho: Resumen */}
+            <div className="flex flex-col w-full bg-white border border-gray-300 rounded-lg shadow-lg p-5">
+                {/* Resumen en 3 columnas */}
+                <div className="flex justify-between p-5 border border-gray-300 rounded-full">
+                    {/* Columna: Precio Lista */}
+                    <div className="text-center">
+                        <p className="text-sm font-bold text-gray-600">Precio Lista</p>
+                        <p className="text-lg font-semibold text-gray-800">
+                            {listPrice ? `${listPrice} USD` : "0 USD"}
+                        </p>
+                    </div>
+
+                    {/* Columna: Precio Final */}
+                    <div className="text-center">
+                        <p className="text-sm font-bold text-gray-600">Precio Final</p>
+                        <p className="text-lg font-semibold text-gray-800">
+                            {finalPrice ? `${finalPrice} USD` : "0 USD"}
+                        </p>
+                    </div>
+
+                    {/* Columna: Descuento */}
+                    <div className="text-center">
+                        <p className="text-sm font-bold text-gray-600">Descuento</p>
+                        <p className="text-lg font-semibold text-green-600">
+                            {percentage ? `${percentage}%` : "0%"}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Sección de imágenes: Mostrar solo la primera imagen */}
+                <div className="w-full bg-white border border-gray-300 rounded-lg shadow mt-6 p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Imagen</h3>
+                    {imagen.length > 0 ? (
+                        <img
+                            src={imagen[0]} // Mostrar solo la primera imagen
+                            alt={`Imagen del Part Number ${selectedParts[0]}`} // Relacionada con el primer número de parte
+                            className="w-full h-32 object-contain border rounded"
+                        />
+                    ) : (
+                        <p className="text-gray-600">
+                            No hay imágenes disponibles para el número de parte seleccionado.
+                        </p>
+                    )}
+                </div>
+            </div>
         </div>
-  
-        {/* Panel derecho: Resumen */}
-<div className="flex items-center w-full bg-white border border-gray-300 rounded-full shadow-lg p-4">
-  {/* Parte izquierda: Resumen en 3 columnas */}
-  <div className="flex flex-1 justify-between">
-    {/* Columna: Precio Lista */}
-    <div className="text-center">
-      <p className="text-sm font-bold text-gray-600">Precio Lista</p>
-      <p className="text-lg font-semibold text-gray-800">
-        {listPrice ? `${listPrice} USD` : "0 USD"}
-      </p>
-    </div>
-
-    {/* Columna: Precio Final */}
-    <div className="text-center">
-      <p className="text-sm font-bold text-gray-600">Precio Final</p>
-      <p className="text-lg font-semibold text-gray-800">
-        {finalPrice ? `${finalPrice} USD` : "0 USD"}
-      </p>
-    </div>
-
-    {/* Columna: Descuento */}
-    <div className="text-center">
-      <p className="text-sm font-bold text-gray-600">Descuento</p>
-      <p className="text-lg font-semibold text-green-600">
-        {percentage ? `${percentage}%` : "0%"}
-      </p>
-    </div>
-  </div>
-</div>
-
-      </div>
     </AuthenticatedLayout>
-  );
+);
 
 }

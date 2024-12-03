@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function TodosDatos({todosnum, onPartNumSelect, selectedParts, listPrice, finalPrice, porcentaje})
+export default function TodosDatos({todosnum, onPartNumSelect, selectedParts})
 {
     return (
         <div>
