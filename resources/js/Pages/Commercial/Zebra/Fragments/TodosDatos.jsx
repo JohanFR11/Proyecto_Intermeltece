@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function TodosDatos({todosnum, onPartNumSelect, selectedParts, listPrice})
+export default function TodosDatos({todosnum, onPartNumSelect, selectedParts, listPrice, finalPrice, porcentaje})
 {
     return (
         <div>
@@ -27,10 +27,18 @@ export default function TodosDatos({todosnum, onPartNumSelect, selectedParts, li
                 <li>No hay números de parte disponibles.</li>
               )}
             </ul>
-          </div>
-          <div>
-            <h3>Precio Lista: ${listPrice}</h3>
-          </div>
+            </div>
+            {/* <div>
+                <div>
+                   <h3>Precio Lista: ${listPrice}</h3>
+                </div>
+                <div>
+                   <h3>Precio Final: ${finalPrice}</h3>
+                </div>
+                <div>
+                   <h3>Descuento: ${porcentaje}%</h3>
+                </div>
+            </div> */}
         </div>
       );
 }

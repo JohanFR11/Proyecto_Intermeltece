@@ -2,7 +2,7 @@ import React from "react";
 import NumberList from "../Fragments/NumberList";
 import TodosDatos from "../Fragments/TodosDatos";
 
-const NumeroComponente = ({ number, onPartNumSelect, listPrice, selectedParts, datosporsi}) => {
+const NumeroComponente = ({ number, onPartNumSelect, listPrice, selectedParts, datosporsi, finalPrice, porcentaje}) => {
     // Validar si la lista está vacía o no definida
     if (!number || number.length === 0) {
         const todoeso = datosporsi.map((itemx) => itemx.Part_Number);
@@ -14,6 +14,8 @@ const NumeroComponente = ({ number, onPartNumSelect, listPrice, selectedParts, d
                     onPartNumSelect={onPartNumSelect}
                     selectedParts={selectedParts}
                     listPrice={listPrice}
+                    finalPrice={finalPrice}
+                    porcentaje={porcentaje}
                 />
             </div>
         );
@@ -30,6 +32,8 @@ const NumeroComponente = ({ number, onPartNumSelect, listPrice, selectedParts, d
                 onPartNumSelect={onPartNumSelect}
                 selectedParts={selectedParts}
                 listPrice={listPrice}
+                finalPrice={finalPrice}
+                porcentaje={porcentaje}
             />
         </div>
     );

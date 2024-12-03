@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function NumberList({ numeros, onPartNumSelect, selectedParts, listPrice }) {
+export default function NumberList({ numeros, onPartNumSelect, selectedParts, listPrice, finalPrice, porcentaje}) {
   return (
     <div>
       <label htmlFor="NumberList" className="block text-sm font-semibold text-gray-700">
@@ -27,9 +27,17 @@ export default function NumberList({ numeros, onPartNumSelect, selectedParts, li
           )}
         </ul>
       </div>
-      <div>
-        <h3>Precio Lista: ${listPrice}</h3>
-      </div>
+      {/* <div>
+        <div>
+          <h3>Precio Lista: ${listPrice}</h3>
+        </div>
+        <div>
+          <h3>Precio Final: ${finalPrice}</h3>
+        </div>
+        <div>
+          <h3>Descuento: ${porcentaje}%</h3>
+        </div>
+      </div> */}
     </div>
   );
 }

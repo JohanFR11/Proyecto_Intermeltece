@@ -35,17 +35,6 @@ class CotizadorZebraController extends Controller
     public function FilterPartNum($categorySelected)
     {
         try {
-            /* if ($categorySelected == "") {
-                // Obtener todos los números de parte si no se selecciona ninguna categoría
-                $results = DB::connection('sqlsrv')->select(
-                    "SELECT TOP (20700) [Part Number] AS [Part_Number] 
-                    FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol']"
-                );
-
-                return response()->json([
-                    'numberfilter' => $results,
-                ], 200);
-            } */
                 // Si hay categorías seleccionadas, filtrar
                 $categories = explode(',', $categorySelected);
                 $results = [];
@@ -117,5 +106,66 @@ class CotizadorZebraController extends Controller
             'error'=>$e -> getMessage(),
         ],500);
     }
+    }
+
+    public function FinalPrice(Request $request)
+    {
+        try{
+            
+            $selectedParts = $request->input('selectedParts');
+
+            if (empty($selectedParts)) {
+                return response()->json([
+                    'totalPrice' => 0, // Mostrar con 2 decimales
+                    'descuento'=>0,
+                ], 200);
+            }  
+
+            $totalDiscount = 0;
+
+            $totalPrice = 0;
+
+            foreach ($selectedParts as $partNumber) {
+                // Obtener el precio de lista para cada número de parte
+                $price = DB::connection('sqlsrv')->select("SELECT [List Price] AS [List_Price] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] WHERE [Part Number] = ?", [$partNumber]);
+                
+                // Si no se encuentra el número de parte, continuar con el siguiente
+                if (empty($price)) {
+                    continue;
+                }
+                $discountCode = DB::connection('sqlsrv')->select("SELECT [Discount Group] AS [Discount_Group] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] WHERE [Part Number] = ?", [$partNumber]);
+                $discountPercentage = DB::connection('sqlsrv')->select("SELECT [Recommended _Premier Solution Partner Discount] AS [per_Discount] FROM [COTIZADOR].[dbo].[Patametros_Descuetos_Zebra] WHERE [Discount Code] = ?", [$discountCode[0]->Discount_Group]);
+                $valorVentaMeltec = $price[0]->List_Price -($price[0]->List_Price * $discountPercentage[0]->per_Discount);
+                
+                $aidc = DB::connection('sqlsrv')->select("SELECT [POCENTAJE OFERTA] AS [Porcentaje_Venta] FROM [COTIZADOR].[dbo].[A4_FLETE (Parametro)] WHERE [OFERTA VENTA] = 'AIDC'");
+                
+                $flete = DB::connection('sqlsrv')->select("SELECT [PORCENTAJE FLETE] AS [Porcentaje_Flete] FROM [COTIZADOR].[dbo].[A4_FLETE (Parametro)]");
+                
+                // Calcular el precio total con flete
+                $finalPrice = $valorVentaMeltec * $flete[0]->Porcentaje_Flete / ($aidc[0]->Porcentaje_Venta-1)*(-1);
+                $listPriceWithFlete = $price[0]->List_Price * $flete[0]->Porcentaje_Flete;
+                $discount= 1-($finalPrice/$listPriceWithFlete);
+                $discountInt= (number_format($discount, 2))*100;
+                // Sumar el precio calculado al total
+                
+                $totalPrice += $finalPrice;
+                $totalDiscount += $discountInt;
+            }
+
+            // Registrar el precio total calculado en los logs
+            // Devolver el precio total calculado
+            return response()->json([
+                'totalPrice' => number_format($totalPrice, 2), // Mostrar con 2 decimales
+                'descuento'=>$totalDiscount,
+            ], 200);
+
+        }catch(\Exception $e){
+            // Registrar el error en el log
+            Log::error("Error al calcular el precio de lista: {$e->getMessage()}");
+
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
