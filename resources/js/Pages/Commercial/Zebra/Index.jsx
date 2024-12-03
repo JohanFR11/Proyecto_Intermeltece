@@ -125,8 +125,8 @@ return (
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Imagen</h3>
                     {imagen.length > 0 ? (
                         <img
-                            src={imagen[0]} // Mostrar solo la primera imagen
-                            alt={`Imagen del Part Number ${selectedParts[0]}`} // Relacionada con el primer número de parte
+                            src={imagen[imagen.length -1]} // Mostrar solo la primera imagen
+                            alt={`Imagen del Part Number ${selectedParts[selectedParts.length - 1]}`} // Relacionada con el primer número de parte
                             className="w-full h-32 object-contain border rounded"
                         />
                     ) : (
