@@ -203,4 +203,64 @@ class CotizadorZebraController extends Controller
         }
     }
 
+    public function datosPartes(Request $request)
+    {
+        try{
+            $selectedParts = $request->input('selectedParts');
+        
+            // Crear un array para almacenar los precios finales y descuentos
+            $Partprice=[];
+            $finalPriceDetails = [];
+            $discountDetails = [];
+
+            foreach ($selectedParts as $partNumber) {
+                // Obtener el precio de lista
+                // Obtener el precio de lista para cada número de parte
+                $price = DB::connection('sqlsrv')->select("SELECT [List Price] AS [List_Price] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] WHERE [Part Number] = ?", [$partNumber]);
+                
+                // Si no se encuentra el número de parte, continuar con el siguiente
+                if (empty($price)) {
+                    continue;
+                }
+
+                $flateX = DB::connection('sqlsrv')->select("SELECT [PORCENTAJE FLETE] AS [PORCENTAJE_FLETE] FROM [COTIZADOR].[dbo].[A4_FLETE (Parametro)]");
+
+                $listPriceANDFlete = $price[0]-> List_Price * $flateX[0]-> PORCENTAJE_FLETE;
+
+
+                $discountCode = DB::connection('sqlsrv')->select("SELECT [Discount Group] AS [Discount_Group] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] WHERE [Part Number] = ?", [$partNumber]);
+                $discountPercentage = DB::connection('sqlsrv')->select("SELECT [Recommended _Premier Solution Partner Discount] AS [per_Discount] FROM [COTIZADOR].[dbo].[Patametros_Descuetos_Zebra] WHERE [Discount Code] = ?", [$discountCode[0]->Discount_Group]);
+                $valorVentaMeltec = $price[0]->List_Price -($price[0]->List_Price * $discountPercentage[0]->per_Discount);
+                
+                $aidc = DB::connection('sqlsrv')->select("SELECT [POCENTAJE OFERTA] AS [Porcentaje_Venta] FROM [COTIZADOR].[dbo].[A4_FLETE (Parametro)] WHERE [OFERTA VENTA] = 'AIDC'");
+                
+                $flete = DB::connection('sqlsrv')->select("SELECT [PORCENTAJE FLETE] AS [Porcentaje_Flete] FROM [COTIZADOR].[dbo].[A4_FLETE (Parametro)]");
+                
+                // Calcular el precio total con flete
+                $finalPrice = $valorVentaMeltec * $flete[0]->Porcentaje_Flete / ($aidc[0]->Porcentaje_Venta-1)*(-1);
+                $listPriceWithFlete = $price[0]->List_Price * $flete[0]->Porcentaje_Flete;
+                $discount= 1-($finalPrice/$listPriceWithFlete);
+                $discountInt= (number_format($discount, 2))*100;
+
+                $Partprice[$partNumber] = number_format($listPriceANDFlete, 2);
+                Log::info("los datos obtenidos son Partprice:", ['price' => json_encode($Partprice)]); 
+                $finalPriceDetails[$partNumber] = number_format($finalPrice, 2);
+                $discountDetails[$partNumber] = number_format($discountInt, 2);
+            }
+
+            return response()->json([
+                'listPrice' => $Partprice,
+                'totalPrice' => $finalPriceDetails, // Precios finales por parte
+                'descuento' => $discountDetails, // Descuentos por parte
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error("Error al obtener precios finales: {$e->getMessage()}");
+    
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
