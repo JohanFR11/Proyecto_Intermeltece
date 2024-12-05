@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useDisclosure, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from '@nextui-org/react'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import CategoryComponent from "./Components/CategoryComponent";
 import NumeroComponente from "./Components/NumberComponent";
+import ModalZebra from "./Fragments/ModalZebra";
 import axios from "axios";
 
 export default function Index({ auth, unreadNotifications, data, datosporsi }) {
@@ -12,6 +14,17 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
     const [percentage, setPercentage] = useState('');
     const [imagen, setImagen] = useState([]);
     const [partDetails, setPartDetails] = useState([]);
+
+    const {isOpen, onOpen, onClose} = useDisclosure();
+    const [size, setSize] = React.useState('md')
+
+    const sizes = ["5xl"];
+
+
+    const handleOpen = (size) => {
+        setSize(size)
+        onOpen();
+    }
 
     const handleCategorySelect = async (selectedCategory) => {
         try {
@@ -163,7 +176,7 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
                             <tr className="bg-blue-300 text-white text-sm font-semibold uppercase">
                                 <th className="py-3 px-6 text-left text-gray-700">N° Parte</th>
                                 <th className="py-3 px-6 text-left text-gray-700">Tipo Producto</th>
-                                <th className="py-3 px-6 text-left text-gray-700">Modelo</th>
+                                <th className="py-3 px-6 text-left text-gray-700">Moneda</th>
                                 <th className="py-3 px-6 text-left text-gray-700">Precio Lista</th>
                                 <th className="py-3 px-6 text-left text-gray-700">Precio Final</th>
                                 <th className="py-3 px-6 text-left text-gray-700">Descuento</th>
@@ -194,6 +207,13 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
                     </table>
                 </div>
             </div>
+            {/* Botón para abrir el modal */}
+            {sizes.map((size) => (
+            <Button key={size} onPress={() => handleOpen(size)} color="primary">Mostrar Modal</Button>
+            ))}  
+
+            {/* Aquí se integra el ModalZebra con useDisclosure */}
+            <ModalZebra size={size} open={isOpen} close={onClose} partDetails ={partDetails} />
         </AuthenticatedLayout>
     );
 }
