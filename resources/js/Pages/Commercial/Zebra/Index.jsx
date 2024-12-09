@@ -209,7 +209,7 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
             </div>
             {/* Botón para abrir el modal */}
             {sizes.map((size) => (
-            <Button key={size} onPress={() => handleOpen(size)} color="primary">Mostrar Modal</Button>
+            <Button key={size} onPress={() => handleOpen(size)} color="primary">Factura</Button>
             ))}  
 
             {/* Aquí se integra el ModalZebra con useDisclosure */}
