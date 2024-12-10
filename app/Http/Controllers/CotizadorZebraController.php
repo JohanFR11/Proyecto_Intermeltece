@@ -15,6 +15,7 @@ class CotizadorZebraController extends Controller
         try {
 
             $data =DB::connection('mysql')->select("SELECT * FROM subcategoriaszebra");
+            $partNumsData=DB::connection('mysql')->select("SELECT Part_Number FROM catalogo_zebra_espanol");
 
             // Registrar la información obtenida
             //Log::info("Los datos obtenidos son:", ['data' => $data]);
@@ -23,12 +24,14 @@ class CotizadorZebraController extends Controller
             if (empty($data)) {
                 return Inertia::render('Commercial/Zebra/Index', [
                     'data' => [],
+                    'partNumData'=>[]
                 ]);
             }
 
             // Si hay datos, renderiza la vista de React y pasa los datos
             return Inertia::render('Commercial/Zebra/Index', [
                 'data' => $data,
+                'partNumData'=>$partNumsData
             ]);
 
         } catch (\Exception $e) {
@@ -45,7 +48,7 @@ class CotizadorZebraController extends Controller
     {
         try{
             
-            if (empty($categorySelected)) {
+            if (empty($categorySelected)|| $categorySelected==0) {
 
                 $PartNums = DB::connection('mysql')->select("SELECT * FROM catalogo_zebra_espanol");
                 return response()->json([
@@ -172,7 +175,7 @@ class CotizadorZebraController extends Controller
                 // Sumar el precio calculado al total
                 
                 $totalFinalPrice += $finalPrice;
-                $totalDiscount += $discountInt;
+                $totalDiscount = $discountInt;
             }
 
             // Registrar el precio total calculado en los logs
@@ -185,6 +188,102 @@ class CotizadorZebraController extends Controller
             // Registrar el error en el log
             Log::error("Error al calcular el precio de lista: {$e->getMessage()}");
 
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function DescPart(Request $request)
+    {
+        try {
+            $selectedParts = $request->input('selectedParts');
+            $Img ='' ;
+            $Desc='';
+            foreach ($selectedParts as $partNumber) {
+                $result = DB::connection('mysql')->select("SELECT Image_URL, Short_Marketing_Desc FROM catalogo_zebra_espanol WHERE Part_Number = ?", [$partNumber]);
+                if (!empty($result)) {
+                    $Img = $result[0]->Image_URL;
+                    $Desc= $result[0]->Short_Marketing_Desc;
+                }
+            }
+            // Verificar si no hay imágenes encontradas
+            if (empty($Img)) {
+                return response()->json([
+                    'imagen' => [],
+                    'message' => 'No se encontraron imágenes para los números de parte seleccionados.',
+                ], 200);
+            }
+            return response()->json([
+                'imagen' => $Img,
+                'Desc'=>$Desc
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error("Error al obtener imágenes: {$e->getMessage()}");
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function datosPartes(Request $request)
+    {
+        try{
+            $selectedParts = $request->input('selectedParts');
+        
+            // Crear un array para almacenar los precios finales y descuentos
+            $Partprice=[];
+            $finalPriceDetails = [];
+            $discountDetails = [];
+            $datainfo=[];
+
+            foreach ($selectedParts as $partNumber) {
+                // Obtener el precio de lista
+                // Obtener el precio de lista para cada número de parte
+                $price = DB::connection('mysql')->select("SELECT List_Price FROM catalogo_zebra_espanol WHERE Part_Number = ?", [$partNumber]);
+                $info = DB::connection('mysql')->select("SELECT * FROM catalogo_zebra_espanol WHERE Part_Number = ?", [$partNumber]);
+                
+                // Si no se encuentra el número de parte, continuar con el siguiente
+                if (empty($price)) {
+                    continue;
+                }
+
+                $flateX = DB::connection('mysql')->select("SELECT Porcentaje_Flete FROM a4_flete");
+
+                $listPriceANDFlete = $price[0]-> List_Price * $flateX[0]-> Porcentaje_Flete;
+
+
+                $discountCode = DB::connection('mysql')->select("SELECT Discount_Group FROM catalogo_zebra_espanol WHERE Part_Number = ?", [$partNumber]);
+                $discountPercentage = DB::connection('mysql')->select("SELECT Recommended_Premier_Solution_Partner_Discount AS per_Discount FROM patametros_descuetos_zebra WHERE Discount_Code = ?", [$discountCode[0]->Discount_Group]);
+                $valorVentaMeltec = $price[0]->List_Price -($price[0]->List_Price * $discountPercentage[0]->per_Discount);
+                
+                $aidc = DB::connection('mysql')->select("SELECT Porcentaje_Venta FROM a4_flete WHERE Oferta_Venta = 'AIDC'");
+                
+                $flete = DB::connection('mysql')->select("SELECT Porcentaje_Flete FROM a4_flete");
+                
+                // Calcular el precio total con flete
+                $finalPrice = $valorVentaMeltec * $flete[0]->Porcentaje_Flete / ($aidc[0]->Porcentaje_Venta-1)*(-1);
+                $listPriceWithFlete = $price[0]->List_Price * $flete[0]->Porcentaje_Flete;
+                $discount= 1-($finalPrice/$listPriceWithFlete);
+                $discountInt= (number_format($discount, 2))*100;
+
+                $Partprice[$partNumber] = number_format($listPriceANDFlete, 2);
+                $finalPriceDetails[$partNumber] = number_format($finalPrice, 2);
+                $discountDetails[$partNumber] = number_format($discountInt, 2);
+                $datainfo[$partNumber]=$info;
+                Log::info("informacion obtenida: ", $datainfo);
+            }
+
+            return response()->json([
+                'listPrice' => $Partprice,
+                'totalPrice' => $finalPriceDetails, // Precios finales por parte
+                'descuento' => $discountDetails,
+                'dataInfo' => $datainfo
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error("Error al obtener precios finales: {$e->getMessage()}");
+    
             return response()->json([
                 'error' => $e->getMessage(),
             ], 500);

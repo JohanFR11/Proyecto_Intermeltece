@@ -1,51 +1,34 @@
-import React, { useEffect, useState } from "react";
-import './css/PartNumComponent.css'
+import React from "react";
+import NumberList from "../Fragments/NumberList";
+import AllPartNumber from "../Fragments/AllPartNumber";
 
-const PartNumComponent = ({ partNums, onPartNumSelect, listPrice, selectedParts,finalPrice, porcentaje }) => {
+const PartNumComponent = ({ partNums, onPartNumSelect, selectedParts,allData }) => {
+
+  if (!partNums || partNums.length === 0) {
+    const allPartNums = allData.map((item) => item.Part_Number);
+    return (
+        <div>
+            <AllPartNumber 
+            todosnum = {allPartNums}
+            onPartNumSelect={onPartNumSelect}
+            selectedParts={selectedParts}/>
+        </div>
+    );
+  }
+
+  // Mapear los números de parte si la lista no está vacía
+  const numeros = partNums.map((item) => item.Part_Number); 
+
   return (
-    <div className="partnum-container">
-    {/* Título */}
-    <h1>números de parte</h1>
-
-    {/* Contenedor con barra de desplazamiento */}
-    <div className="checkbox-container">
-      {partNums.map((part) => (
-        <div key={part.Part_Number} className="checkbox-item">
-          <input
-            type="checkbox"
-            id={part.Part_Number}
-            value={part.Part_Number}
-            checked={selectedParts.includes(part.Part_Number)} // Verifica si el número de parte está seleccionado
-            onChange={() => onPartNumSelect(part.Part_Number)} // Maneja la selección
-            className="checkbox-input"
-          />
-          <label htmlFor={part.Part_Number} className="checkbox-label">{part.Part_Number}</label>
-        </div>
-      ))}
+    <div>
+        <h1>Selecciona el número de parte</h1>
+        <NumberList
+            numeros={numeros} // Pasa solo los números de parte al componente hijo
+            onPartNumSelect={onPartNumSelect}
+            selectedParts={selectedParts}
+        />
     </div>
-
-     {/* Este contenedor será independiente y flotará a la derecha de la pantalla */}
-      {listPrice && (
-        <div className="price-container">
-          <h3>Precio Lista: ${listPrice}</h3>
-        </div>
-      )}
-
-      {finalPrice && (
-        <div className="finalPrice-container">
-          <h3>Precio Final: ${finalPrice}</h3>
-        </div>
-      )}
-
-      {porcentaje && (
-        <div className="discount-container">
-          <h3>Descuento: {porcentaje}%</h3>
-        </div>
-      )}
-    </div>
-  );
+);
 };
-
-
 
 export default PartNumComponent;

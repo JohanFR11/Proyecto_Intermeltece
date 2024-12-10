@@ -81,6 +81,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/commercial/zebra/{categorySelected}', [CotizadorZebraController::class, 'FilterPartNum'])->name('zebra.filter.partnum');
     Route::post('/commercial/zebra/price', [CotizadorZebraController::class, 'PrecioLista'])->name('zebra.listprice');
     Route::post('/commercial/zebra/finalprice', [CotizadorZebraController::class, 'FinalPrice'])->name('zebra.finalprice');
+    Route::post('/commercial/zebra/desc', [CotizadorZebraController::class, 'DescPart'])->name('zebra.desc');
+    Route::post('/commercial/zebra/datospartes', [CotizadorZebraController::class, 'datosPartes'])->name('zebra.datospartes');
 
     Route::get('hseq', [HseqController::class, 'index'])->name('resources.hseq.index');
     Route::post('hseq', [HseqController::class, 'store'])->name('resources.hseq.store');
