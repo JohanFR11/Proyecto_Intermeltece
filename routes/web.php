@@ -83,6 +83,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/commercial/zebra/finalprice', [CotizadorZebraController::class, 'FinalPrice'])->name('zebra.finalprice');
     Route::post('/commercial/zebra/desc', [CotizadorZebraController::class, 'DescPart'])->name('zebra.desc');
     Route::post('/commercial/zebra/datospartes', [CotizadorZebraController::class, 'datosPartes'])->name('zebra.datospartes');
+    Route::post('/commercial/zebra/search', [CotizadorZebraController::class, 'InputSearch'])->name('zebra.search');
 
     Route::get('hseq', [HseqController::class, 'index'])->name('resources.hseq.index');
     Route::post('hseq', [HseqController::class, 'store'])->name('resources.hseq.store');

@@ -271,7 +271,7 @@ class CotizadorZebraController extends Controller
                 $finalPriceDetails[$partNumber] = number_format($finalPrice, 2);
                 $discountDetails[$partNumber] = number_format($discountInt, 2);
                 $datainfo[$partNumber]=$info;
-                Log::info("informacion obtenida: ", $datainfo);
+                
             }
 
             return response()->json([
@@ -283,6 +283,51 @@ class CotizadorZebraController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Error al obtener precios finales: {$e->getMessage()}");
+    
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function InputSearch(Request $request)
+    {
+        Log::info("Solicitud recibida en InputSearch");
+
+        try{
+
+            Log::info("Datos recibidos en el request: ", $request->all());
+            $input = $request->input('selectedParts');
+            Log::info("Esto es lo que se recibe como selectedParts: {$input}");
+            if (empty($input)|| $input==null) {
+
+                $PartNums = DB::connection('mysql')->select("SELECT Part_Number FROM catalogo_zebra_espanol");
+                return response()->json([
+                    'partNums' => $PartNums
+                ], 200);
+            }
+            
+            $PartNums = DB::connection('mysql')->select("
+                SELECT Part_Number FROM catalogo_zebra_espanol 
+                WHERE Part_Number LIKE ?
+            ", ["%$input%"]);        
+
+            Log::info("Resultados de la búsqueda: ", $PartNums);
+
+            if (empty($PartNums)) {
+                return response()->json([
+                    'partNums' => [],
+                    'message' => 'No se encontro el numero de busqueda.',
+                ], 200);
+            }
+    
+            // Devolver los resultados en formato JSON
+            return response()->json([
+                'partNums' => $PartNums,
+            ], 200);
+        } catch (\Exception $e) {
+            // Log del error para debugging
+            Log::error("Error al buscar el numero de busqueda: {$e->getMessage()}");
     
             return response()->json([
                 'error' => $e->getMessage(),

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDisclosure, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/react'
+import React, { useState, useEffect } from "react";
+import { useDisclosure, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, input } from '@nextui-org/react'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import CategoryComponent from "./Components/CategoryComponent";
 import PartNumComponent from "./Components/PartNumComponent";
@@ -16,7 +16,7 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
     const [desc, setDesc] = useState('');
     const [partDetails, setPartDetails] = useState([]);
     const [quantities, setQuantities] = useState({}); // Estado para almacenar cantidades
-
+    const [partSearch, setPartSearch] = useState("");
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [size, setSize] = React.useState('md')
 
@@ -27,7 +27,25 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
         setSize(size)
         onOpen();
     }
+    // Maneja la busqueda del numero de parte
+    const handleBuscar = async () => {
+        if (!partSearch.trim()) {
+            console.warn("El campo de búsqueda está vacío.");
+            return;
+        }
+        try {
+            console.log('este es lo que se mande: ', partSearch);
+            // Cambia la solicitud GET para que pase el parámetro en la URL
+            const response = await axios.post(route("zebra.search", { selectedParts: partSearch || "" }));
+            console.log('Datos recibidos: ', response.data);
+            setPartNums(response.data.partNums);
+            setSelectedParts(''); // Limpiar partes seleccionadas
+            setListPrice(""); // Limpiar precio
 
+        } catch (error) {
+            console.error("Error al obtener números de parte:", error);
+        }
+    };
     // Manejar cambios en la cantidad
     const handleQuantityChange = (partNumber, newQuantity) => {
         setQuantities((prevQuantities) => ({
@@ -109,7 +127,7 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
             console.error("Error al obtener precios:", error);
         }
     };
-    console.log(partDetails)
+    console.log('estos son los numeros de parte: ', PartNums)
     return (
         <AuthenticatedLayout
             auth={auth}
@@ -127,6 +145,28 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
                         Selección de Productos
                     </h3>
                     <CategoryComponent data={data} onCategorySelect={handleCategorySelect} />
+
+                    {/* Buscador */}
+                    <div class="w-full max-w-sm min-w-[200px] mb-3">
+                        <div class="relative flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute w-5 h-5 top-2.5 left-2.5 text-slate-600">
+                                <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                            </svg>
+                            <input
+                                class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+                                placeholder="UI Kits, Dashboards..."
+                                value={partSearch}
+                                onChange={(e) => setPartSearch(e.target.value)}
+                            />
+                            <button
+                                class="rounded-md text-gray-700 bg-blue-300 py-2 px-4 border border-transparent text-center text-sm transition-all shadow-md hover:shadow-lg text-white focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
+                                type="button"
+                                onClick={() => handleBuscar()}
+                            >
+                                Search
+                            </button>
+                        </div>
+                    </div>
                     <PartNumComponent
                         partNums={PartNums}
                         allData={partNumData}
@@ -164,12 +204,12 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
                     </div>
 
                     <div className="w-full bg-white border border-gray-300 rounded-lg shadow mt-6 p-4 flex items-center gap-4">
-                        <div className="w-1/2">
+                        <div className="w-full flex flex-col items-center">
                             <h3 className="text-lg font-semibold text-gray-800 mb-4">Imagen</h3>
                             {imagen.length > 0 ? (
                                 <img
                                     src={imagen} // Mostrar solo la última imagen
-                                    className="w-full h-32 object-contain border rounded"
+                                    className="w-auto max-h-[300px] object-contain border rounded"
                                 />
                             ) : (
                                 <p className="text-gray-600">No hay imágenes disponibles para el número de parte seleccionado.</p>
@@ -208,32 +248,33 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
                                     const quantity = quantities[partDetail.partNumber] || 1;
                                     const listPrice = parseFloat(partDetail.listPrice.replace(/,/g, ""));
                                     const finalPrice = parseFloat(partDetail.finalPrice.replace(/,/g, ""));
-                                    const totalListPrice =( listPrice* quantity).toFixed(2);
+                                    const totalListPrice = (listPrice * quantity).toFixed(2);
                                     const totalFinalPrice = (finalPrice * quantity).toFixed(2);
-                                    
-                                    return(
-                                    <tr className="border-b hover:bg-gray-100" key={index}>
-                                        <td className="py-3 px-6">{partDetail.partNumber}</td>
-                                        <td className="py-3 px-6">{partDetail.dataInfo.Product_Type}</td>
-                                        <td className="py-3 px-6">{partDetail.dataInfo.Currency}</td>
-                                        <td className="py-3 px-6">
-                                            <input
-                                                type="number"
-                                                min="1"
-                                                className="w-20 border border-gray-300 rounded px-2 py-1"
-                                                value={quantity}
-                                                onChange={(e) =>
-                                                    handleQuantityChange(partDetail.partNumber, parseInt(e.target.value) || 0)
-                                                }
-                                            />
-                                        </td>
-                                        <td className="py-3 px-6">{ totalListPrice}</td>
-                                        <td className="py-3 px-6">{ totalFinalPrice}</td>
-                                        <td className="py-3 px-6">{`${partDetail.descuento}%`}</td>
-                                        <td className="py-3 px-6">{partDetail.dataInfo.Product_Category}</td>
-                                        <td className="py-3 px-6">{partDetail.dataInfo.Short_Marketing_Desc}</td>
-                                    </tr>
-                                )})
+
+                                    return (
+                                        <tr className="border-b hover:bg-gray-100" key={index}>
+                                            <td className="py-3 px-6">{partDetail.partNumber}</td>
+                                            <td className="py-3 px-6">{partDetail.dataInfo.Product_Type}</td>
+                                            <td className="py-3 px-6">{partDetail.dataInfo.Currency}</td>
+                                            <td className="py-3 px-6">
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    className="w-20 border border-gray-300 rounded px-2 py-1"
+                                                    value={quantity}
+                                                    onChange={(e) =>
+                                                        handleQuantityChange(partDetail.partNumber, parseInt(e.target.value) || 0)
+                                                    }
+                                                />
+                                            </td>
+                                            <td className="py-3 px-6">{totalListPrice}</td>
+                                            <td className="py-3 px-6">{totalFinalPrice}</td>
+                                            <td className="py-3 px-6">{`${partDetail.descuento}%`}</td>
+                                            <td className="py-3 px-6">{partDetail.dataInfo.Product_Category}</td>
+                                            <td className="py-3 px-6">{partDetail.dataInfo.Short_Marketing_Desc}</td>
+                                        </tr>
+                                    )
+                                })
                             ) : (
                                 <tr>
                                     <td colSpan="8" className="py-3 px-6 text-center">No se han seleccionado productos aún.</td>
@@ -249,7 +290,7 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
             ))}
 
             {/* Aquí se integra el ModalZebra con useDisclosure */}
-            <ModalZebra size={size} open={isOpen} close={onClose} partDetails={partDetails} quantities={quantities}/>
+            <ModalZebra size={size} open={isOpen} close={onClose} partDetails={partDetails} quantities={quantities} />
         </AuthenticatedLayout>
     );
 

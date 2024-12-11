@@ -78,7 +78,13 @@ export default function Authenticated({
                 href={route("ulefone.index")}
                 text="Cotizador Web Ulefone"
               />
+              <SidebarItem
+                icon={<SellerIcon size="32px" color="#395181" />}
+                href={route("zebra.index")}
+                text="Cotizador Web Zebra"
+              />
             </div>
+            
           </div>
         )}
 
