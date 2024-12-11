@@ -3,9 +3,11 @@ import NumberList from "../Fragments/NumberList";
 import TodosDatos from "../Fragments/TodosDatos";
 
 const NumeroComponente = ({ number, onPartNumSelect, listPrice, selectedParts, datosporsi, finalPrice, porcentaje}) => {
+
+    console.log('lo manda?',number)
     // Validar si la lista está vacía o no definida
     if (!number || number.length === 0) {
-        const todoeso = datosporsi.map((itemx) => itemx.Part_Number);
+        const todoeso = datosporsi.map((itemx) => itemx.Part_Number) || [];
         console.log('aDAdaDAda',datosporsi);
         return (
             <div>
@@ -22,7 +24,8 @@ const NumeroComponente = ({ number, onPartNumSelect, listPrice, selectedParts, d
     }
 
     // Mapear los números de parte si la lista no está vacía
-    const numeros = number.map((item) => item.Part_Number); // Asegúrate de que 'Part_Number' exista en cada item
+    const numeros = number.map((item) => item.Part_Number) || []; // Asegúrate de que 'Part_Number' exista en cada item
+    
 
     return (
         <div>

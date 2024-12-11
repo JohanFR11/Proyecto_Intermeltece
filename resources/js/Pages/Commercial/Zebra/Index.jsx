@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDisclosure, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from '@nextui-org/react'
+import React, { useState, useEffect} from "react";
+import { useDisclosure, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/react'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import CategoryComponent from "./Components/CategoryComponent";
 import NumeroComponente from "./Components/NumberComponent";
@@ -14,8 +14,9 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
     const [percentage, setPercentage] = useState('');
     const [imagen, setImagen] = useState([]);
     const [partDetails, setPartDetails] = useState([]);
+    const [partBuscar, setpartBuscar] = useState("");
 
-    const {isOpen, onOpen, onClose} = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const [size, setSize] = React.useState('md')
 
     const sizes = ["5xl"];
@@ -25,6 +26,23 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
         setSize(size)
         onOpen();
     }
+
+    const handelBuscar = async () => {
+        try {
+            console.log('este es lo que se mande', partBuscar);
+            // Cambia la solicitud GET para que pase el parámetro en la URL
+            const response = await axios.get(route("zebra.filter.porparte", { parteBuscar: partBuscar || ""}));
+            console.log(route("zebra.filter.porparte", { parteBuscar: partBuscar || "" }));
+            console.log('esta monda 2.00000', response.data.numberfilter);
+            setPartNums(response.data.numberfilter); // Establecer todos los números de parte
+            setSelectedParts(''); // Limpiar partes seleccionadas
+            setListPrice(""); // Limpiar precio
+    
+        } catch (error) {
+            console.error("Error al obtener números de parte:", error);
+        }
+    };
+    
 
     const handleCategorySelect = async (selectedCategory) => {
         try {
@@ -37,7 +55,7 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
             console.error("Error al obtener números de parte:", error);
         }
     };
-
+    
     const handlePartNumSelect = (selectedPart) => {
         // Actualizar el estado de los números de parte seleccionados de manera eficiente
         const updatedSelectedParts = selectedParts.includes(selectedPart)
@@ -75,9 +93,9 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
 
             const mappedParts = updatedSelectedParts.map((part) => {
                 const listPrice = datosPartesResponse.data.listPrice[part] || 0;
-                console.log("este es el listprice que toma ",listPrice)
+                console.log("este es el listprice que toma ", listPrice)
                 const finalPrice = datosPartesResponse.data.totalPrice[part] || 0;
-                console.log("este es el finalPrice que toma ",finalPrice)
+                console.log("este es el finalPrice que toma ", finalPrice)
                 const descuento = datosPartesResponse.data.descuento[part] || 0;
 
                 return {
@@ -96,6 +114,10 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
         }
     };
 
+    useEffect(() => {
+        console.log("Numberfilter actualizado: ", numberfilter);
+    }, [numberfilter]);
+
     return (
         <AuthenticatedLayout
             auth={auth}
@@ -113,6 +135,31 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
                         Selección de Productos
                     </h3>
                     <CategoryComponent data={data} onCategorySelect={handleCategorySelect} />
+
+                    {/* Buscador */}
+                    <div class="w-full max-w-sm min-w-[200px] mb-3">
+                        <div class="relative flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute w-5 h-5 top-2.5 left-2.5 text-slate-600">
+                                <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                            </svg>
+
+                            <input
+                                class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+                                placeholder="UI Kits, Dashboards..."
+                                value={partBuscar}
+                                onChange={(e) => setpartBuscar(e.target.value)}
+                            />
+
+                            <button
+                                class="rounded-md text-gray-700 bg-blue-300 py-2 px-4 border border-transparent text-center text-sm transition-all shadow-md hover:shadow-lg text-white focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
+                                type="button"
+                                onClick={() => handelBuscar()}
+                            >
+                                Search
+                            </button>
+                        </div>
+                    </div>
+
                     <NumeroComponente
                         number={numberfilter}
                         datosporsi={datosporsi}
@@ -209,11 +256,11 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
             </div>
             {/* Botón para abrir el modal */}
             {sizes.map((size) => (
-            <Button key={size} onPress={() => handleOpen(size)} color="primary">Factura</Button>
-            ))}  
+                <Button key={size} onPress={() => handleOpen(size)} color="primary">Factura</Button>
+            ))}
 
             {/* Aquí se integra el ModalZebra con useDisclosure */}
-            <ModalZebra size={size} open={isOpen} close={onClose} partDetails ={partDetails} />
+            <ModalZebra size={size} open={isOpen} close={onClose} partDetails={partDetails} />
         </AuthenticatedLayout>
     );
 }

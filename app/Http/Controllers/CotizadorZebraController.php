@@ -35,6 +35,7 @@ class CotizadorZebraController extends Controller
     public function FilterPartNum($categorySelected)
     {
         try {
+            Log::info("los datos obtenidos son categorySelected:", ['categorySelected' => json_encode($categorySelected)]);
                 // Si hay categorías seleccionadas, filtrar
                 $categories = explode(',', $categorySelected);
                 $results = [];
@@ -46,6 +47,9 @@ class CotizadorZebraController extends Controller
                         WHERE [Product Sub Category] = ?", [$category]
                     ));
                 }
+
+            Log::info("los datos obtenidos son results:", ['results' => json_encode($results)]);
+
             // Verificar si no hay resultados
             if (empty($results)) {
                 return response()->json([
@@ -263,4 +267,34 @@ class CotizadorZebraController extends Controller
         }
     }
 
+    public function porParte($parteBuscar)
+{
+    try {
+        Log::info("los datos obtenidos son parteBuscar:", ['parteBuscar' => json_encode($parteBuscar)]);
+       
+            $resultsx = DB::connection('sqlsrv')->select(
+            "SELECT TOP (20700) [Part Number] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] WHERE [Part Number] = ?", [$parteBuscar]);
+           
+        Log::info("los datos obtenidos son resultsx:", ['resultsx' => json_encode($resultsx)]);
+
+        if (empty($resultsx)) {
+            return response()->json([
+                'numberfilter' => [],
+                'message' => 'No se encontraron resultados para las categorías seleccionadas.',
+            ], 200);
+        }
+
+        return response()->json([
+            'numberfilter' => $resultsx,
+        ], 200);
+    } catch (\Exception $e) {
+        Log::error("Error al filtrar números de parte: {$e->getMessage()}");
+
+        return response()->json([
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+        
 }

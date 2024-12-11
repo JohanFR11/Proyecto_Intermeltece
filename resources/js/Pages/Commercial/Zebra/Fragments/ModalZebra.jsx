@@ -11,8 +11,6 @@ export default function ModalZebra({ open, close, size, partDetails }) {
   const [LugarEntrega, setLugarEntrega] = useState('');
   const [Persona, setPersona] = useState('');
   const [correoPersona, setcorreoPersona] = useState('');
-  const [Cantidad, setCantidad] = useState('');
-  
 
   const getFormattedDate = () => {
     if (!selectedDate) return 'No seleccionada';
@@ -136,163 +134,157 @@ export default function ModalZebra({ open, close, size, partDetails }) {
 
   return (
     <Modal isOpen={open} onClose={close} size={size}>
-      <ModalContent className="mt-60">
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1">Factura</ModalHeader>
-            <ModalBody style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-              <div className="flex w-full flex-row flex-wrap md:flex-nowrap gap-4">
-                <p>Bogotá D.C. ,</p>
-                <DatePicker
-                  isRequired
-                  className="max-w-[284px] max-h-[30px] mb-5"
-                  label="Fecha de la cotización"
-                  value={selectedDate}
-                  onChange={setSelectedDate} // Establece la fecha seleccionada
-                />
-              </div>
-              <div className="flex w-full flex-row flex-wrap md:flex-nowrap gap-4">
-                <p>Cotizacion N°</p>
-                <p>1231231231</p>
-              </div>
-              <div className="flex w-full flex-row flex-wrap md:flex-nowrap gap-4">
-                <p>Señores:   </p>
-                <p>cliente</p>
-              </div>
-              <div className="flex w-full flex-row flex-wrap md:flex-nowrap gap-4">
-                <p>Asunto:   </p>
-                <p>asdasdasdasda</p>
-              </div>
-              <div className="flex flex-col md:flex-col items-start gap-6 p-4">
-                <h1 className="text-center">COTIZACION MELTEC COMUNICACIONES S.A.</h1>
-                <p className="text-justify">
-                  Reciba un cordial saludo en nombre de MELTEC COMUNICACIONES S.A., compañía dedicada al suministro, integración y desarrollo de soluciones empresariales y movilidad digital en Colombia. A continuación, me permito enviarle nuestra cotización de acuerdo a sus requerimientos. Esperamos que esta propuesta cumpla con sus expectativas y estaremos atentos a sus comentarios.
-                </p>
-              </div>
+      <ModalContent className="bg-white rounded-lg shadow-xl p-8">
+        <ModalHeader className="text-lg font-semibold text-center text-gray-800">Factura</ModalHeader>
+        <ModalBody className="max-h-[70vh] overflow-y-auto">
+          <div className="mb-6 flex flex-wrap gap-4 justify-between items-center">
+            <div className="w-full sm:w-1/2">
+              <p className="font-medium">Bogotá D.C. ,</p>
+              <DatePicker
+                isRequired
+                className="max-w-[284px] mb-2 mt-1"
+                label="Fecha de la cotización"
+                value={selectedDate}
+                onChange={setSelectedDate}
+              />
+            </div>
+            <div className="w-full sm:w-1/2">
+              <p className="font-medium">Cotización N°</p>
+              <p className="text-gray-700">1231231231</p>
+            </div>
+          </div>
 
-              {/* Tabla de los productos seleccionados */}
-              <div className="flex flex-col md:flex-row items-start gap-6 p-4">
+          <div className="mb-6 flex flex-wrap gap-4 justify-between items-center">
+            <div className="w-full sm:w-1/2">
+              <p className="font-medium">Señores:</p>
+              <p className="text-gray-700">cliente</p>
+            </div>
+            <div className="w-full sm:w-1/2">
+              <p className="font-medium">Asunto:</p>
+              <p className="text-gray-700">asdasdasdasda</p>
+            </div>
+          </div>
+
+          <div className="text-center mb-6">
+            <h1 className="text-xl font-semibold text-blue-600">COTIZACIÓN MELTEC COMUNICACIONES S.A.</h1>
+            <p className="text-justify mt-4 text-sm text-gray-600">
+              Reciba un cordial saludo en nombre de MELTEC COMUNICACIONES S.A., compañía dedicada al suministro, integración y desarrollo de soluciones empresariales y movilidad digital en Colombia. A continuación, me permito enviarle nuestra cotización de acuerdo a sus requerimientos. Esperamos que esta propuesta cumpla con sus expectativas y estaremos atentos a sus comentarios.
+            </p>
+          </div>
+
+          {/* Tabla de los productos seleccionados */}
+          <div className="flex flex-col md:flex-row items-start gap-6 p-4">
                 <div className="overflow-x-auto w-full">
-                <div className="flex w-full flex-row flex-wrap md:flex-nowrap gap-4">
-                  <p>OFERTA ECONOMICA</p>
+                <div className="flex w-full flex-row flex-wrap md:flex-nowrap gap-4 text-center">
+                  <p className="text-xl font-semibold text-blue-600">OFERTA ECONOMICA</p>
                 </div>
-                  <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
-                    <thead>
-                      <tr className="bg-blue-300 text-white text-sm font-semibold uppercase">
-                        <th className="py-3 px-6 text-left text-gray-700">N° Parte</th>
-                        <th className="py-3 px-6 text-left text-gray-700">Tipo Producto</th>
-                        <th className="py-3 px-6 text-left text-gray-700">Moneda</th>
-                        <th className="py-3 px-6 text-left text-gray-700">Precio Lista</th>
-                        <th className="py-3 px-6 text-left text-gray-700">Cantidad</th>
-                        <th className="py-3 px-6 text-left text-gray-700">Precio Final</th>
-                        <th className="py-3 px-6 text-left text-gray-700">Descuento</th>
-                        <th className="py-3 px-6 text-left text-gray-700">Categoria Producto</th>
-                        <th className="py-3 px-6 text-left text-gray-700">Descripción</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-sm text-gray-800">
-                      {partDetails.length > 0 ? (
-                        partDetails.map((partDetail, index) => (
-                          <tr className="border-b hover:bg-gray-100" key={index}>
-                            <td className="py-3 px-6">{partDetail.partNumber}</td>
-                            <td className="py-3 px-6">----</td>
-                            <td className="py-3 px-6">----</td>
-                            <td className="py-3 px-6">{`${partDetail.listPrice}$`}</td>
-                            <td className="py-3 px-6"></td>
-                            <td className="py-3 px-6">{`${partDetail.finalPrice}$`}</td>
-                            <td className="py-3 px-6">{`${partDetail.descuento}%`}</td>
-                            <td className="py-3 px-6">----</td>
-                            <td className="py-3 px-6">----</td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="8" className="py-3 px-6 text-center">
-                            No se han seleccionado productos aún.
-                          </td>
+                <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
+                  <thead>
+                    <tr className="bg-blue-300 text-white text-sm font-semibold uppercase">
+                      <th className="py-3 px-6 text-left text-gray-700">N° Parte</th>
+                      <th className="py-3 px-6 text-left text-gray-700">Tipo Producto</th>
+                      <th className="py-3 px-6 text-left text-gray-700">Moneda</th>
+                      <th className="py-3 px-6 text-left text-gray-700">Precio Lista</th>
+                      <th className="py-3 px-6 text-left text-gray-700">Cantidad</th>
+                      <th className="py-3 px-6 text-left text-gray-700">Precio Final</th>
+                      <th className="py-3 px-6 text-left text-gray-700">Descuento</th>
+                      <th className="py-3 px-6 text-left text-gray-700">Categoria Producto</th>
+                      <th className="py-3 px-6 text-left text-gray-700">Descripción</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-gray-800">
+                    {partDetails.length > 0 ? (
+                      partDetails.map((partDetail, index) => (
+                        <tr className="border-b hover:bg-gray-100" key={index}>
+                          <td className="py-3 px-6">{partDetail.partNumber || '----'}</td>
+                          <td className="py-3 px-6">----</td>
+                          <td className="py-3 px-6">----</td>
+                          <td className="py-3 px-6">{`${partDetail.listPrice || 0}$`}</td>
+                          <td className="py-3 px-6">----</td>
+                          <td className="py-3 px-6">{`${partDetail.finalPrice || 0}$`}</td>
+                          <td className="py-3 px-6">{`${partDetail.descuento || 0}%`}</td>
+                          <td className="py-3 px-6">----</td>
+                          <td className="py-3 px-6">----</td>
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="9" className="py-3 px-6 text-center">No se han seleccionado productos aún.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
                 </div>
               </div>
-              <div className="flex flex-row w-full flex-wrap md:flex-nowrap gap-4">
-                <p>Tiempo de entrega: </p>
+          <div className="flex flex-wrap gap-4 justify-between items-center">
+            <div className="w-full sm:w-1/2">
+              <p className="font-medium">Tiempo de Entrega:</p>
+              <Input
+                isRequired
+                className="max-w-xs mb-4"
+                label="Tiempo de entrega"
+                type="text"
+                value={deliveryTime}
+                onChange={(e) => setDeliveryTime(e.target.value)}
+              />
+            </div>
+
+            <div className="w-full sm:w-1/2">
+              <p className="font-medium">Lugar de Entrega:</p>
+              <Input
+                isRequired
+                className="max-w-xs mb-4"
+                label="Lugar de entrega"
+                type="text"
+                value={LugarEntrega}
+                onChange={(e) => setLugarEntrega(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="text-sm text-gray-600 mb-6">
+            <p><span className="font-semibold">Comentario:</span> En nombre de MELTEC COMUNICACIONES S.A., quiero expresarle mis agradecimientos por considerarnos una alternativa de solución. Todos nuestros equipos están debidamente amparados por licencias de importación de las cuales usted podrá disponer en el momento que lo solicite.</p>
+          </div>
+
+          <div className="flex flex-wrap gap-4 justify-between items-center">
+            <div className="w-full sm:w-1/2">
+              <p className="font-medium">Cordialmente,</p>
+            </div>
+            <div className="w-full sm:w-1/2">
+              <div className="mb-4">
+                <p className="font-medium">Responsable:</p>
                 <Input
                   isRequired
-                  className="max-w-xs max-h-[30px]"
-                  label="Tiempo de entrega"
+                  className="max-w-xs"
+                  label="Persona"
                   type="text"
-                  value={deliveryTime}
-                  onChange={(e) => setDeliveryTime(e.target.value)}
+                  value={Persona}
+                  onChange={(e) => setPersona(e.target.value)}
                 />
               </div>
-              <div className="flex flex-row w-full flex-wrap md:flex-nowrap gap-4">
-                    <p>
-                      Lugar de Entrega:  
-                    </p>
-                    <Input
-                      isRequired
-                      className="max-w-xs max-h-[30px]"
-                      label="Lugar de entrega"
-                      type="text"
-                      value={LugarEntrega}
-                      onChange={(e) => setLugarEntrega(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex flex-col w-full flex-wrap md:flex-nowrap gap-4">
-                    <p>
-                    Comentario
-                    </p>
-                    <p>
-                    En nombre de MELTEC COMUNICACIONES S.A., quiero expresarle mis agradecimientos por considerarnos
-                    una alternativa de solución. Todos nuestros equipos están debidamente amparados por licencias de importación
-                    de las cuales usted podrá disponer en el momento que lo solicite.
-                    </p>
-                  </div>
-                  <div className="flex flex-col w-full flex-wrap md:flex-nowrap gap-4">
-                    <p>
-                    Cordialmente, 
-                    </p>
-                    <div className="flex flex-row w-full flex-wrap md:flex-nowrap gap-4">
-                      <p>
-                        Responsable:
-                      </p>
-                      <Input
-                        isRequired
-                        className="max-w-xs max-h-[30px]"
-                        label="Persona"
-                        type="text"
-                        value={Persona}
-                        onChange={(e) => setPersona(e.target.value)}
-                      />
-                    </div>
-                    <div className="flex flex-row w-full flex-wrap md:flex-nowrap gap-4">
-                      <p>
-                        Correo: 
-                      </p>
-                      <Input
-                        isRequired
-                        className="max-w-xs max-h-[30px]"
-                        label="Correo"
-                        type="email"
-                        value={correoPersona}
-                        onChange={(e) => setcorreoPersona(e.target.value)}
-                      />
-                    </div>    
-                  </div>
-            </ModalBody>
+              <div>
+                <p className="font-medium">Correo:</p>
+                <Input
+                  isRequired
+                  className="max-w-xs"
+                  label="Correo"
+                  type="email"
+                  value={correoPersona}
+                  onChange={(e) => setcorreoPersona(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        </ModalBody>
 
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Cerrar
-              </Button>
-              <Button color="primary" onPress={() => generatePDF()}> 
-                Generar Factura
-              </Button>
-            </ModalFooter>
-          </>
-        )}
+        <ModalFooter className="flex justify-between">
+          <Button color="danger" variant="light" onPress={close} className="w-full sm:w-auto">
+            Cerrar
+          </Button>
+          <Button color="primary" onPress={() => generatePDF()} className="w-full sm:w-auto">
+            Generar Factura
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
