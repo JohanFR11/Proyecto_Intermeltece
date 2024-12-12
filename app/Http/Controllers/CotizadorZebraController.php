@@ -20,12 +20,57 @@ class CotizadorZebraController extends Controller
             $data2 = DB::connection('sqlsrv')->select("SELECT TOP (20700) [Part Number] AS [Part_Number] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol']");
             Log::info("los datos obtenidos son datosporsi:", ['datosporsi' => json_encode($data2)]); 
             
+            $CREDENTIALS = [
+                'url' => 'https://my345513.sapbydesign.com/',
+                'auth' => [
+                    'username' => 'SEIDORFUNCIONAL',
+                    'password' => 'S31d0r*2o24_'
+                ]
+            ];
+
+            $url = $CREDENTIALS['url'] . 'sap/byd/odata/cust/v1/clientesv3/CustomerCollection?$format=json&$select=NombreCliente&$filter=LifeCycleStatusCode%20eq%20%272%27&$top=100000&$expand=Relationship';
+
+            Log::info('URL generada para la API OData: ' . $url);
+
+            $ch = curl_init($url);
+
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($ch, CURLOPT_USERPWD, $CREDENTIALS['auth']['username'] . ':' . $CREDENTIALS['auth']['password']);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Accept: application/json',
+                'Content-Type: application/json'
+            ]);
+
+            $response = curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                $error = curl_error($ch);
+                curl_close($ch);
+                Log::error('Error cURL: ' . $error);
+                return response()->json(['OdataClientes' => []], 400);
+            }
+
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            Log::info('Código de estado HTTP: ' . $httpCode);
+            Log::info('Respuesta completa de la API: ' . $response);
+
+            $odata = [];
+            if ($httpCode == 200) {
+                $odata = json_decode($response, true);
+            } else {
+                Log::error('Error al obtener datos de OData: ' . $response);
+            }
+            
             // Retornar ambos conjuntos de datos a la vista
             return Inertia::render('Commercial/Zebra/Index', [
-                'data' => $data,
-                'datosporsi' => $data2,// pasar el segundo conjunto de datos
+                'data' => $data,       // Datos de la primera consulta
+                'datosporsi' => $data2,// Datos de la segunda consulta
+                'odataClientes' => $odata['d']['results'] ?? [] // Datos de la API OData (asegurando que sea un array)
             ]);
-    
+
         } catch (\Exception $e) {
             Log::error("Error al obtener datos de precios Zebra: {$e->getMessage()}");
             return response()->json(['error' => $e->getMessage()], 500);
@@ -268,33 +313,32 @@ class CotizadorZebraController extends Controller
     }
 
     public function porParte($parteBuscar)
-{
-    try {
-        Log::info("los datos obtenidos son parteBuscar:", ['parteBuscar' => json_encode($parteBuscar)]);
-       
-            $resultsx = DB::connection('sqlsrv')->select(
-            "SELECT TOP (20700) [Part Number] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] WHERE [Part Number] = ?", [$parteBuscar]);
-           
-        Log::info("los datos obtenidos son resultsx:", ['resultsx' => json_encode($resultsx)]);
-
-        if (empty($resultsx)) {
-            return response()->json([
-                'numberfilter' => [],
-                'message' => 'No se encontraron resultados para las categorías seleccionadas.',
-            ], 200);
-        }
-
-        return response()->json([
-            'numberfilter' => $resultsx,
-        ], 200);
-    } catch (\Exception $e) {
-        Log::error("Error al filtrar números de parte: {$e->getMessage()}");
-
-        return response()->json([
-            'error' => $e->getMessage(),
-        ], 500);
-    }
-}
-
+    {
+        try {
+            Log::info("los datos obtenidos son parteBuscar:", ['parteBuscar' => json_encode($parteBuscar)]);
         
+                $resultsx = DB::connection('sqlsrv')->select(
+                "SELECT TOP (20700) [Part Number] FROM [COTIZADOR].[dbo].['Catalogo Zebra Espanol'] WHERE [Part Number] = ?", [$parteBuscar]);
+            
+            Log::info("los datos obtenidos son resultsx:", ['resultsx' => json_encode($resultsx)]);
+
+            if (empty($resultsx)) {
+                return response()->json([
+                    'numberfilter' => [],
+                    'message' => 'No se encontraron resultados para las categorías seleccionadas.',
+                ], 200);
+            }
+
+            return response()->json([
+                'numberfilter' => $resultsx,
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error("Error al filtrar números de parte: {$e->getMessage()}");
+
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }

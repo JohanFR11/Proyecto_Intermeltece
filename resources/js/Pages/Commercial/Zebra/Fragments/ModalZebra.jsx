@@ -1,16 +1,36 @@
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, DatePicker, Input } from '@nextui-org/react';
-import React, { useState } from 'react';
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, DatePicker, Input, Select, SelectItem} from '@nextui-org/react';
+import React, { useState, useEffect} from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import images from './images.png';
 import meltec from './meltec.png';
 
-export default function ModalZebra({ open, close, size, partDetails }) {
+export default function ModalZebra({ open, close, size, partDetails, odataClientes}) {
+
+  console.log('si pasa?', odataClientes);
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [deliveryTime, setDeliveryTime] = useState('');
   const [LugarEntrega, setLugarEntrega] = useState('');
   const [Persona, setPersona] = useState('');
   const [correoPersona, setcorreoPersona] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedCliente, setSelectedCliente] = useState(null);
+
+
+  const filteredClientes = odataClientes.filter((cliente) =>
+    cliente.NombreCliente.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleSelectCliente = (cliente) => {
+    setSelectedCliente(cliente.NombreCliente);
+    setIsDropdownOpen(false); // Cierra el dropdown al seleccionar un cliente
+  };
 
   const getFormattedDate = () => {
     if (!selectedDate) return 'No seleccionada';
@@ -44,6 +64,9 @@ export default function ModalZebra({ open, close, size, partDetails }) {
     return `${words} (${formattedNumber}) Días`;
   };
 
+
+
+
   // Función para generar el PDF
   const generatePDF = () => {
     const doc = new jsPDF(); // Crea un nuevo documento PDF
@@ -56,7 +79,7 @@ export default function ModalZebra({ open, close, size, partDetails }) {
     doc.setFontSize(12);
     doc.text(`Bogotá D.C. ,   ${formattedDate}`, 20, 50);
     doc.text('Cotizacion N°  -----', 20, 60);
-    doc.text('Señores: cliente', 20, 70);
+    doc.text(`Señores: ${selectedCliente || 'cliente no seleccionado'}`, 20, 70);
     doc.text('Asunto:  asdasdasfasfa', 20, 80);
 
     // Título de la cotización
@@ -132,6 +155,18 @@ export default function ModalZebra({ open, close, size, partDetails }) {
     doc.save('cotizacion_meltec.pdf');
   };
 
+  /* useEffect(() => {
+    setClientes(odataClientes); // Cargar los clientes cuando se recibe odataClientes
+  }, [odataClientes]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setSelectOpen(true); // Abre el Select cuando haya texto en el input
+    } else {
+      setSelectOpen(false); // Cierra el Select si el input está vacío
+    }
+  }, [searchQuery]); */
+
   return (
     <Modal isOpen={open} onClose={close} size={size}>
       <ModalContent className="bg-white rounded-lg shadow-xl p-8">
@@ -155,9 +190,36 @@ export default function ModalZebra({ open, close, size, partDetails }) {
           </div>
 
           <div className="mb-6 flex flex-wrap gap-4 justify-between items-center">
-            <div className="w-full sm:w-1/2">
-              <p className="font-medium">Señores:</p>
-              <p className="text-gray-700">cliente</p>
+          <div className="relative w-full">
+              <button
+                type="button"
+                className="w-full bg-gray-100 border border-gray-300 text-gray-700 rounded-lg px-4 py-2 text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onClick={toggleDropdown}
+              >
+                {selectedCliente || '-- Selecciona un cliente --'}
+                <span className="float-right text-gray-500">&#9660;</span>
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute z-10 bg-white border border-gray-300 rounded-lg shadow-md w-full mt-1 max-h-60 overflow-y-auto">
+                  <div className="p-2">
+                    <Input
+                      placeholder="Buscar cliente..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                  {filteredClientes.map((cliente, index) => (
+                    <div
+                      key={index}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => handleSelectCliente(cliente)}
+                    >
+                      {cliente.NombreCliente}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="w-full sm:w-1/2">
               <p className="font-medium">Asunto:</p>

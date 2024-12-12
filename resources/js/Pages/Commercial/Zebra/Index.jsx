@@ -6,7 +6,10 @@ import NumeroComponente from "./Components/NumberComponent";
 import ModalZebra from "./Fragments/ModalZebra";
 import axios from "axios";
 
-export default function Index({ auth, unreadNotifications, data, datosporsi }) {
+export default function Index({ auth, unreadNotifications, data, datosporsi, odataClientes}) {
+
+    console.log('Esta es la odata de la cliente',odataClientes)
+
     const [numberfilter, setPartNums] = useState([]);
     const [selectedParts, setSelectedParts] = useState([]); // Lista de números de parte seleccionados
     const [listPrice, setListPrice] = useState('');
@@ -260,7 +263,8 @@ export default function Index({ auth, unreadNotifications, data, datosporsi }) {
             ))}
 
             {/* Aquí se integra el ModalZebra con useDisclosure */}
-            <ModalZebra size={size} open={isOpen} close={onClose} partDetails={partDetails} />
+
+            <ModalZebra size={size} open={isOpen} close={onClose} partDetails={partDetails} odataClientes={odataClientes}/>
         </AuthenticatedLayout>
     );
 }
