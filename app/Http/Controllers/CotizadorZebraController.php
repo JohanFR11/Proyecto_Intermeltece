@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
+use App\Models\MesaAyuda;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -16,22 +17,28 @@ class CotizadorZebraController extends Controller
 
             $data =DB::connection('mysql')->select("SELECT * FROM subcategoriaszebra");
             $partNumsData=DB::connection('mysql')->select("SELECT Part_Number FROM catalogo_zebra_espanol");
+            $madata =DB::connection('mysql')->select("SELECT * FROM mesa_ayuda_aidc");
+            $categorias =DB::connection('mysql')->select("SELECT DISTINCT categoria_producto FROM mesa_ayuda_aidc");
 
             // Registrar la información obtenida
-            //Log::info("Los datos obtenidos son:", ['data' => $data]);
+            Log::info("Los datos obtenidos son:", $madata);
 
             // Verificar si los datos están vacíos
             if (empty($data)) {
                 return Inertia::render('Commercial/Zebra/Index', [
                     'data' => [],
-                    'partNumData'=>[]
+                    'partNumData'=>[],
+                    'MAData' =>[],
+                    'CategoriasMA'=>[]
                 ]);
             }
-
+            
             // Si hay datos, renderiza la vista de React y pasa los datos
             return Inertia::render('Commercial/Zebra/Index', [
                 'data' => $data,
-                'partNumData'=>$partNumsData
+                'partNumData'=>$partNumsData,
+                'MAData' =>$madata,
+                'CategoriasMA'=>$categorias,
             ]);
 
         } catch (\Exception $e) {
@@ -328,6 +335,44 @@ class CotizadorZebraController extends Controller
         } catch (\Exception $e) {
             // Log del error para debugging
             Log::error("Error al buscar el numero de busqueda: {$e->getMessage()}");
+    
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function FilterMesaAyudaData($categoryMesaAyudaSelected)
+    {
+        try{
+            
+            if (empty($categoryMesaAyudaSelected)|| $categoryMesaAyudaSelected==0) {
+
+                $data = DB::connection('mysql')->select("SELECT * FROM mesa_ayuda_aidc");
+                return response()->json([
+                    'partNums' => $PartNums
+                ], 200);
+            }
+            
+            $data = DB::connection('mysql')->select("
+                SELECT * FROM  mesa_ayuda_aidc
+                WHERE categoria_producto = ?
+            ", [$categoryMesaAyudaSelected]);        
+
+            if (empty($data)) {
+                return response()->json([
+                    'MAData' => [],
+                    'message' => 'No se encontraron resultados para la categoría seleccionada de la mesa de ayuda.',
+                ], 200);
+            }
+    
+            // Devolver los resultados en formato JSON
+            return response()->json([
+                'MAData' => $data,
+            ], 200);
+        } catch (\Exception $e) {
+            // Log del error para debugging
+            Log::error("Error al obtener los datos filtrados de mesa de ayuda: {$e->getMessage()}");
     
             return response()->json([
                 'error' => $e->getMessage(),

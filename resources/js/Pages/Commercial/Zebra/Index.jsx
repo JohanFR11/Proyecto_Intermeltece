@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useDisclosure, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, input } from '@nextui-org/react'
+import { useDisclosure, Button } from '@nextui-org/react'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import CategoryComponent from "./Components/CategoryComponent";
 import PartNumComponent from "./Components/PartNumComponent";
 import ModalZebra from "./Fragments/ModalZebra";
 import axios from "axios";
+import ModalMesaAyuda from "./Fragments/ModalMesaAyuda";
+import { color } from "framer-motion";
 
-export default function Index({ auth, unreadNotifications, data, partNumData }) {
+export default function Index({ auth, unreadNotifications, data, partNumData, MAData, CategoriasMA }) {
     const [PartNums, setPartNums] = useState([]);
     const [selectedParts, setSelectedParts] = useState([]); // Para almacenar los números de parte seleccionados
     const [listPrice, setListPrice] = useState('');
@@ -18,10 +20,17 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
     const [quantities, setQuantities] = useState({}); // Estado para almacenar cantidades
     const [partSearch, setPartSearch] = useState("");
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [maData, setMaData] = useState([]);
+    const [selectedDataMA, setSelectedDataMA] = useState({})
     const [size, setSize] = React.useState('md')
 
     const sizes = ["5xl"];
-
+    useEffect(() => {
+        if (MAData) {
+            setMaData(MAData);
+        }
+    }, [MAData]);
+    //console.log('Datos recibidos: ', MAData);
 
     const handleOpen = (size) => {
         setSize(size)
@@ -39,8 +48,6 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
             const response = await axios.post(route("zebra.search", { selectedParts: partSearch || "" }));
             console.log('Datos recibidos: ', response.data);
             setPartNums(response.data.partNums);
-            setSelectedParts(''); // Limpiar partes seleccionadas
-            setListPrice(""); // Limpiar precio
 
         } catch (error) {
             console.error("Error al obtener números de parte:", error);
@@ -59,8 +66,6 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
             // Si no se selecciona ninguna categoría, pasar un valor vacío o null
             const response = await axios.get(route("zebra.filter.partnum", { categorySelected: selectedCategory || "" }));
             setPartNums(response.data.partNums); // Establecer todos los números de parte
-            setSelectedParts([]); // Limpiar partes seleccionadas
-            setListPrice(""); // Limpiar precio
         } catch (error) {
             console.error("Error al obtener números de parte:", error);
         }
@@ -80,12 +85,12 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
             setPercentage(0);
             setImagen(0);
             setDesc(0);
+            setPartDetails('')
         }
         // Enviar los números de parte seleccionados al backend
         fetchDataForSelectedParts(updatedSelectedParts);
         // Enviar los números de parte seleccionados al backend
     };
-
 
     const fetchDataForSelectedParts = async (updatedSelectedParts) => {
         try {
@@ -127,7 +132,37 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
             console.error("Error al obtener precios:", error);
         }
     };
-    console.log('estos son los numeros de parte: ', PartNums)
+
+    const handleCleanPartNums = () => {
+        setSelectedParts([]);
+        setListPrice(0);
+        setFinalPrice(0);
+        setPercentage(0);
+        setImagen(0);
+        setDesc(0);
+        setPartDetails('')
+        setSelectedDataMA({})
+    }
+    const handleCleanMA = (index) => {
+        setSelectedDataMA((prevState) => {
+            const updatedState = { ...prevState };
+            delete updatedState[index]; // Eliminar el valor asociado a esta fila
+            return updatedState;
+        });
+    }
+
+    const handleDataSelection = (index, data) => {
+        if (data) {
+            // Actualizar el valor de selectedDataMA específico para esta fila
+            setSelectedDataMA((prevState) => ({
+                ...prevState,
+                [index]: data.venta_usd_periodo_equipo,
+            }));
+            console.log("Fila seleccionada:", index, data.venta_usd_periodo_equipo);
+        }
+    };
+    console.log(selectedDataMA)
+
     return (
         <AuthenticatedLayout
             auth={auth}
@@ -144,13 +179,25 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">
                         Selección de Productos
                     </h3>
-                    <CategoryComponent data={data} onCategorySelect={handleCategorySelect} />
+                    <CategoryComponent
+                        data={data}
+                        onCategorySelect={handleCategorySelect}
+                    />
 
                     {/* Buscador */}
                     <div class="w-full max-w-sm min-w-[200px] mb-3">
                         <div class="relative flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute w-5 h-5 top-2.5 left-2.5 text-slate-600">
-                                <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                class="absolute w-5 h-5 top-2.5 left-2.5 text-slate-600"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
+                                    clip-rule="evenodd"
+                                />
                             </svg>
                             <input
                                 class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
@@ -166,6 +213,14 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
                                 Search
                             </button>
                         </div>
+                    </div>
+                    <div className="flex justify-center items-center mt-4">
+                        <button
+                            onClick={handleCleanPartNums}
+                            className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+                        >
+                            Limpiar Números de Parte
+                        </button>
                     </div>
                     <PartNumComponent
                         partNums={PartNums}
@@ -201,61 +256,110 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
                                 {percentage ? `${percentage}%` : "0%"}
                             </p>
                         </div>
+
+                        {/* Columna: Mesa de ayuda */}
+                        <div className="text-center">
+                            <p className="text-sm font-bold text-gray-600">Descuento</p>
+                            <p className="text-lg font-semibold text-green-800">
+                                <ModalMesaAyuda MAData={maData} categories={CategoriasMA} onSelectData={handleDataSelection} />
+
+                            </p>
+                        </div>
                     </div>
+
 
                     <div className="w-full bg-white border border-gray-300 rounded-lg shadow mt-6 p-4 flex items-center gap-4">
                         <div className="w-full flex flex-col items-center">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Imagen</h3>
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                                Imagen
+                            </h3>
                             {imagen.length > 0 ? (
                                 <img
                                     src={imagen} // Mostrar solo la última imagen
                                     className="w-auto max-h-[300px] object-contain border rounded"
                                 />
                             ) : (
-                                <p className="text-gray-600">No hay imágenes disponibles para el número de parte seleccionado.</p>
+                                <p className="text-gray-600">
+                                    No hay imágenes disponibles para el número de parte
+                                    seleccionado.
+                                </p>
                             )}
                         </div>
                         <div className="w-1/2">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Descripción</h3>
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                                Descripción
+                            </h3>
                             {desc.length > 0 ? (
                                 <p className="text-gray-700">{desc}</p> // Mostrar la última descripción
                             ) : (
-                                <p className="text-gray-600">No hay descripción disponible para el número de parte seleccionado.</p>
+                                <p className="text-gray-600">
+                                    No hay descripción disponible para el número de parte
+                                    seleccionado.
+                                </p>
                             )}
                         </div>
                     </div>
                 </div>
             </div>
             <div className="flex flex-col md:flex-row items-start gap-6 p-4">
-                <div className="overflow-x-auto w-full"> {/* Se agrega un contenedor para el scroll horizontal */}
+                <div className="overflow-x-auto w-full">
+                    {" "}
+                    {/* Se agrega un contenedor para el scroll horizontal */}
                     <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
                         <thead>
                             <tr className="bg-blue-300 text-white text-sm font-semibold uppercase">
-                                <th className="py-3 px-6 text-left text-gray-700">N° Parte</th>
-                                <th className="py-3 px-6 text-left text-gray-700">Tipo Producto</th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    N° Parte
+                                </th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    Tipo Producto
+                                </th>
                                 <th className="py-3 px-6 text-left text-gray-700">Moneda</th>
-                                <th className="py-3 px-6 text-left text-gray-700">Cantidad</th>
-                                <th className="py-3 px-6 text-left text-gray-700">Precio Lista</th>
-                                <th className="py-3 px-6 text-left text-gray-700">Precio Final</th>
-                                <th className="py-3 px-6 text-left text-gray-700">Descuento</th>
-                                <th className="py-3 px-6 text-left text-gray-700">Categoria Producto</th>
-                                <th className="py-3 px-6 text-left text-gray-700">Descripción</th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    Cantidad
+                                </th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    Precio Lista
+                                </th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    Precio Final
+                                </th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    Precio mesa AYUDA
+                                </th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    Descuento
+                                </th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    Categoria Producto
+                                </th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    Descripción
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="text-sm text-gray-800">
                             {partDetails.length > 0 ? (
                                 partDetails.map((partDetail, index) => {
                                     const quantity = quantities[partDetail.partNumber] || 1;
-                                    const listPrice = parseFloat(partDetail.listPrice.replace(/,/g, ""));
-                                    const finalPrice = parseFloat(partDetail.finalPrice.replace(/,/g, ""));
+                                    const listPrice = parseFloat(
+                                        partDetail.listPrice.replace(/,/g, "")
+                                    );
+                                    const finalPrice = parseFloat(
+                                        partDetail.finalPrice.replace(/,/g, "")
+                                    );
                                     const totalListPrice = (listPrice * quantity).toFixed(2);
-                                    const totalFinalPrice = (finalPrice * quantity).toFixed(2);
+                                    const totalFinalPrice = selectedDataMA[index] ? ((finalPrice * quantity) + selectedDataMA[index]).toFixed(2) : (finalPrice * quantity).toFixed(2);
 
                                     return (
                                         <tr className="border-b hover:bg-gray-100" key={index}>
                                             <td className="py-3 px-6">{partDetail.partNumber}</td>
-                                            <td className="py-3 px-6">{partDetail.dataInfo.Product_Type}</td>
-                                            <td className="py-3 px-6">{partDetail.dataInfo.Currency}</td>
+                                            <td className="py-3 px-6">
+                                                {partDetail.dataInfo.Product_Type}
+                                            </td>
+                                            <td className="py-3 px-6">
+                                                {partDetail.dataInfo.Currency}
+                                            </td>
                                             <td className="py-3 px-6">
                                                 <input
                                                     type="number"
@@ -263,21 +367,45 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
                                                     className="w-20 border border-gray-300 rounded px-2 py-1"
                                                     value={quantity}
                                                     onChange={(e) =>
-                                                        handleQuantityChange(partDetail.partNumber, parseInt(e.target.value) || 0)
+                                                        handleQuantityChange(
+                                                            partDetail.partNumber,
+                                                            parseInt(e.target.value) || 0
+                                                        )
                                                     }
                                                 />
                                             </td>
                                             <td className="py-3 px-6">{totalListPrice}</td>
                                             <td className="py-3 px-6">{totalFinalPrice}</td>
+                                            <td className="py-3 px-6">{selectedDataMA[index] || 0}</td>
                                             <td className="py-3 px-6">{`${partDetail.descuento}%`}</td>
-                                            <td className="py-3 px-6">{partDetail.dataInfo.Product_Category}</td>
-                                            <td className="py-3 px-6">{partDetail.dataInfo.Short_Marketing_Desc}</td>
+                                            <td className="py-3 px-6">
+                                                {partDetail.dataInfo.Product_Category}
+                                            </td>
+                                            <td className="py-3 px-6">
+                                                {partDetail.dataInfo.Short_Marketing_Desc}
+                                            </td>
+                                            <td className="p-2">
+                                                <ModalMesaAyuda
+                                                    MAData={maData}
+                                                    index={index}
+                                                    categories={CategoriasMA}
+                                                    onSelectData={handleDataSelection}
+                                                />
+                                                <button
+                                                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                                    onClick={() => handleCleanMA(index)}
+                                                >
+                                                    Limpiar
+                                                </button>
+                                            </td>
                                         </tr>
-                                    )
+                                    );
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan="8" className="py-3 px-6 text-center">No se han seleccionado productos aún.</td>
+                                    <td colSpan="8" className="py-3 px-6 text-center">
+                                        No se han seleccionado productos aún.
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
@@ -286,11 +414,20 @@ export default function Index({ auth, unreadNotifications, data, partNumData }) 
             </div>
             {/* Botón para abrir el modal */}
             {sizes.map((size) => (
-                <Button key={size} onPress={() => handleOpen(size)} color="primary">Factura</Button>
+                <Button key={size} onPress={() => handleOpen(size)} color="primary">
+                    Factura
+                </Button>
             ))}
 
             {/* Aquí se integra el ModalZebra con useDisclosure */}
-            <ModalZebra size={size} open={isOpen} close={onClose} partDetails={partDetails} quantities={quantities} />
+            <ModalZebra
+                size={size}
+                open={isOpen}
+                close={onClose}
+                partDetails={partDetails}
+                quantities={quantities}
+                selectedDataMA={selectedDataMA}
+            />
         </AuthenticatedLayout>
     );
 

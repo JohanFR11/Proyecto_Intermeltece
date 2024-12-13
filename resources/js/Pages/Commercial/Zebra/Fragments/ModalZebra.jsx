@@ -4,7 +4,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import images from './images.png';
 import meltec from './meltec.png';
-export default function ModalZebra({ open, close, size, partDetails,quantities }) {
+export default function ModalZebra({ open, close, size, partDetails,quantities,selectedDataMA }) {
     const [selectedDate, setSelectedDate] = useState(null);
     const [deliveryTime, setDeliveryTime] = useState('');
     const [LugarEntrega, setLugarEntrega] = useState('');
@@ -63,14 +63,14 @@ export default function ModalZebra({ open, close, size, partDetails,quantities }
         doc.autoTable({
             startY: 140,
             head: [
-                ['N° Parte', 'Tipo Producto', 'Descripción','Und', 'Moneda', 'Precio Lista', 'Precio Final', 'Descuento', 'Categoria Producto'],
+                ['N° Parte', 'Tipo Producto', 'Descripción','Und', 'Moneda', 'Precio Lista', 'Precio Final','Precio Mesa Ayuda', 'Descuento', 'Categoria Producto'],
             ],
-            body: partDetails.map((partDetail) => {
+            body: partDetails.map((partDetail, index) => {
                 const quantity = quantities[partDetail.partNumber] || 1; // Obtén la cantidad o usa 1 por defecto
                 const listPrice = parseFloat(partDetail.listPrice.replace(/,/g, "")) || 0; // Convierte listPrice a número
                 const finalPrice = parseFloat(partDetail.finalPrice.replace(/,/g, "")) || 0; // Convierte finalPrice a número
                 const totalListPrice = (listPrice * quantity).toFixed(2); // Calcula totalListPrice con 2 decimales
-                const totalFinalPrice = (finalPrice * quantity).toFixed(2); // Calcula totalFinalPrice con 2 decimales
+                const totalFinalPrice = selectedDataMA[index] ? ((finalPrice * quantity) + selectedDataMA[index]).toFixed(2) : (finalPrice * quantity).toFixed(2); // Calcula totalFinalPrice con 2 decimales
             
                 return [
                     partDetail.partNumber || '----',
@@ -78,8 +78,9 @@ export default function ModalZebra({ open, close, size, partDetails,quantities }
                     partDetail.dataInfo.Short_Marketing_Desc || '----',
                     quantity, // Cantidad seleccionada
                     partDetail.dataInfo.Currency || '----', // Moneda
-                    `${totalListPrice}$`,
-                    `${totalFinalPrice}$`, 
+                    `$${totalListPrice}`,
+                    `$${totalFinalPrice}`, 
+                    `$${selectedDataMA[index]||0}`,
                     `${parseInt(partDetail.descuento) || 0}%`, // Descuento
                     partDetail.dataInfo.Product_Category || '----', // Categoría del producto
 
@@ -89,17 +90,7 @@ export default function ModalZebra({ open, close, size, partDetails,quantities }
             theme: 'grid', // El tema para la tabla
             headStyles: { fillColor: [148, 199, 255] }, // Color de fondo para la cabecera
             styles: { fontSize: 7 }, // Tamaño de la fuente
-            columnStyles: {
-                0: { cellWidth: 20 }, // N° Parte
-                1: { cellWidth: 30 },    // Tipo Producto
-                2: { cellWidth: 50 },    // Descripción (más ancho)
-                3: { cellWidth: 10 },    // Moneda (más pequeño)
-                4: { cellWidth: 10 },    // Unidades (más pequeño)
-                5: { cellWidth: 15 },    // Precio Lista
-                6: { cellWidth: 15 },    // Precio Final
-                7: { cellWidth: 10 },    // Descuento
-                8: { cellWidth: 20 },    // Categoría Producto
-            },
+            
             
         });
         // Si el contenido sobrepasa una página, automáticamente agregará una nueva
@@ -182,6 +173,7 @@ export default function ModalZebra({ open, close, size, partDetails,quantities }
                                                 <th className="py-3 px-6 text-left text-gray-700">Cantidad</th>
                                                 <th className="py-3 px-6 text-left text-gray-700">Precio Lista</th>
                                                 <th className="py-3 px-6 text-left text-gray-700">Precio Final</th>
+                                                <th className="py-3 px-6 text-left text-gray-700">Precio mesa AYUDA</th>
                                                 <th className="py-3 px-6 text-left text-gray-700">Descuento</th>
                                                 <th className="py-3 px-6 text-left text-gray-700">Categoria Producto</th>
                                                 <th className="py-3 px-6 text-left text-gray-700">Descripción</th>
@@ -194,7 +186,7 @@ export default function ModalZebra({ open, close, size, partDetails,quantities }
                                                     const listPrice = parseFloat(partDetail.listPrice.replace(/,/g, ""));
                                                     const finalPrice = parseFloat(partDetail.finalPrice.replace(/,/g, ""));
                                                     const totalListPrice =( listPrice* quantity).toFixed(2);
-                                                    const totalFinalPrice = (finalPrice * quantity).toFixed(2);
+                                                    const totalFinalPrice = selectedDataMA[index] ? ((finalPrice * quantity) + selectedDataMA[index]).toFixed(2) : (finalPrice * quantity).toFixed(2);
                                                     return (
                                                     <tr className="border-b hover:bg-gray-100" key={index}>
                                                         <td className="py-3 px-6">{partDetail.partNumber}</td>
@@ -203,6 +195,7 @@ export default function ModalZebra({ open, close, size, partDetails,quantities }
                                                         <td className="py-3 px-6">{quantity}</td>
                                                         <td className="py-3 px-6">{totalListPrice}</td>
                                                         <td className="py-3 px-6">{totalFinalPrice}</td>
+                                                        <td className="py-3 px-6">{selectedDataMA[index]||0}</td>
                                                         <td className="py-3 px-6">{`${partDetail.descuento}%`}</td>
                                                         <td className="py-3 px-6">{partDetail.dataInfo.Product_Category}</td>
                                                         <td className="py-3 px-6">{partDetail.dataInfo.Short_Marketing_Desc}</td>
