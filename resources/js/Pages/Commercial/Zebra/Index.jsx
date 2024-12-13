@@ -161,7 +161,6 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
             console.log("Fila seleccionada:", index, data.venta_usd_periodo_equipo);
         }
     };
-    console.log(selectedDataMA)
 
     return (
         <AuthenticatedLayout
