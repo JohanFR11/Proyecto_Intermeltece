@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "docuemntos-drive",
+  "private_key_id": "f2c6de3addd14824ca225076a5858479bbbb3866",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDS+Gltcp7aXNQp\ngsU97ZG2AQE7wMDwGg9qmyi4UgrUNGr3bdsQkFmgl1y6mEocL4uLPy6989cz8ID7\nskQZDIuyxFwww68WgGVUgkI292+JQch3sAlGRv6MRdR7uhImLx0jXSIvn3eC2U7F\n0okfRPkUX1bP7y7wo4nKwo9KZlJBz/oZHHEz8O/xXM6U2C19pAURSENIvsAMMfyH\nDOOCP+N1atlxsXUw7mbl51VpNmQCWUP7v8VyVG+XyNbhU00zHgk+vuAvVfzcx7us\nONT0SuDhB4xdn+RT/ji+1KpnojGtFfqra2CfTrbZ64Urr3Uun3LeuUoqHwJ1ylum\ndjyw0rCHAgMBAAECggEAHFuMsaFTDe9QC1u1ueBu525/enHV3VA7cJfLjj8Pj+eT\nKzq70/Wl6Sqp/wuNBqMzbXOq4O3fqEPJ1Us90Q95JaiJlc/FKfqh5Df1a4sF6zFe\n9LZCVjfLwRIlK2kJmygBEX7+zd+bAl5wXVyH1vP/9lzm/+CFcuN17ZMKYgnv65gp\nEdzvwMS5qEF7FBQcvrNyXOTKMW+ND55jbTyDjRmd+XdXRR4BJPdTRthzaDtgpPPQ\nmjiONQ6/ls/v2NXxtBG/JM393a+GT0JeKVHONh2W1Iqa4oJXdU2nFCHkVmBWyZHd\nmK+gLWDIkQjDTX9EoWeppqQfpZ5jABi61Y0Z32e6vQKBgQDtYzhX3/CfI5gRhyc1\nLuTm7wi9zADb3/QQWEAbNqeliUdmigzr6KwmeuiTo7ebR8qHIf4pcq0a2Q3nOe3/\nD8mr39B9jdpKXmb9KThpWkcHfRZ4Nv70a82BXcpql7DbGgXxaq/29AcIgrlS3p2F\nZ2Af4bcxvJMFm+S+ajmNqm3P7QKBgQDjgvPOxGEdKx3wqdfUQ2hHH6SMWAf1D9Jy\nAh23tUJWIx8pDuLPeWfzZIIM5ch01yjForS80v5ai7QuBRBxMwOZWbmz/FlrnII1\ntoguWBZLaS3qGgd1jD09c6PDUYJhQcQSV62+Y/EvAwqbKeUbXT640o6hDyRyLxiV\nbx1KbTKrwwKBgFtzEL6Rj6HO1YNTHKCZWyc3yJdNYrtRkDVHuhKBwJ29v9rZrdan\nwMHmMXjG5jGUu4nJZ59SBSvFmFyObYgH7fofc7MalZB2w5gdbBTx6VESODjBfwBs\nEzQWDKd5nnEZmlaBch5hrd/ydDBfgDFnPJmrm6Y2bjEH+Fv+kgNoN3uVAoGAYOyZ\nEa138gU8bBrvZ+6Prj08zM10FmL3NLrSDkGaUTgFPmipF9qQ/pADF5uNGrnPFOOM\nPCVnVwvNZw2hQ5iIH/ypsJQBRGcY0elBevzsApR8iw8rvlhQfq2VRtCiyuxJq8bO\nrh3F0lFpY1El2dKPtg191f+tdze5MXB0+hArViECgYAr4tGGXr7cwcmYEASGSfkQ\naPGiFv7jvSriiTXcUVsGat19IsNvqFcDWBVKmcoGj7Uo+RreLPGlYywN/OLFKkbX\nP/mIRqE/qOjbLLLXXmqmfAzgWvGq2rRQSIyvuP3sPbTwzqNUuhOL3RKydrq2H2mH\n1lj4fD8p26D1QX7DlUK/EA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "intrameltec@docuemntos-drive.iam.gserviceaccount.com",
+  "client_id": "111209411304316966460",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/intrameltec%40docuemntos-drive.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

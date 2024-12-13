@@ -24,6 +24,7 @@ use App\Http\Controllers\Auth\PersonalAccessTokensController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PreciosUlefoneController;
 use App\Http\Controllers\CotizadorZebraController;
+use App\Http\Controllers\ControladorAuditoria;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +92,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/hseq/{id}', [HseqController::class, 'download'])->name('resources.hseq.download');
     Route::delete('/hseq/delete/{id}', [HseqController::class, 'destroy'])->name('resources.hseq.destroy');
 
+    Route::get('auditoria', [ControladorAuditoria::class, 'index'])->name('resources.auditoria.index');
+
+
     Route::post('/uploadFile', UploadFilesController::class);
 
     Route::get('/kpis', [KpiReportsController::class, 'index'])->name('kpi.reports.index');
@@ -106,7 +110,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/precios-ulefone', [PreciosUlefoneController::class, 'index'])->name('ulefone.index');
     Route::get('/ulefone/odata', [PreciosUlefoneController::class, 'Odata']);
-
 
     Route::get('/products', function () {
         return Inertia::render('Products/Index');
