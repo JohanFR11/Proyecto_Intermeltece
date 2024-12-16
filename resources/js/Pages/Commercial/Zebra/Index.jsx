@@ -156,7 +156,6 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
                 ...prevState,
                 [index]: data.venta_usd_periodo_equipo,
             }));
-            console.log("Fila seleccionada:", index, data.venta_usd_periodo_equipo);
         }
     };
 
@@ -324,6 +323,9 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
                                 <th className="py-3 px-6 text-left text-gray-700">
                                     Descripción
                                 </th>
+                                <th className="py-3 px-6 text-left text-gray-700">
+                                    Select Precio mesa de AYUDA
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="text-sm text-gray-800">
@@ -373,19 +375,25 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
                                                 {partDetail.dataInfo.Short_Marketing_Desc}
                                             </td>
                                             <td className="p-2">
-                                                <ModalMesaAyuda
-                                                    MAData={maData}
-                                                    index={index}
-                                                    categories={CategoriasMA}
-                                                    onSelectData={handleDataSelection}
-                                                />
-                                                <button
-                                                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                                                    onClick={() => handleCleanMA(index)}
-                                                >
-                                                    Limpiar
-                                                </button>
+                                                <div className="flex flex-col gap-4">
+                                                    {/* Botón del Modal */}
+                                                    <ModalMesaAyuda
+                                                        MAData={maData}
+                                                        index={index}
+                                                        categories={CategoriasMA}
+                                                        onSelectData={handleDataSelection}
+                                                    />
+
+                                                    {/* Botón de Limpiar */}
+                                                    <button
+                                                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                                                        onClick={() => handleCleanMA(index)}
+                                                    >
+                                                        Limpiar
+                                                    </button>
+                                                </div>
                                             </td>
+
                                         </tr>
                                     );
                                 })

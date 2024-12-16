@@ -342,42 +342,4 @@ class CotizadorZebraController extends Controller
         }
     }
 
-    public function FilterMesaAyudaData($categoryMesaAyudaSelected)
-    {
-        try{
-            
-            if (empty($categoryMesaAyudaSelected)|| $categoryMesaAyudaSelected==0) {
-
-                $data = DB::connection('mysql')->select("SELECT * FROM mesa_ayuda_aidc");
-                return response()->json([
-                    'partNums' => $PartNums
-                ], 200);
-            }
-            
-            $data = DB::connection('mysql')->select("
-                SELECT * FROM  mesa_ayuda_aidc
-                WHERE categoria_producto = ?
-            ", [$categoryMesaAyudaSelected]);        
-
-            if (empty($data)) {
-                return response()->json([
-                    'MAData' => [],
-                    'message' => 'No se encontraron resultados para la categoría seleccionada de la mesa de ayuda.',
-                ], 200);
-            }
-    
-            // Devolver los resultados en formato JSON
-            return response()->json([
-                'MAData' => $data,
-            ], 200);
-        } catch (\Exception $e) {
-            // Log del error para debugging
-            Log::error("Error al obtener los datos filtrados de mesa de ayuda: {$e->getMessage()}");
-    
-            return response()->json([
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
 }
