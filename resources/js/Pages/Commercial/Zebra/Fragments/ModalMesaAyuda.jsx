@@ -38,20 +38,21 @@ const ModalMesaAyuda = ({ MAData, categories, onSelectData, index }) => {
       <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        size="4xl"
+        size="6xl"
         scrollBehavior="inside"
       >
-        <ModalContent>
-          <ModalHeader className="text-xl font-bold">
+        <ModalContent className="bg-blue-900 text-white rounded-lg shadow-lg max-w-[90%]">
+          <ModalHeader className="text-2xl font-bold border-b border-blue-700">
             Datos de Contratos
-           {/* Dropdown de Categorías */}
           </ModalHeader>
           <ModalBody>
-            <div className="overflow-x-auto">
+            <div className="flex flex-col gap-6">
+              <div className="flex">
+                <div  className="w-1/4 pr-4">
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 bg-blue-800 text-white border border-blue-700 rounded-md focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas las Categorías</option>
               {categories?.map((category) => (
@@ -63,32 +64,45 @@ const ModalMesaAyuda = ({ MAData, categories, onSelectData, index }) => {
                 </option>
               ))}
             </select>
-        
+            <div className="mt-9 bg-blue-800 p-4 rounded-md text-sm text-white">
+      <h3>
+        ◉ Punto central de contacto de usuarios/clientes con la unidad de soporte técnico. <br />
+        ◉ Responsable por la recepción del reporte de falla <br />
+        ◉ Diagnóstico preliminar <br />
+        ◉ Nivel de solución básica <br />
+        ◉ Escalamiento del incidente al siguiente nivel si no logra resolver la falla (Garantía de Fábrica). <br />
+        ◉ Logística de doble vía durante el periodo de garantía. <br />
+        ◉ Documenta la solución al incidente en caso de resolverlo. <br />
+        ◉ También brinda información a clientes con incidentes en proceso de atención.<br />
+      </h3>
+    </div>
+            </div>
+              <div className="flex-1 overflow-x-auto">
               <table className="w-full border-collapse min-w-full">
                 <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-2 border text-left text-sm font-semibold">
+                  <tr className="bg-blue-800">
+                    <th className="p-3 border-b border-blue-700 text-left text-sm font-semibold">
                       Número de Parte
                     </th>
-                    <th className="p-2 border text-left text-sm font-semibold">
+                    <th className="p-3 border-b border-blue-700 text-left text-sm font-semibold">
                       Nivel
                     </th>
-                    <th className="p-2 border text-left text-sm font-semibold">
+                    <th className="p-3 border-b border-blue-700 text-left text-sm font-semibold">
                       Recomendaciones
                     </th>
-                    <th className="p-2 border text-left text-sm font-semibold">
+                    <th className="p-3 border-b border-blue-700 text-left text-sm font-semibold">
                       Descripción
                     </th>
-                    <th className="p-2 border text-left text-sm font-semibold">
+                    <th className="p-3 border-b border-blue-700 text-left text-sm font-semibold">
                       Periodo/Meses
                     </th>
-                    <th className="p-2 border text-center text-sm font-semibold">
+                    <th className="p-3 border-b border-blue-700 text-center text-sm font-semibold">
                       Perfil EA
                     </th>
-                    <th className="p-2 border text-left text-sm font-semibold">
+                    <th className="p-3 border-b border-blue-700 text-left text-sm font-semibold">
                       Moneda
                     </th>
-                    <th className="p-2 border text-right text-sm font-semibold">
+                    <th className="p-3 border-b border-blue-700 text-right text-sm font-semibold">
                       Valor por Equipo
                     </th>
                   </tr>
@@ -98,34 +112,34 @@ const ModalMesaAyuda = ({ MAData, categories, onSelectData, index }) => {
                     filteredData.map((row, index) => (
                       <tr 
                         key={index} 
-                        className="hover:bg-gray-50 cursor-pointer"  // Agregamos un estilo para indicar que es seleccionable
+                        className="hover:bg-blue-700 transition-colors"  // Agregamos un estilo para indicar que es seleccionable
                         onClick={() => handleRowClick(row)}  // Llamamos a handleRowClick cuando se hace clic en una fila
                       >
-                        <td className="p-2 border text-sm">
+                        <td className="p-3 border-b border-blue-700 text-sm">
                           {row.numero_de_parte}
                         </td>
-                        <td className="p-2 border text-sm">{row.nivel}</td>
-                        <td className="p-2 border text-sm">
+                        <td className="p-3 border-b border-blue-700 text-sm">{row.nivel}</td>
+                        <td className="p-3 border-b border-blue-700 text-sm">
                           {row.recomendaciones}
                         </td>
-                        <td className="p-2 border text-sm">
+                        <td className="p-3 border-b border-blue-700 text-sm">
                           {row.descripcion}
                         </td>
-                        <td className="p-2 border text-sm">
+                        <td className="p-3 border-b border-blue-700 text-sm">
                           {row.periodo_meses}
                         </td>
-                        <td className="p-2 border text-center text-sm">
+                        <td className="p-3 border-b border-blue-700 text-center text-sm">
                           {row.perfil_ea}
                         </td>
-                        <td className="p-2 border text-sm">USD</td>
-                        <td className="p-2 border text-right text-sm">
+                        <td className="p-3 border-b border-blue-700 text-sm">USD</td>
+                        <td className="p-3 border-b border-blue-700 text-right text-sm">
                           {row.venta_usd_periodo_equipo}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="8" className="py-3 px-6 text-center">
+                      <td colSpan="8" className="py-4 px-6 text-center text-sm">
                         no se han encontrado datos, por favor comuniquese con el
                         desarrollador de la pagina.
                       </td>
@@ -133,24 +147,18 @@ const ModalMesaAyuda = ({ MAData, categories, onSelectData, index }) => {
                   )}
                 </tbody>
               </table>
+              </div>
+              </div>
               
             </div>
           </ModalBody>
-          <ModalFooter>
-            <h3>
-              ◉ Punto central de contacto de usuarios/clientes con la unidad de soporte técnico. <br/>
-              ◉ Responsable por la recepción del reporte de falla <br/>
-              ◉ Diagnóstico preliminar <br/>
-              ◉ Nivel de solución basica <br/>
-              ◉Escalamiento del incidente al siguiente nivel si no logra resolver la falla (Garantia de Fabrica). <br/>
-              ◉ Logistica de doble via, durante el periodo de garantia. <br/>
-              ◉ Documenta la solución al incidente en caso de resolverlo. <br/>
-              ◉ También brinda información a clientes con incidentes en proceso de atención.<br/>
-            </h3>
+          <ModalFooter className="border-t border-blue-700">
+          
             <Button
               color="danger"
-              variant="light"
+              variant="ghost"
               onPress={() => setIsOpen(false)}
+               className="text-white hover:bg-blue-800 hover:shadow-lg"
             >
               Cerrar
             </Button>

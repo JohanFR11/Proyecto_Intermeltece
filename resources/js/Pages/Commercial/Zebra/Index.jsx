@@ -6,7 +6,6 @@ import PartNumComponent from "./Components/PartNumComponent";
 import ModalZebra from "./Fragments/ModalZebra";
 import axios from "axios";
 import ModalMesaAyuda from "./Fragments/ModalMesaAyuda";
-import { color } from "framer-motion";
 
 export default function Index({ auth, unreadNotifications, data, partNumData, MAData, CategoriasMA }) {
     const [PartNums, setPartNums] = useState([]);
@@ -153,7 +152,6 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
 
     const handleDataSelection = (index, data) => {
         if (data) {
-            // Actualizar el valor de selectedDataMA específico para esta fila
             setSelectedDataMA((prevState) => ({
                 ...prevState,
                 [index]: data.venta_usd_periodo_equipo,
@@ -200,7 +198,7 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
                             </svg>
                             <input
                                 class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-                                placeholder="UI Kits, Dashboards..."
+                                placeholder="Part Number/Número de parte..."
                                 value={partSearch}
                                 onChange={(e) => setPartSearch(e.target.value)}
                             />
@@ -253,15 +251,6 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
                             <p className="text-sm font-bold text-gray-600">Descuento</p>
                             <p className="text-lg font-semibold text-green-600">
                                 {percentage ? `${percentage}%` : "0%"}
-                            </p>
-                        </div>
-
-                        {/* Columna: Mesa de ayuda */}
-                        <div className="text-center">
-                            <p className="text-sm font-bold text-gray-600">Descuento</p>
-                            <p className="text-lg font-semibold text-green-800">
-                                <ModalMesaAyuda MAData={maData} categories={CategoriasMA} onSelectData={handleDataSelection} />
-
                             </p>
                         </div>
                     </div>
