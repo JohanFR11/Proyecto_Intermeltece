@@ -426,5 +426,4 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
             />
         </AuthenticatedLayout>
     );
-
 }

@@ -34,7 +34,8 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_ID_CLIENT'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_CALLBACK_URL')
+        'redirect' => env('GOOGLE_CALLBACK_URL'),
+        'access_type' => 'offline',
     ]
 
 ];

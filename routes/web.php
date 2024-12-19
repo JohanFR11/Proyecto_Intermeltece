@@ -12,6 +12,7 @@ use App\Http\Controllers\ServerpartController;
 use App\Http\Controllers\Admin\PartsController;
 use App\Http\Controllers\Admin\KpiReportsController;
 use App\Http\Controllers\Auth\NotificationController;
+use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\MarkReadNotificationController;
 use App\Http\Controllers\Functions\UploadFilesController;
 use App\Http\Controllers\Pdf\QuoteServerReportController;
@@ -23,6 +24,8 @@ use App\Http\Controllers\Auth\PersonalAccessTokensController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PreciosUlefoneController;
 use App\Http\Controllers\CotizadorZebraController;
+use App\Http\Controllers\GoogleDriveController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -53,6 +56,14 @@ Route::get('/formulario-de-pagos', function() {
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+    
+    Route::get('/auditoria', function () {
+        return Inertia::render('Auditorias/Index');
+    })->name('auditoria');
+    Route::get('/auditoria/token',  [GoogleAuthenticationController::class, 'getGoogleDriveClient'])->name('auditoria.token');
+    Route::get('/exchange-token', [GoogleDriveController::class, 'exchangeCodeForToken']);
+    Route::post('/refresh-token', [GoogleDriveController::class, 'refreshAccessToken']);
+    Route::post('/upload-file', [GoogleDriveController::class, 'uploadFile']);
     
     Route::get('/salesToday', [MasterDataController::class, 'salesToday'])->name('masterdata.salestoday');
 

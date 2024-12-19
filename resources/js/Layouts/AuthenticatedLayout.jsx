@@ -93,6 +93,11 @@ export default function Authenticated({
           href={route("resources.hseq.index")}
           text="Area HSEQ"
         />
+         <SidebarItem
+          icon={<HumanIcon size="32px" color="#395181" />}
+          href={route("auditoria")}
+          text="Auditorias"
+        />
         <SidebarItem
           icon={<AccountingIcon size="32px" color="#395181" />}
           href={route("payments.index")}

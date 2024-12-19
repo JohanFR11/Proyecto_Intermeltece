@@ -341,5 +341,4 @@ class CotizadorZebraController extends Controller
             ], 500);
         }
     }
-
 }

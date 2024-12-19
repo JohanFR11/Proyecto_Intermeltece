@@ -2,9 +2,10 @@ import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, DateP
 import React, { useState } from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import images from './images.png';
-import meltec from './meltec.png';
-export default function ModalZebra({ open, close, size, partDetails,quantities,selectedDataMA }) {
+import Menbrete from './Menbrete.jpg';
+import Pie_de_pagina from './Pie_de_pagina.png'
+
+export default function ModalZebra({ open, close, size, partDetails, quantities, selectedDataMA }) {
     const [selectedDate, setSelectedDate] = useState(null);
     const [deliveryTime, setDeliveryTime] = useState('');
     const [LugarEntrega, setLugarEntrega] = useState('');
@@ -39,31 +40,67 @@ export default function ModalZebra({ open, close, size, partDetails,quantities,s
     // Función para generar el PDF
     const generatePDF = () => {
         const doc = new jsPDF(); // Crea un nuevo documento PDF
-        doc.addImage(images, 'PNG', 20, 5, 40, 30);
-        doc.addImage(meltec, 'PNG', 130, 5, 60, 20);
-        // Fecha y descripción
+        const headerHeight = 25;
+        const footerHeight = 20; 
+        const addHeader = () => {
+            doc.addImage(Menbrete, 'JPG', 20, 5, 170, 20);
+        };
+
+        const addFooter = () => {
+            const pageHeight = doc.internal.pageSize.height;
+            doc.addImage(Pie_de_pagina, 'JPG', 20, pageHeight - footerHeight, 190, 25); // Ajusta la posición y tamaño
+        };
+        const checkAndAddPage = (currentY, requiredSpace) => {
+            if (currentY + requiredSpace > doc.internal.pageSize.height - footerHeight - 10) {
+                doc.addPage();
+                addHeader();
+                addFooter();
+                return headerHeight + 5; // Retorna posición inicial después del encabezado
+            }
+            return currentY;
+        };
+    
+        
+        // Agregar el encabezado en la primera página
+        addHeader();
+
+        let currentY = headerHeight + 10; // Posición inicial debajo del encabezado
         const formattedDate = getFormattedDate();
+        // Fecha y descripción
+        doc.setFontSize(10);
+        doc.text(`Bogotá D.C., ${formattedDate}`, 20, currentY);
+        currentY += 5;
+    
+        doc.setFont("helvetica", "bold");
+        doc.text('Cotización N° -----', 20, currentY);
+        currentY += 10;
+    
+        doc.setFont("helvetica", "normal");
         doc.setFontSize(12);
-        doc.text(`Bogotá D.C. ,   ${formattedDate}`, 20, 50);
-        doc.text('Cotizacion N°  -----', 20, 60);
-        doc.text('Señores: cliente', 20, 70);
-        doc.text('Asunto:  asdasdasfasfa', 20, 80);
+        doc.text('Señores: cliente', 20, currentY);
+        currentY += 10;
+    
+        doc.text('Asunto: asdasdasfasfa', 20, currentY);
+        currentY += 10;
+    
         // Título de la cotización
-        doc.setFontSize(16);
-        doc.text('COTIZACION MELTEC COMUNICACIONES S.A.', 45, 90);
-        doc.setFontSize(12);
+        doc.text('COTIZACIÓN MELTEC COMUNICACIONES S.A.', 45, currentY);
+        currentY += 10;
+        doc.setFontSize(10);
         doc.text(
-            'Reciba un cordial saludo en nombre de MELTEC COMUNICACIONES S.A., compañía dedicada al suministro, integración y desarrollo de soluciones empresariales y movilidad digital en Colombia. A continuación, me permito enviarle nuestra cotización de acuerdo a sus requerimientos. Esperamos que esta propuesta cumpla con sus expectativas y estaremos atentos a sus comentarios.',
+            `Reciba un cordial saludo en nombre de MELTEC COMUNICACIONES S.A., compañía dedicada al suministro, integración y desarrollo de soluciones empresariales y movilidad digital en Colombia. A continuación, me permito enviarle nuestra cotización de acuerdo a sus requerimientos. Esperamos que esta propuesta cumpla con sus expectativas y estaremos atentos a sus comentarios.`,
             20,
-            100,
+            currentY,
             { maxWidth: 180 }
         );
+        currentY += 30
         // Generar la tabla de productos
-        doc.text('OFERTA ECONOMICA', 90, 130);
+        doc.text('OFERTA ECONOMICA', 90, currentY);
+        currentY += 10;
         doc.autoTable({
-            startY: 140,
+            startY: currentY,
             head: [
-                ['N° Parte', 'Tipo Producto', 'Descripción','Und', 'Moneda', 'Precio Lista', 'Precio Final','Precio Mesa Ayuda', 'Descuento', 'Categoria Producto'],
+                ['N° Parte', 'Tipo Producto', 'Descripción', 'Und', 'Moneda', 'Precio Lista', 'Precio Final', 'Precio Mesa Ayuda', 'Descuento', 'Categoria Producto'],
             ],
             body: partDetails.map((partDetail, index) => {
                 const quantity = quantities[partDetail.partNumber] || 1; // Obtén la cantidad o usa 1 por defecto
@@ -71,7 +108,7 @@ export default function ModalZebra({ open, close, size, partDetails,quantities,s
                 const finalPrice = parseFloat(partDetail.finalPrice.replace(/,/g, "")) || 0; // Convierte finalPrice a número
                 const totalListPrice = (listPrice * quantity).toFixed(2); // Calcula totalListPrice con 2 decimales
                 const totalFinalPrice = selectedDataMA[index] ? ((finalPrice * quantity) + selectedDataMA[index]).toFixed(2) : (finalPrice * quantity).toFixed(2); // Calcula totalFinalPrice con 2 decimales
-            
+
                 return [
                     partDetail.partNumber || '----',
                     partDetail.dataInfo.Product_Type || '----',
@@ -79,8 +116,8 @@ export default function ModalZebra({ open, close, size, partDetails,quantities,s
                     quantity, // Cantidad seleccionada
                     partDetail.dataInfo.Currency || '----', // Moneda
                     `$${totalListPrice}`,
-                    `$${totalFinalPrice}`, 
-                    `$${selectedDataMA[index]||0}`,
+                    `$${totalFinalPrice}`,
+                    `$${selectedDataMA[index] || 0}`,
                     `${parseInt(partDetail.descuento) || 0}%`, // Descuento
                     partDetail.dataInfo.Product_Category || '----', // Categoría del producto
 
@@ -90,37 +127,55 @@ export default function ModalZebra({ open, close, size, partDetails,quantities,s
             theme: 'grid', // El tema para la tabla
             headStyles: { fillColor: [148, 199, 255] }, // Color de fondo para la cabecera
             styles: { fontSize: 7 }, // Tamaño de la fuente
-            
-            
+
+            didDrawPage: () => {
+                addHeader(); // Vuelve a agregar el encabezado
+                addFooter();
+            },
         });
-        // Si el contenido sobrepasa una página, automáticamente agregará una nueva
+
+        currentY = doc.lastAutoTable.finalY + 10;
+        currentY = checkAndAddPage(currentY, 50);
+
+        doc.setFontSize(10);
+        doc.text(`Tiempo de Entrega: ${deliveryTime}`, 20, currentY);
+        currentY += 10; // Aumenta la posición Y para la siguiente línea
+
+        doc.text(`Lugar de Entrega: ${LugarEntrega}`, 20, currentY);
+        currentY += 10;
+
         const formattedDeliveryTime = formatDeliveryTime(deliveryTime);
-        // Comprobar si el espacio restante en la página es suficiente
-        if (doc.lastAutoTable.finalY) { // Si el contenido excede la página actual
-            doc.addPage(); // Agregar una nueva página
-            doc.addImage(images, 'PNG', 20, 5, 40, 30);
-            doc.addImage(meltec, 'PNG', 130, 5, 60, 20);
-            doc.setFontSize(12);
-            doc.text(`Tiempo de Entrega: ${deliveryTime}`, 20, 45);
-            doc.text(`Lugar de Entrega: ${LugarEntrega}`, 20, 55);
-            doc.text(`Validez de la oferta: ${formattedDeliveryTime}`, 20, 65);
-            doc.setFontSize(12);
-            doc.text('comentario', 20, 75);
-            doc.text(
-                'En nombre de MELTEC COMUNICACIONES S.A., quiero expresarle mis agradecimientos por considerarnos una alternativa de solución. Todos nuestros equipos están debidamente amparados por licencias de importación de las cuales usted podrá disponer en el momento que lo solicite.',
-                20,
-                85,
-                { maxWidth: 180 }
-            );
-            doc.setFontSize(12);
-            doc.text('Cordialmente, ', 20, 105);
-            doc.text(`${Persona}`, 20, 115);
-            doc.text(`${correoPersona}`, 20, 125);
-            doc.text('+57 4111899, ', 20, 135);
-            doc.setFontSize(16);
-            doc.text('MELTEC COMUNICACIONES S.A., ', 20, 145);
-        }
-        // Descarga el PDF generado
+        doc.text(`Validez de la oferta: ${formattedDeliveryTime}`, 20, currentY);
+        currentY += 15;
+
+        currentY = checkAndAddPage(currentY, 30);
+        // Comentarios finales
+        doc.text(
+            `En nombre de MELTEC COMUNICACIONES S.A., quiero expresarle mis agradecimientos por considerarnos una alternativa de solución. Todos nuestros equipos están debidamente amparados por licencias de importación de las cuales usted podrá disponer en el momento que lo solicite.`,
+            20,
+            currentY,
+            { maxWidth: 180 }
+        );
+        currentY += 20;
+
+        doc.text('Cordialmente, ', 20, currentY);
+        currentY += 10;
+
+        doc.setFontSize(11);
+        doc.text(`${Persona}`, 20, currentY);
+        currentY += 5;
+
+        doc.setFontSize(8);
+        doc.text(`${correoPersona}`, 20, currentY);
+        currentY += 5;
+
+        doc.text('+57 4111899, ', 20, currentY);
+        currentY += 5;
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text('MELTEC COMUNICACIONES S.A.', 20, currentY);
+        
         doc.save('cotizacion_meltec.pdf');
     };
     return (
@@ -185,22 +240,23 @@ export default function ModalZebra({ open, close, size, partDetails,quantities,s
                                                     const quantity = quantities[partDetail.partNumber] || 1;
                                                     const listPrice = parseFloat(partDetail.listPrice.replace(/,/g, ""));
                                                     const finalPrice = parseFloat(partDetail.finalPrice.replace(/,/g, ""));
-                                                    const totalListPrice =( listPrice* quantity).toFixed(2);
+                                                    const totalListPrice = (listPrice * quantity).toFixed(2);
                                                     const totalFinalPrice = selectedDataMA[index] ? ((finalPrice * quantity) + selectedDataMA[index]).toFixed(2) : (finalPrice * quantity).toFixed(2);
                                                     return (
-                                                    <tr className="border-b hover:bg-gray-100" key={index}>
-                                                        <td className="py-3 px-6">{partDetail.partNumber}</td>
-                                                        <td className="py-3 px-6">{partDetail.dataInfo.Product_Type}</td>
-                                                        <td className="py-3 px-6">{partDetail.dataInfo.Currency}</td>
-                                                        <td className="py-3 px-6">{quantity}</td>
-                                                        <td className="py-3 px-6">{totalListPrice}</td>
-                                                        <td className="py-3 px-6">{totalFinalPrice}</td>
-                                                        <td className="py-3 px-6">{selectedDataMA[index]||0}</td>
-                                                        <td className="py-3 px-6">{`${partDetail.descuento}%`}</td>
-                                                        <td className="py-3 px-6">{partDetail.dataInfo.Product_Category}</td>
-                                                        <td className="py-3 px-6">{partDetail.dataInfo.Short_Marketing_Desc}</td>
-                                                    </tr>
-                                                )})
+                                                        <tr className="border-b hover:bg-gray-100" key={index}>
+                                                            <td className="py-3 px-6">{partDetail.partNumber}</td>
+                                                            <td className="py-3 px-6">{partDetail.dataInfo.Product_Type}</td>
+                                                            <td className="py-3 px-6">{partDetail.dataInfo.Currency}</td>
+                                                            <td className="py-3 px-6">{quantity}</td>
+                                                            <td className="py-3 px-6">{totalListPrice}</td>
+                                                            <td className="py-3 px-6">{totalFinalPrice}</td>
+                                                            <td className="py-3 px-6">{selectedDataMA[index] || 0}</td>
+                                                            <td className="py-3 px-6">{`${partDetail.descuento}%`}</td>
+                                                            <td className="py-3 px-6">{partDetail.dataInfo.Product_Category}</td>
+                                                            <td className="py-3 px-6">{partDetail.dataInfo.Short_Marketing_Desc}</td>
+                                                        </tr>
+                                                    )
+                                                })
                                             ) : (
                                                 <tr>
                                                     <td colSpan="8" className="py-3 px-6 text-center">

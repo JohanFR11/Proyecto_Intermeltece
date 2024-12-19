@@ -158,7 +158,7 @@ const ModalMesaAyuda = ({ MAData, categories, onSelectData, index }) => {
               color="danger"
               variant="ghost"
               onPress={() => setIsOpen(false)}
-               className="text-white hover:bg-blue-800 hover:shadow-lg"
+              className="text-white hover:bg-blue-800 hover:shadow-lg"
             >
               Cerrar
             </Button>
