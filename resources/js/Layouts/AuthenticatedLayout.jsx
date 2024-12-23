@@ -21,7 +21,6 @@ export default function Authenticated ({ auth, header, children, unreadNotificat
         <SidebarItem icon={<SellerIcon size='32px' color='#395181' />} href={route('ulefone.index')} text='Cotizador Ulefone'/>
         <SidebarItem icon={<SellerIcon size='32px' color='#395181' />} href={route('zebra.index')} text='Cotizador Zebra'/>
         <SidebarItem icon={<HumanIcon size='32px' color='#395181' />} href={route('resources.hseq.index')} text='Area HSEQ' />
-        <SidebarItem icon={<HumanIcon size='32px' color='#395181' />} href={route('resources.auditoria.index')} text='Area Auditoria' />
         <SidebarItem icon={<AccountingIcon size='32px' color='#395181' />} href={route('payments.index')} text='Area Contable' />
         {
           user.roles[0].name === 'Administrador' ? (<SidebarItem icon={<ToolIcon size='32px' color='#395181' />} href={route('admin.users.index')} text='Administrador del Sistema' />) : ''

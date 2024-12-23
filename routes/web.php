@@ -25,6 +25,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PreciosUlefoneController;
 use App\Http\Controllers\CotizadorZebraController;
 use App\Http\Controllers\ControladorAuditoria;
+use App\Http\Controllers\GoogleDriveController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +57,15 @@ Route::get('/formulario-de-pagos', function() {
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+
+    Route::get('/auditoria', function () {
+        return Inertia::render('Auditorias/Index');
+    })->name('auditoria');
+    Route::get('/auditoria/token',  [GoogleAuthenticationController::class, 'getGoogleDriveClient'])->name('auditoria.token');
+    Route::get('/exchange-token', [GoogleDriveController::class, 'exchangeCodeForToken']);
+    Route::post('/refresh-token', [GoogleDriveController::class, 'refreshAccessToken']);
+    Route::post('/remove-token', [GoogleDriveController::class, 'revokeAuthorization']);
+    Route::post('/upload-file', [GoogleDriveController::class, 'uploadFile']);
     
     Route::get('/salesToday', [MasterDataController::class, 'salesToday'])->name('masterdata.salestoday');
 
@@ -91,9 +101,6 @@ Route::middleware('auth')->group(function () {
     Route::post('hseq', [HseqController::class, 'store'])->name('resources.hseq.store');
     Route::get('/hseq/{id}', [HseqController::class, 'download'])->name('resources.hseq.download');
     Route::delete('/hseq/delete/{id}', [HseqController::class, 'destroy'])->name('resources.hseq.destroy');
-
-    Route::get('auditoria', [ControladorAuditoria::class, 'index'])->name('resources.auditoria.index');
-
 
     Route::post('/uploadFile', UploadFilesController::class);
 

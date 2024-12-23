@@ -7,11 +7,30 @@ import SidebarMeta from './Home/Components/SideBarMeta'
 import { dateTimeFormatted } from '@/helpers/dateHelper'
 import { useSalesToday } from '@/hooks/useSalesToday'
 import SapLoader from '@/Components/SapLoader'
-import { Button } from '@nextui-org/react'
+import {Button, useDisclosure,Tabs, Tab, Card, CardBody } from '@nextui-org/react'
+/* import Ranking from './RankingVentas'  // Asegúrate de importar el componente correctamente */
+import ModalDolar from './ModalDolar';
+import React from 'react'
 
-export default function Dashboard ({ auth, unreadNotifications }) {
-  const { valores, loading, trmInCop } = useTrm()
-  const { loaderKpiSap, error, kpi, getData } = useSalesToday()
+export default function Dashboard ({ auth, unreadNotifications, OdataRanking, OdataMeta}) {
+
+  const { valores, loading, trmInCop } = useTrm();
+  const { loaderKpiSap, error, kpi, getData } = useSalesToday();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [size, setSize] = React.useState('md')
+
+    const sizes = ["5xl"];
+
+
+    const handleOpen = (size) => {
+        setSize(size)
+        onOpen();
+    }
+
+  const totalRevenue = OdataMeta.reduce((acc, item) => {
+    const revenue = parseInt(item.KCNT_REVENUE.replace(/[^\d.-]/g, ''), 10);  // Extrae y convierte a número
+    return acc + (isNaN(revenue) ? 0 : revenue);  // Evita sumar valores NaN
+  }, 0);
 
   return (
     <AuthenticatedLayout
@@ -21,35 +40,45 @@ export default function Dashboard ({ auth, unreadNotifications }) {
         <h2 className='font-semibold text-xl text-gray-800 leading-tight'>
           Inicio Meltec Comunicaciones S.A
         </h2>
-            }
+      }
     >
       <Head title='Dashboard' />
       <main className='overflow-y-auto'>
-        <div className='grid grid-flow-row grid-cols-3 items-center justify-stretch gap-3 auto-rows-fr'>
-          {loading ? <p>Cargando...</p> : <TrmGraph valores={valores} trmInCop={trmInCop} />}
-
-          <div className='bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 col-span-2'>
-            <h2 className='font-bold text-xl text-center py-2'>Meta Meltec 2024</h2>
-
-            <h5 className='text-right p-4 font-semibold italic text-zinc-600/50'>Ultima Actualización: <span>{dateTimeFormatted(new Date())}</span> </h5>
-
-            {loaderKpiSap && <SapLoader message='Obteniendo Meta Actual. Por favor espere...' />}
-
-            {kpi && <SidebarMeta kpi={kpi} />}
-
-            {error && (<h3 className='text-center bg-red-500 rounded-md py-6 text-white font-bold'>Error al Obtener los datos de ventas de SAP - Contacte con Administrador del sistema para mas información</h3>)}
-
-            <div className='flex justify-end m-2'>
-              <Button color='secondary' isDisabled={loaderKpiSap} onClick={getData}>Regenerando</Button>
-            </div>
+        <div className="my-5 bg-white overflow-hidden shadow-lg sm:rounded-lg p-8">
+          <div className='bg-[#395181] text-center items-center w-[130px] overflow-hidden shadow-lg sm:rounded-lg hover:bg-[#5b7ab8] cursosr-pointer'>
+            {sizes.map((size) => (
+              <button className='text-white text-center text-lg items-center w-[100px]' key={size} onClick={() => handleOpen(size)} color="#395181">Dólar hoy: <br/><span>{trmInCop}</span></button>
+            ))}
+            <ModalDolar size={size} open={isOpen} close={onClose} valores={valores} trmInCop={trmInCop} />
           </div>
+        <div className='bg-white overflow-hidden shadow-sm sm:rounded-lg p-4'>
+                  <h2 className='font-bold text-xl text-center py-2'>Meta Meltec 2024</h2>
+
+                  <h5 className='text-right p-4 font-semibold italic text-zinc-600/50'>
+                    Última Actualización: <span>{dateTimeFormatted(new Date())}</span>
+                  </h5>
+
+                  {loaderKpiSap && <SapLoader message='Obteniendo Meta Actual. Por favor espere...' />}
+
+                  {kpi && <SidebarMeta kpi={kpi} totalRevenue={totalRevenue} />}
+
+                  {error && (
+                    <h3 className='text-center bg-red-500 rounded-md py-6 text-white font-bold'>
+                      Error al Obtener los datos de ventas de SAP - Contacte con Administrador del sistema para más información
+                    </h3>
+                  )}
+
+                  <div className='flex justify-end m-2'>
+                    <Button color='secondary' isDisabled={loaderKpiSap} onClick={getData}>
+                      Regenerando
+                    </Button>
+                  </div>
+                </div>
+          {/* <div>
+            <Ranking OdataRanking={OdataRanking}/>
+          </div> */}
         </div>
-
-        {/* <div className='my-5 bg-white overflow-hidden shadow-sm sm:rounded-lg p-10'>
-
-        </div> */}
       </main>
-
     </AuthenticatedLayout>
   )
 }

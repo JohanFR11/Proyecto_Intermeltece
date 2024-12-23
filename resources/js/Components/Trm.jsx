@@ -1,4 +1,4 @@
-import { Line } from 'react-chartjs-2'
+import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
   Filler
-} from 'chart.js'
+} from 'chart.js';
 
 ChartJS.register(
   CategoryScale,
@@ -20,7 +20,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler
-)
+);
 
 export function TrmTable ({ valores }) {
   return (
@@ -47,12 +47,12 @@ export function TrmTable ({ valores }) {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 export function TrmGraph ({ valores, trmInCop }) {
-  const labels = valores.map((item) => item.vigenciahasta.split('T')[0])
-  const values = valores.map((item) => parseFloat(item.valor))
+  const labels = valores.map((item) => item.vigenciahasta.split('T')[0]);
+  const values = valores.map((item) => parseFloat(item.valor));
   const midata = {
     labels,
     datasets: [
@@ -61,44 +61,75 @@ export function TrmGraph ({ valores, trmInCop }) {
         data: values,
         tension: 0.2,
         fill: true,
-        borderColor: 'rgb(57, 81, 129)',
-        backgroundColor: 'rgba(57, 81, 129, 0.5)',
+        borderColor: '#395181',
+        backgroundColor: 'rgba(70, 144, 187, 0.5)',
         pointRadius: 1
       }
     ]
-  }
+  };
 
   const misOpciones = {
+    responsive: true,
     scales: {
+      x: {
+        ticks: {
+          font: {
+            size: 16, // Tamaño de la fuente del eje X
+          },
+        },
+      },
       y: {
         beginAtZero: false,
         ticks: {
+          font: {
+            size: 16, // Tamaño de la fuente del eje Y
+          },
           callback: function (value) {
             return value.toLocaleString('es-CO', {
               style: 'currency',
               currency: 'COP'
-            })
+            });
           }
         }
       }
+    },
+    plugins: {
+      legend: {
+        labels: {
+          font: {
+            size: 16, // Tamaño de la fuente de la leyenda
+          },
+        }
+      },
+      tooltip: {
+        titleFont: {
+          size: 16, // Tamaño de la fuente del título del tooltip
+        },
+        bodyFont: {
+          size: 14, // Tamaño de la fuente del cuerpo del tooltip
+        }
+      }
     }
-  }
+  };
+
   return (
     <div className='bg-white overflow-hidden shadow-sm sm:rounded-lg'>
       <div className='p-10'>
-        <h2 className='text-center font-bold text-xl mt-3'>Precio del dolar del dia de hoy: {trmInCop}</h2>
+        <h2 className='text-center font-bold text-xl mt-3'>
+          Precio del dólar del día de hoy: {trmInCop}
+        </h2>
         <Line data={midata} options={misOpciones} />
       </div>
     </div>
-  )
+  );
 }
 
 export function NoTrmResult () {
-  return <p> No se encontraron datos de TRM</p>
+  return <p> No se encontraron datos de TRM</p>;
 }
 
 export function Trm ({ valores }) {
-  const hasTrm = valores?.length > 0
+  const hasTrm = valores?.length > 0;
 
-  return hasTrm ? <TrmTable valores={valores} /> : <NoTrmResult />
+  return hasTrm ? <TrmTable valores={valores} /> : <NoTrmResult />;
 }
