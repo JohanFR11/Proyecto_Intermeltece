@@ -12,3 +12,9 @@
     grid-template-columns: auto 1fr;
     grid-template-rows: 1fr auto;
 }
+
+@layer base {
+  :root {
+        --radius: 0.5rem;
+    }
+}
