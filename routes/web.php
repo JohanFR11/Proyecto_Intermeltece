@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/auditoria/token',  [GoogleAuthenticationController::class, 'getGoogleDriveClient'])->name('auditoria.token');
     Route::get('/exchange-token', [GoogleDriveController::class, 'exchangeCodeForToken']);
     Route::post('/refresh-token', [GoogleDriveController::class, 'refreshAccessToken']);
+    Route::post('/remove-token', [GoogleDriveController::class, 'revokeAuthorization']);
     Route::post('/upload-file', [GoogleDriveController::class, 'uploadFile']);
     
     Route::get('/salesToday', [MasterDataController::class, 'salesToday'])->name('masterdata.salestoday');

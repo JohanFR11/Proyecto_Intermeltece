@@ -5,15 +5,17 @@ const GoogleDriveUpload = () => {
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState('Esperando archivo...');
   const [accessToken, setAccessToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
+
 
   // Función para redirigir al usuario para autenticarse
   const handleAuthClick = async () => {
-    const clientId = 'client id de cloud console';
+    const clientId = '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com';
     const redirectUri = 'http://127.0.0.1:8000/auditoria';  // URL donde el usuario es redirigido después de autenticarse
     const scope = 'https://www.googleapis.com/auth/drive.file';
     
 
-    const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&scope=${scope}`;
+    const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent&scope=${scope}`;
     window.location.href = authUrl;
   };
 
@@ -26,8 +28,8 @@ const GoogleDriveUpload = () => {
     try {
       // Enviar el código al servidor
       const response = await axios.get(`http://127.0.0.1:8000/exchange-token?code=${code}`);
-      console.log(response)
       const { access_token, refresh_token } = response.data;
+      console.log(response.data)
 
       if (access_token) {
         localStorage.setItem('access_token', access_token);
@@ -45,28 +47,28 @@ const GoogleDriveUpload = () => {
   };
 
   // Función para verificar el token y refrescarlo si es necesario
-  // const refreshAccessToken = async () => {
-  //   const refreshToken = localStorage.getItem('refresh_token');
-  //   if (refreshToken) {
-  //     try {
-  //       const response = await axios.post('http://127.0.0.1:8000/refresh-token', {
-  //         refresh_token: refreshToken
-  //       });
+  const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (refreshToken) {
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/refresh-token', {
+          refresh_token: refreshToken
+        });
         
-  //       if (response.data.success && response.data.access_token) {
-  //         localStorage.setItem('access_token', response.data.access_token);
-  //         setAccessToken(response.data.access_token);
-  //       } else {
-  //         alert('No se pudo renovar el token de acceso.');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error al refrescar el token:', error);
-  //       alert('Error al refrescar el token.');
-  //     }
-  //   } else {
-  //     alert('No se ha encontrado un refresh_token. Por favor, autentica primero.');
-  //   }
-  // };
+        if (response.data.success && response.data.access_token) {
+          localStorage.setItem('access_token', response.data.access_token);
+          setAccessToken(response.data.access_token);
+        } else {
+          alert('No se pudo renovar el token de acceso.');
+        }
+      } catch (error) {
+        console.error('Error al refrescar el token:', error);
+        alert('Error al refrescar el token.');
+      }
+    } else {
+      alert('No se ha encontrado un refresh_token. Por favor, autentica primero. O comunicate con los desarrolladores para poder obtener permisos');
+    }
+  };
 
   // UseEffect para cargar el token desde el almacenamiento local
   useEffect(() => {
@@ -119,8 +121,9 @@ const GoogleDriveUpload = () => {
           },
         }
       );
+
       if (response.data.success) {
-        setUploadStatus(`Archivo subido con éxito: ${response.data.file_id}`);
+        setUploadStatus(`Archivo subido con éxito: ${response.data.name}`);
       } else {
         setUploadStatus(`Error al subir el archivo: ${response.data.error}`);
         console.log(response.data)
@@ -130,7 +133,6 @@ const GoogleDriveUpload = () => {
       setUploadStatus('Error al subir el archivo.');
     }
   };
-  console.log('este es el acces token',accessToken)
 
   return (
     <div>
