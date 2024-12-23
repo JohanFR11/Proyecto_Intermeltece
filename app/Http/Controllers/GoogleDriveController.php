@@ -15,8 +15,8 @@ class GoogleDriveController extends Controller
     public function __construct()
     {
         $this->client = new Google_Client();
-        $this->client->setClientId('714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com');
-        $this->client->setClientSecret('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');
+        $this->client->setClientId('');
+        $this->client->setClientSecret('');
         $this->client->setRedirectUri("http://127.0.0.1:8000/auditoria");
         $this->client->setAccessType('offline');
         $this->client->setPrompt('consent');
@@ -97,7 +97,7 @@ public function revokeAuthorization(Request $request)
 
         if ($this->isAccessTokenExpired($accessToken)) {
             // Obtener el refresh_token desde la base de datos o almacenamiento
-            $refreshToken = '1//04yTzIzZq-rY3CgYIARAAGAQSNwF-L9IrtCarx1pS_yPLuQcJIokXNdAzQEQrYYuZmUu4cfV8nA4LRvNm_RBQM8o_fwOwFeVfpWA';
+            $refreshToken = '';
     
             if (!$refreshToken) {
                 return response()->json(['error' => 'No se encontró el refresh token para renovar el acceso'], 401);
