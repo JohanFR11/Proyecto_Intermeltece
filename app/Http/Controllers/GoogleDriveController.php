@@ -15,8 +15,8 @@ class GoogleDriveController extends Controller
     public function __construct()
     {
         $this->client = new Google_Client();
-        $this->client->setClientId('714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com');
-        $this->client->setClientSecret('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');
+        $this->client->setClientId('clientid');
+        $this->client->setClientSecret('secret id');
         $this->client->setRedirectUri("http://127.0.0.1:8000/auditoria");
         $this->client->setAccessType('offline');
         $this->client->setPrompt('consent');
@@ -118,7 +118,7 @@ public function revokeAuthorization(Request $request)
 
         $fileMetadata = new Google_Service_Drive_DriveFile([
             'name' => $file->getClientOriginalName(),
-            'parents' => ["1CFMfx5iLuGmf9aeA24fyeIMObea-azVa"]
+            'parents' => ["id carpeta"]
         ]);
 
         try {
