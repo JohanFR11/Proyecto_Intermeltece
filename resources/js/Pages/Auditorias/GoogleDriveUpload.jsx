@@ -6,13 +6,13 @@ const GoogleDriveUpload = () => {
   const [uploadStatus, setUploadStatus] = useState('Esperando archivo...');
   const [accessToken, setAccessToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
-
+  const [listedFiles, setListedFiles] = useState([]);
 
   // Función para redirigir al usuario para autenticarse
   const handleAuthClick = async () => {
     const clientId = 'clientid';
     const redirectUri = 'http://127.0.0.1:8000/auditoria';  // URL donde el usuario es redirigido después de autenticarse
-    const scope = 'https://www.googleapis.com/auth/drive.file';
+    const scope = 'https://www.googleapis.com/auth/drive';
     
 
     const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent&scope=${scope}`;
@@ -23,6 +23,7 @@ const GoogleDriveUpload = () => {
   const extractTokenFromUrl = async () => {
     const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
+  console.log("este es el code que devuelve " , code)
 
   if (code) {
     try {
@@ -33,6 +34,7 @@ const GoogleDriveUpload = () => {
 
       if (access_token) {
         localStorage.setItem('access_token', access_token);
+        
       }
 
       if (refresh_token) {
@@ -55,11 +57,12 @@ const GoogleDriveUpload = () => {
           refresh_token: refreshToken
         });
         
-        if (response.data.success && response.data.access_token) {
+        if (response.data.access_token) {
           localStorage.setItem('access_token', response.data.access_token);
           setAccessToken(response.data.access_token);
         } else {
           alert('No se pudo renovar el token de acceso.');
+          console.log("datos recibidos al intentar renovar el token: ", response.data)
         }
       } catch (error) {
         console.error('Error al refrescar el token:', error);
@@ -73,9 +76,11 @@ const GoogleDriveUpload = () => {
   // UseEffect para cargar el token desde el almacenamiento local
   useEffect(() => {
     const storedAccessToken = localStorage.getItem('access_token');
+    const storenRefreshToken = localStorage.getItem('refresh_token')
     if (storedAccessToken) {
       setAccessToken(storedAccessToken);
       setUploadStatus('Token encontrado en almacenamiento local.');
+      console.log('este es el refresh token almacenado',storenRefreshToken)
     } else {
       extractTokenFromUrl(); // Intentar extraer el token desde la URL
     }
@@ -95,16 +100,28 @@ const GoogleDriveUpload = () => {
       alert('Selecciona un archivo primero.');
       return;
     }
+    const refreshToken = localStorage.getItem('refresh_token');
+    let token;
+    const tokenExpiry = 3599;
 
-    let token = accessToken || localStorage.getItem('access_token');
+// Verificar si el token está vencido
+const isTokenExpired = tokenExpiry && Date.now() > parseInt(tokenExpiry, 10);
+
+if (!token || isTokenExpired) {
+  // Si no hay token o está vencido, intentar refrescarlo
+  try {
+    await refreshAccessToken(); // Refrescar el token
+    token = localStorage.getItem('access_token'); // Recuperar el nuevo access token
+
     if (!token) {
-      await refreshAccessToken();  // Intentar refrescar el token
-      token = localStorage.getItem('access_token');  // Recuperar el nuevo access token
-      if (!token) {
-        alert('No se pudo obtener un token válido.');
-        return;
-      }
+      alert('No se pudo obtener un token válido.');
+      return;
     }
+  } catch (error) {
+    alert('Error al renovar el token: ' + error.message);
+    return;
+  }
+}
 
     setUploadStatus('Subiendo archivo...');
     const formData = new FormData();
@@ -118,7 +135,9 @@ const GoogleDriveUpload = () => {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`,
+            
           },
+          refresh_token: refreshToken
         }
       );
 
@@ -134,15 +153,55 @@ const GoogleDriveUpload = () => {
     }
   };
 
+// const listFiles = async () => {
+
+//   let token = accessToken || localStorage.getItem('access_token');
+
+//     const response= await axios.post('http://127.0.0.1:8000/list-files', {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     })
+//     console.log(response.data)
+//     if (!response.data.files){
+//       setListedFiles([])
+//     }
+//     setListedFiles(response.data.files)
+//   }
+// listFiles()
+
   return (
     <div>
       <h2>Subir archivo a Google Drive</h2>
-      {!accessToken && <button onClick={handleAuthClick}>Autenticar con Google</button>}
+      <button onClick={handleAuthClick}>Autenticar con Google</button>
+      {!accessToken && 
+      <button onClick={handleAuthClick}>Autenticar con Google</button>
+      }
       {accessToken && <>
         <input type="file" onChange={handleFileChange} />
         <button onClick={handleFileUpload}>Subir archivo</button>
     </> }
       <p>{uploadStatus}</p>
+
+      {accessToken && <>
+        {listedFiles.length > 0 ? (
+                    listedFiles.map((row, index) => (
+                      <tr 
+                        key={index}
+                      >
+                        <td className="p-3 border-b border-blue-700 text-sm">
+                          {row.files}
+                        </td>                
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="8" className="py-4 px-6 text-center text-sm">
+                        no se han encontrado datos/ no se han subido archivos todavia.
+                      </td>
+                    </tr>
+                  )}
+    </> }
     </div>
   );
 };

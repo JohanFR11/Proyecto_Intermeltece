@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Google_Client;
+use Google\Client;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
 
@@ -16,11 +17,16 @@ class GoogleDriveController extends Controller
     {
         $this->client = new Google_Client();
         $this->client->setClientId('clientid');
-        $this->client->setClientSecret('secret id');
+        $this->client->setClientSecret('secretid');
         $this->client->setRedirectUri("http://127.0.0.1:8000/auditoria");
         $this->client->setAccessType('offline');
         $this->client->setPrompt('consent');
     }
+
+    public function generateAuthUrl(){
+        $authUrl = $this->client->createAuthUrl();
+        return response()->json(['auth_url' => $authUrl]);
+}
 
     // Método para intercambiar el código por un token de acceso
     public function exchangeCodeForToken(Request $request)
@@ -32,21 +38,130 @@ class GoogleDriveController extends Controller
     }
 
     try {
-        $token = $this->client->fetchAccessTokenWithAuthCode($authCode);
-        log::info('este es el token de acceso: ', $token);
+        // Configuración de los parámetros para la solicitud
+        $postFields = [
+            'code' => $authCode,
+            'client_id' => 'clientid',
+            'client_secret' => 'Gclientid',
+            'redirect_uri' => 'http://127.0.0.1:8000/auditoria',
+            'grant_type' => 'authorization_code',
+        ];
 
-        if (isset($token['access_token'])) {
-            return response()->json([
-                'access_token' => $token['access_token'],
-                'expires_in' => $token['expires_in'] ?? 3600, // Tiempo predeterminado si no se especifica
-            ]);
-        } else {
-            return response()->json(['error' => 'No se recibió el access token.'], 400);
+        // Configuración del cURL
+        $ch = curl_init('https://oauth2.googleapis.com/token');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postFields));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+        ]);
+
+        // Ejecución de la solicitud
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (curl_errno($ch)) {
+            throw new \Exception('Error en la solicitud cURL: ' . curl_error($ch));
         }
+
+        curl_close($ch);
+
+        // Decodificar la respuesta JSON
+        $token = json_decode($response, true);
+
+        if ($httpCode !== 200 || isset($token['error'])) {
+            return response()->json([
+                'error' => $token['error'] ?? 'Error desconocido',
+                'error_description' => $token['error_description'] ?? 'No se pudo obtener el token',
+            ], $httpCode);
+        }
+
+        // Guardar el token en la base de datos
+        // DB::table('users')->updateOrInsert(
+        //     ['external_id' => auth()->id()],
+        //     [
+        //         'google_access_token' => $token['access_token'],
+        //         'google_refresh_token' => $token['refresh_token'] ?? null,
+        //         'expires_in' => now()->addSeconds($token['expires_in']),
+        //     ]
+        // );
+
+        return response()->json([
+            'access_token' => $token['access_token'],
+            'refresh_token' => $token['refresh_token'] ?? null,
+            'expires_in' => $token['expires_in'] ?? 3600,
+        ]);
     } catch (\Exception $e) {
         return response()->json(['error' => 'Error al intercambiar el código: ' . $e->getMessage()], 500);
     }
 }
+
+public function refreshAccessToken(request $request)
+{
+    try {
+
+        $refreshToken=$request->input('refresh_token');
+        // Obtener el refresh token del usuario autenticado
+        // $user = DB::table('users')->where('external_id', auth()->id())->first();
+
+        // if (!$user || !$user->google_refresh_token) {
+        //     return response()->json(['error' => 'No se encontró un refresh token para el usuario'], 400);
+        // }
+
+        $refresh_token = $refreshToken;
+
+        // Configuración de los parámetros para la solicitud
+        $postFields = [
+            'refresh_token' => $refresh_token,
+            'client_id' => 'clientid',
+            'client_secret' => 'secret',
+            'grant_type' => 'refresh_token',
+        ];
+
+        // Configuración del cURL
+        $ch = curl_init('https://oauth2.googleapis.com/token');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postFields));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+        ]);
+
+        // Ejecución de la solicitud
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (curl_errno($ch)) {
+            throw new \Exception('Error en la solicitud cURL: ' . curl_error($ch));
+        }
+
+        curl_close($ch);
+
+        // Decodificar la respuesta JSON
+        $token = json_decode($response, true);
+
+        if ($httpCode !== 200 || isset($token['error'])) {
+            return response()->json([
+                'error' => $token['error'] ?? 'Error desconocido',
+                'error_description' => $token['error_description'] ?? 'No se pudo renovar el token',
+            ], $httpCode);
+        }
+
+        // Actualizar el token en la base de datos
+        // DB::table('users')->where('id', auth()->id())->update([
+        //     'google_access_token' => $token['access_token'],
+        //     'expires_in' => now()->addSeconds($token['expires_in']),
+        // ]);
+
+        return response()->json([
+            'access_token' => $token['access_token'],
+            'expires_in' => $token['expires_in'] ?? 3600,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al renovar el token: ' . $e->getMessage()], 500);
+    }
+}
+
 
 public function revokeAuthorization(Request $request)
 {
@@ -95,23 +210,23 @@ public function revokeAuthorization(Request $request)
 
         $accessToken = str_replace('Bearer ', '', $authorizationHeader);
 
-        if ($this->isAccessTokenExpired($accessToken)) {
-            // Obtener el refresh_token desde la base de datos o almacenamiento
-            $refreshToken = 'refresh token (se pasa por aparte, mandar dm)';
+        // if ($this->isAccessTokenExpired($accessToken)) {
+        //     ////Obtener el refresh_token desde la base de datos o almacenamiento
+        //     // $refreshToken = '1//04lek8FQ7CDnECgYIARAAGAQSNwF-L9Iry1C54iK0lc0dX5KxbWa0RQ3lfEQDr6bUzLoV-a7L6kXVEDV6V4KX05WMeQ5O3mW2RlE';
     
-            if (!$refreshToken) {
-                return response()->json(['error' => 'No se encontró el refresh token para renovar el acceso'], 401);
-            }
+        //     // if (!$refreshToken) {
+        //     //     return response()->json(['error' => 'No se encontró el refresh token para renovar el acceso'], 401);
+        //     // }
     
-            // Intentar refrescar el token
-            $newAccessToken = $this->refreshAccessToken($refreshToken);
+        //     // Intentar refrescar el token
+        //     $newAccessToken = $this->refreshAccessToken($refreshToken);
     
-            if (!$newAccessToken) {
-                return response()->json(['error' => 'No se pudo renovar el token de acceso'], 500);
-            }
+        //     if (!$newAccessToken) {
+        //         return response()->json(['error' => 'No se pudo renovar el token de acceso'], 500);
+        //     }
     
-            $accessToken = $newAccessToken;
-        }
+        //     $accessToken = $newAccessToken;
+        // }
         
         $this->client->setAccessToken($accessToken);
         $service = new Google_Service_Drive($this->client);
@@ -142,30 +257,56 @@ public function revokeAuthorization(Request $request)
 
     return $this->client->isAccessTokenExpired();
 }
-
-/**
- * Obtiene el refresh token almacenado de forma segura.
- */
-private function getRefreshTokenFromStorage()
+public function listFiles(Request $request)
 {
-    // Implementa la lógica para recuperar el refresh token desde tu base de datos o almacenamiento
-    return env('GOOGLE_REFRESH_TOKEN'); // Ejemplo temporal, cámbialo por tu lógica real
-}
+    $authorizationHeader = $request->header('Authorization');
+        if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
+            return response()->json(['error' => 'Token de autorización no proporcionado o incorrecto'], 401);
+        }
 
-/**
- * Refresca el token de acceso usando el refresh token.
- */
-private function refreshAccessToken($refreshToken)
-{
+        $accessToken = str_replace('Bearer ', '', $authorizationHeader);
+
+        if ($this->isAccessTokenExpired($accessToken)) {
+            // Obtener el refresh_token desde la base de datos o almacenamiento
+            $refreshToken = '1//04lek8FQ7CDnECgYIARAAGAQSNwF-L9Iry1C54iK0lc0dX5KxbWa0RQ3lfEQDr6bUzLoV-a7L6kXVEDV6V4KX05WMeQ5O3mW2RlE';
+    
+            if (!$refreshToken) {
+                return response()->json(['error' => 'No se encontró el refresh token para renovar el acceso'], 401);
+            }
+    
+            // Intentar refrescar el token
+            $newAccessToken = $this->refreshAccessToken($refreshToken);
+    
+            if (!$newAccessToken) {
+                return response()->json(['error' => 'No se pudo renovar el token de acceso'], 500);
+            }
+    
+            $accessToken = $newAccessToken;
+        }
+        
+    $this->client->setAccessToken($accessToken);
+
+    $service = new Google_Service_Drive($this->client);
+
     try {
-        $this->client->refreshToken($refreshToken);
-        $newToken = $this->client->getAccessToken();
+        // Listar archivos
+        $files = $service->files->listFiles([
+            'q' => "'".'1CFMfx5iLuGmf9aeA24fyeIMObea-azVa'."' in parents",
+            'fields' => 'files(id, name)',
+        ]);
 
-        // Actualiza el token en tu base de datos si es necesario
-        return $newToken['access_token'] ?? null;
+        $fileList = [];
+        foreach ($files->getFiles() as $file) {
+            $fileList[] = [
+                'file_name' => $file->getName(),
+            ];
+        }
+
+        return response()->json(['files' => $fileList]);
     } catch (\Exception $e) {
-        return null; // Maneja el error si ocurre durante la renovación
+        return response()->json(['error' => 'Error al listar los archivos: ' . $e->getMessage()], 500);
     }
 }
+
 }
 
