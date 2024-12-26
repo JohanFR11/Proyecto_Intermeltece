@@ -41,8 +41,8 @@ class GoogleDriveController extends Controller
         // Configuración de los parámetros para la solicitud
         $postFields = [
             'code' => $authCode,
-            'client_id' => 'clientid',
-            'client_secret' => 'Gclientid',
+            'client_id' => 'client id',
+            'client_secret' => 'client secret',
             'redirect_uri' => 'http://127.0.0.1:8000/auditoria',
             'grant_type' => 'authorization_code',
         ];
@@ -113,8 +113,8 @@ public function refreshAccessToken(request $request)
         // Configuración de los parámetros para la solicitud
         $postFields = [
             'refresh_token' => $refresh_token,
-            'client_id' => 'clientid',
-            'client_secret' => 'secret',
+            'client_id' => 'client id',
+            'client_secret' => 'id secret',
             'grant_type' => 'refresh_token',
         ];
 
@@ -162,32 +162,6 @@ public function refreshAccessToken(request $request)
     }
 }
 
-
-public function revokeAuthorization(Request $request)
-{
-    $token = $request->input('token'); // Puede ser access_token o refresh_token
-
-    if (!$token) {
-        return response()->json(['error' => 'Token no proporcionado'], 400);
-    }
-
-    try {
-        $client = new \GuzzleHttp\Client();
-        $response = $client->post('https://oauth2.googleapis.com/revoke', [
-            'form_params' => ['token' => $token],
-        ]);
-
-        if ($response->getStatusCode() === 200) {
-            return response()->json(['success' => 'Autorización revocada con éxito']);
-        } else {
-            return response()->json(['error' => 'No se pudo revocar la autorización'], 500);
-        }
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Error al revocar la autorización: ' . $e->getMessage()], 500);
-    }
-}
-
-
     // Método para subir un archivo a Google Drive
     public function uploadFile(Request $request)
     {
@@ -210,30 +184,12 @@ public function revokeAuthorization(Request $request)
 
         $accessToken = str_replace('Bearer ', '', $authorizationHeader);
 
-        // if ($this->isAccessTokenExpired($accessToken)) {
-        //     ////Obtener el refresh_token desde la base de datos o almacenamiento
-        //     // $refreshToken = '1//04lek8FQ7CDnECgYIARAAGAQSNwF-L9Iry1C54iK0lc0dX5KxbWa0RQ3lfEQDr6bUzLoV-a7L6kXVEDV6V4KX05WMeQ5O3mW2RlE';
-    
-        //     // if (!$refreshToken) {
-        //     //     return response()->json(['error' => 'No se encontró el refresh token para renovar el acceso'], 401);
-        //     // }
-    
-        //     // Intentar refrescar el token
-        //     $newAccessToken = $this->refreshAccessToken($refreshToken);
-    
-        //     if (!$newAccessToken) {
-        //         return response()->json(['error' => 'No se pudo renovar el token de acceso'], 500);
-        //     }
-    
-        //     $accessToken = $newAccessToken;
-        // }
-        
         $this->client->setAccessToken($accessToken);
         $service = new Google_Service_Drive($this->client);
 
         $fileMetadata = new Google_Service_Drive_DriveFile([
             'name' => $file->getClientOriginalName(),
-            'parents' => ["id carpeta"]
+            'parents' => ["id de carpeta"]
         ]);
 
         try {
@@ -266,23 +222,6 @@ public function listFiles(Request $request)
 
         $accessToken = str_replace('Bearer ', '', $authorizationHeader);
 
-        if ($this->isAccessTokenExpired($accessToken)) {
-            // Obtener el refresh_token desde la base de datos o almacenamiento
-            $refreshToken = '1//04lek8FQ7CDnECgYIARAAGAQSNwF-L9Iry1C54iK0lc0dX5KxbWa0RQ3lfEQDr6bUzLoV-a7L6kXVEDV6V4KX05WMeQ5O3mW2RlE';
-    
-            if (!$refreshToken) {
-                return response()->json(['error' => 'No se encontró el refresh token para renovar el acceso'], 401);
-            }
-    
-            // Intentar refrescar el token
-            $newAccessToken = $this->refreshAccessToken($refreshToken);
-    
-            if (!$newAccessToken) {
-                return response()->json(['error' => 'No se pudo renovar el token de acceso'], 500);
-            }
-    
-            $accessToken = $newAccessToken;
-        }
         
     $this->client->setAccessToken($accessToken);
 
@@ -291,14 +230,18 @@ public function listFiles(Request $request)
     try {
         // Listar archivos
         $files = $service->files->listFiles([
-            'q' => "'".'1CFMfx5iLuGmf9aeA24fyeIMObea-azVa'."' in parents",
-            'fields' => 'files(id, name)',
+            'q' => "'".'id de carpeta'."' in parents",
+            'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
         ]);
 
         $fileList = [];
         foreach ($files->getFiles() as $file) {
             $fileList[] = [
                 'file_name' => $file->getName(),
+                'id' => $file->getId(),
+                'mimeType' => $file->getMimeType(),
+                'thumbnailLink' => $file->getThumbnailLink(),
+                'webViewLink' => $file->getWebViewLink(),
             ];
         }
 
