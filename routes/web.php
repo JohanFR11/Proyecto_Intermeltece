@@ -66,6 +66,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/refresh-token', [GoogleDriveController::class, 'refreshAccessToken']);
     Route::post('/remove-token', [GoogleDriveController::class, 'revokeAuthorization']);
     Route::post('/upload-file', [GoogleDriveController::class, 'uploadFile']);
+    Route::post('/list-files', [GoogleDriveController::class, 'listFiles']);
+    Route::post('/comentarios', [GoogleDriveController::class, 'SubirComentario'])->name('auditoria.subir.comentario');
+    Route::get('/comentarios/{fileId}', [GoogleDriveController::class, 'obtenerComentarios']);
     
     Route::get('/salesToday', [MasterDataController::class, 'salesToday'])->name('masterdata.salestoday');
 

@@ -10,16 +10,15 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::table('kpi_reports', function (Blueprint $table) {
-            $column = $table->unsignedBigInteger('category_id');
+{
+    Schema::table('kpi_reports', function (Blueprint $table) {
+        $column = $table->unsignedBigInteger('category_id');
 
-            if($column) {
-                $table->foreign('category_id')->references('id')->on('kpi_categories');
-            }
-
-        });
-    }
+        if($column) { 
+            $table->unsignedBigInteger('category_id');
+        }
+    });
+}
 
     /**
      * Reverse the migrations.
