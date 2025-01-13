@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\PermissionsStoreController;
 use App\Http\Controllers\Api\EpaycoController;
 use App\Http\Controllers\Api\Sap\MasterDataController;
 use App\Http\Controllers\Auth\PersonalAccessTokensController;
+use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PreciosUlefoneController;
 use App\Http\Controllers\CotizadorZebraController;

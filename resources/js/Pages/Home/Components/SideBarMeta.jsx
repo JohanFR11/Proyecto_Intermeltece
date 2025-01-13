@@ -32,6 +32,8 @@ export default function SidebarMeta ({ kpi, totalRevenue}) {
 
   const Resultadofinal = (totalRevenue - TargetValue)
 
+  console.log(totalRevenue)
+
   return (
     <>
       <Slider isDisabled size='lg' maxValue={valueMax} minValue={0} aria-label='Meta 2023' defaultValue={parseFloat(totalRevenue)} marks={marks} css={{

@@ -8,11 +8,13 @@ import { dateTimeFormatted } from '@/helpers/dateHelper'
 import { useSalesToday } from '@/hooks/useSalesToday'
 import SapLoader from '@/Components/SapLoader'
 import { Button, useDisclosure, Tabs, Tab, Card, CardBody } from '@nextui-org/react'
-import Ranking from './RankingVentas'  // Asegúrate de importar el componente correctamente */
+import Ranking from './RankingVentas'
 import ModalDolar from './ModalDolar';
 import React from 'react'
 
 export default function Dashboard({ auth, unreadNotifications, OdataRanking, OdataMeta }) {
+
+  console.log(OdataMeta)
 
   const { valores, loading, trmInCop } = useTrm();
   const { loaderKpiSap, error, kpi, getData } = useSalesToday();
@@ -50,7 +52,7 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
               <button className='text-white text-center text-lg items-center w-[100px]' key={size} onClick={() => handleOpen(size)} color="#395181">Dólar hoy: <br /><span>{trmInCop}</span></button>
             ))}
             <ModalDolar size={size} open={isOpen} close={onClose} valores={valores} trmInCop={trmInCop} />
-          </div>
+          </div>  
           <div className='bg-white overflow-hidden shadow-sm sm:rounded-lg p-4'>
             <h2 className='font-bold text-xl text-center py-2'>Meta Meltec 2024</h2>
 
@@ -64,7 +66,7 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
 
             {error && (
               <h3 className='text-center bg-red-500 rounded-md py-6 text-white font-bold'>
-                Error al Obtener los datos de ventas de SAP - Contacte con Administrador del sistema para más información
+                Error al Obtener los datos de ventas de SAP -   Contacte con Administrador del sistema para más información
               </h3>
             )}
 
