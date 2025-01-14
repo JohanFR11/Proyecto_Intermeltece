@@ -41,11 +41,18 @@ export default function Ranking({ OdataRanking }) {
   const maxValue = Math.max(...chartData.map((d) => d.Ventas));
   const marginValue = maxValue * 0.1;
 
+  const meses = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+  const fechaActual = new Date();
+  const mesNombre = meses[fechaActual.getMonth()];
+
   return (
     <div>
       <div className="flex justify-center items-center h-full mt-10 mb-5 ">
         <div className="text-center">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Ranking ventas diarias asesores Meltec 2024</h3>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">Ranking ventas diarias asesores Meltec {new Date().getDate()} de {mesNombre}, {new Date().getFullYear()}</h3>
         </div>
       </div>
 
