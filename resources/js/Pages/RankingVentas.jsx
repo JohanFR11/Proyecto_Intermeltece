@@ -11,7 +11,7 @@ import {
   LabelList
 } from "recharts";
 
-export default function Ranking({ OdataRanking }) {
+export default function Ranking({ OdataRanking,totalRankingRevenue}) {
 
   const [chartData, setChartData] = useState([]);
 
@@ -50,48 +50,63 @@ export default function Ranking({ OdataRanking }) {
 
   return (
     <div>
-      <div className="flex justify-center items-center h-full mt-10 mb-5 ">
-        <div className="text-center">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Ranking ventas diarias asesores Meltec {new Date().getDate()} de {mesNombre}, {new Date().getFullYear()}</h3>
-        </div>
-      </div>
-
-      <div>
-        <BarChart
-          layout="vertical"
-          width={850}
-          height={570}
-          data={chartData}
-          barSize={60}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 100,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <YAxis dataKey="name" type="category" width={280} fontSize={16} />
-          <XAxis type="number" domain={[0, maxValue + marginValue]} />
-          <Tooltip 
-            formatter={(value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value)} 
-          />
-          <Legend />
-          <ReferenceLine y={0} stroke="#000" />
-          <Bar
-            dataKey="Ventas"
-            fill={"#395181"} // Cambiar el color a rojo si el valor es negativo
-          >
-            <LabelList 
-              dataKey="Ventas" 
-              position="center" 
-              formatter={(value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value)} 
-              fontSize={16} 
-              fill="#fff"
-            />
-          </Bar>
-        </BarChart>
-      </div>
+  <div className="flex justify-center items-center h-full mt-10 mb-5">
+    <div className="text-center">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+        Ranking ventas diarias asesores Meltec {new Date().getDate()} de {mesNombre}, {new Date().getFullYear()}
+      </h3>
     </div>
+  </div>
+  
+    {/* Div de total ventas */}
+    <div className="bg-[#395181] text-white p-4 rounded-lg shadow-lg max-w-md sm:max-w-48">
+      <p className="text-lg font-semibold">Total Ventas Hoy:</p>
+      <p className="text-xl font-bold">
+        {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(totalRankingRevenue)}
+      </p>
+    </div>
+    
+    {/* Gráfico de barras */}
+    <div>
+      <BarChart
+        layout="vertical"
+        width={850}
+        height={570}
+        data={chartData}
+        barSize={60}
+        margin={{
+          top: 5,
+          right: 30,
+          left: 100,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <YAxis dataKey="name" type="category" width={280} fontSize={16} />
+        <XAxis type="number" domain={[0, maxValue + marginValue]} />
+        <Tooltip
+          formatter={(value) =>
+            new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value)
+          }
+        />
+        <Legend />
+        <ReferenceLine y={0} stroke="#000" />
+        <Bar
+          dataKey="Ventas"
+          fill={"#395181"}
+        >
+          <LabelList
+            dataKey="Ventas"
+            position="center"
+            formatter={(value) =>
+              new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value)
+            }
+            fontSize={10}
+            fill="#fff"
+          />
+        </Bar>
+      </BarChart>
+    </div>
+  </div>
   );
 }

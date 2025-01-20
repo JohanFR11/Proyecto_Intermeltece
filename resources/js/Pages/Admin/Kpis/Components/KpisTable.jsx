@@ -5,10 +5,11 @@ import { Link, usePage } from '@inertiajs/react'
 import DeleteButton from '../Fragments/DeleteButton2'
 import Paginator from '@/Components/Paginator'
 
-export default function KpisTable (id) {
+export default function KpisTable () {
+
   const { auth, reports, reportsData2 } = usePage().props
 
-
+  /* console.log(reportsData2) */
 
   return (
     <Table
@@ -27,7 +28,11 @@ export default function KpisTable (id) {
           : (
             <TableBody>
               {reportsData2.map(({ id, name, roles }) => {
+
+                /* console.log(id) */
+
                 const userHasRole = roles.find(role => role.name === auth.userRole[0])
+
                 if (userHasRole) {
                   return (
                     <TableRow key={id} className='text-center'>

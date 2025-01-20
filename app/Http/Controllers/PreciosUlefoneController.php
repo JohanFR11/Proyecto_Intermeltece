@@ -35,10 +35,10 @@ class PreciosUlefoneController extends Controller
         }
     
         $CREDENTIALS = [
-            'url' => 'url',
+            'url' => 'https://my345513.sapbydesign.com/',
             'auth' => [
-                'username' => 'username',
-                'password' => 'password'
+                'username' => 'SEIDORFUNCIONAL',
+                'password' => 'S31d0r*2o24_'
             ]
         ];
 
@@ -85,6 +85,38 @@ class PreciosUlefoneController extends Controller
         }
         Log::info('Respuesta completa de la API OData: ' . print_r($data, true));
 
-    }    
+    }
+
+    public function DatosModelo($Datomodelo)
+    {
+        try{
+        Log::info("Esto esta dando de la respuesta sql:", ['results' => json_encode($Datomodelo)]);
+
+        
+        if (!$Datomodelo) {
+            return response()->json(['error' => 'Modelo no proporcionado'], 400);
+        }
+        
+        $results = DB::connection('sqlsrv')->select('SELECT * FROM [COTIZADOR].[dbo].[PRECIOS_ULEFONE] WHERE [MODELO] = ?',[$Datomodelo]);
+        Log::info("Esto esta dando de la respuesta sql:", ['results' => json_encode($results)]);
+
+        if (empty($results)) {
+            return response()->json([
+                'DatosModelo' => [],
+                'message' => 'No se encontraron resultados para las categorías seleccionadas.',
+            ], 200);
+        }
+
+        return response()->json([
+            'DatosModelo' => $results,
+        ], 200);
+    } catch (\Exception $e) {
+        Log::error("Error al filtrar números de parte: {$e->getMessage()}");
+
+        return response()->json([
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+    } 
     
 }

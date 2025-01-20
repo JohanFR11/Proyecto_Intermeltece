@@ -84,12 +84,8 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
               </Button>
             </div>
           </div>
-          <div className="bg-[#395181] text-white p-4 rounded-lg shadow-lg max-w-md mx-auto text-center sm:max-w-48">
-            <p className="text-lg font-semibold">Total Ventas Hoy:</p>
-            <p className="text-2xl font-bold">{totalRankingRevenue}</p>
-          </div>
           <div>
-            <Ranking OdataRanking={OdataRanking} />
+            <Ranking OdataRanking={OdataRanking} totalRankingRevenue={totalRankingRevenue}/>
           </div>
         </div>
       </main>

@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { HomeIcon, DatacenterIcon, ToolIcon, SellerIcon, HumanIcon, AccountingIcon } from '@/Components/icons/Icons'
+import { HomeIcon, DatacenterIcon, ToolIcon, SellerIcon, HumanIcon, AccountingIcon, ZebraIcon, UlefonIcon} from '@/Components/icons/Icons'
 import Sidebar, { SidebarItem } from './partials/Sidebar'
 import DevMessage from './partials/DevMessage'
 import TopBar from './partials/TopBar'
@@ -18,8 +18,8 @@ export default function Authenticated ({ auth, header, children, unreadNotificat
         }
 
         <SidebarItem icon={<SellerIcon size='32px' color='#395181' />} href={route('commercial.quoter')} text='Area Comercial' />
-        <SidebarItem icon={<SellerIcon size='32px' color='#395181' />} href={route('ulefone.index')} text='Cotizador Ulefone'/>
-        <SidebarItem icon={<SellerIcon size='32px' color='#395181' />} href={route('zebra.index')} text='Cotizador Zebra'/>
+        <SidebarItem icon={<UlefonIcon size='32px' color='#395181' />} href={route('ulefone.index')} text='Cotizador Ulefone'/>
+        <SidebarItem icon={<ZebraIcon size='32px' color='#395181' />} href={route('zebra.index')} text='Cotizador Zebra'/>
         <SidebarItem icon={<HumanIcon size='32px' color='#395181' />} href={route('resources.hseq.index')} text='Area HSEQ' />
         <SidebarItem icon={<AccountingIcon size='32px' color='#395181' />} href={route('payments.index')} text='Area Contable' />
         {

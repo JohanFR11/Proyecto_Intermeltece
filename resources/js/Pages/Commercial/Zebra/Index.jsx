@@ -36,7 +36,7 @@ export default function Index({ auth, unreadNotifications, data, datosporsi, oda
             // Cambia la solicitud GET para que pase el parámetro en la URL
             const response = await axios.get(route("zebra.filter.porparte", { parteBuscar: partBuscar || ""}));
             console.log(route("zebra.filter.porparte", { parteBuscar: partBuscar || "" }));
-            console.log('esta monda 2.00000', response.data.numberfilter);
+            console.log(response.data.numberfilter);
             setPartNums(response.data.numberfilter); // Establecer todos los números de parte
             setSelectedParts(''); // Limpiar partes seleccionadas
             setListPrice(""); // Limpiar precio

@@ -121,6 +121,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/precios-ulefone', [PreciosUlefoneController::class, 'index'])->name('ulefone.index');
     Route::get('/ulefone/odata', [PreciosUlefoneController::class, 'Odata']);
+    Route::get('/ulefone/datosmodelo/{Datomodelo}', [PreciosUlefoneController::class, 'DatosModelo'])->name('ulefone.datos.modelo');
 
     Route::get('/products', function () {
         return Inertia::render('Products/Index');
