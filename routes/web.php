@@ -60,7 +60,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/auditoria', function () {
         return Inertia::render('Auditorias/Index');
     })->name('auditoria');
-    Route::get('/auditoria/token',  [GoogleAuthenticationController::class, 'getGoogleDriveClient'])->name('auditoria.token');
     Route::get('/exchange-token', [GoogleDriveController::class, 'exchangeCodeForToken']);
     Route::post('/refresh-token', [GoogleDriveController::class, 'refreshAccessToken']);
     Route::post('/remove-token', [GoogleDriveController::class, 'revokeAuthorization']);

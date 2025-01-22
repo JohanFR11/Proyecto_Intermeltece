@@ -17,6 +17,7 @@ const GoogleDriveUpload = ({refreshAccessToken}) => {
 
     const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent&scope=${scope}`;
     window.location.href = authUrl;
+
   };
 
   // Función para extraer el access_token de la URL
@@ -30,11 +31,9 @@ const GoogleDriveUpload = ({refreshAccessToken}) => {
         // Enviar el código al servidor
         const response = await axios.get(`http://127.0.0.1:8000/exchange-token?code=${code}`);
         const { access_token, refresh_token } = response.data;
-        console.log(response.data)
-
         if (access_token) {
           localStorage.setItem('access_token', access_token);
-
+          setAccessToken(access_token)
         }
 
         if (refresh_token) {
@@ -51,12 +50,10 @@ const GoogleDriveUpload = ({refreshAccessToken}) => {
   // UseEffect para cargar el token desde el almacenamiento local
   useEffect(() => {
     const storedAccessToken = localStorage.getItem('access_token');
-    const storenRefreshToken = localStorage.getItem('refresh_token')
 
     if (storedAccessToken) {
       setAccessToken(storedAccessToken);
       setUploadStatus('Token encontrado en almacenamiento local.');
-      //console.log('este es el refresh token almacenado', storenRefreshToken)
     } else {
       extractTokenFromUrl(); // Intentar extraer el token desde la URL
     }
@@ -129,20 +126,20 @@ const GoogleDriveUpload = ({refreshAccessToken}) => {
     }
   };
 
-  
   return (
     <div>
       <h2>Subir archivo a Google Drive</h2>
-      {!accessToken &&
+      {(!accessToken || accessToken === 'null') ? ( // Verificar si no hay token
         <button onClick={handleAuthClick}>Autenticar con Google</button>
-      }
-      {accessToken && <>
-        <input type="file" onChange={handleFileChange} />
-        <button onClick={handleFileUpload}>Subir archivo</button>
-      </>}
+      ) : (
+        <>
+          <input type="file" onChange={handleFileChange} />
+          <button onClick={handleFileUpload}>Subir archivo</button>
+        </>
+      )}
       <p>{uploadStatus}</p>
     </div>
-  );
+  );  
 };
 
 export default GoogleDriveUpload;

@@ -164,3 +164,20 @@ export const LogoutIcon = ({ size, ...props }) => {
     <svg xmlns='http://www.w3.org/2000/svg' width={size} height={size} viewBox='0 0 24 24' {...props}><path fill='currentColor' d='M5 21q-.825 0-1.413-.588T3 19V5q0-.825.588-1.413T5 3h7v2H5v14h7v2H5Zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5l-5 5Z' /></svg>
   )
 }
+
+export const DocumentIcon = ({ size, ...props }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 256 256"
+      {...props}
+    >
+      <g fill="currentColor">
+        <path d="M208 80v120a16 16 0 0 1-16 16H64a16 16 0 0 1-16-16V56a16 16 0 0 1 16-16h72l56 56Z" opacity=".2" />
+        <path d="M200 72h-48V32H64a24.07 24.07 0 0 0-24 24v144a24.07 24.07 0 0 0 24 24h128a24.07 24.07 0 0 0 24-24V88ZM160 40.48L191.52 72H160ZM208 200a16 16 0 0 1-16 16H64a16 16 0 0 1-16-16V56a16 16 0 0 1 16-16h72v48a8 8 0 0 0 8 8h48Z" />
+      </g>
+    </svg>
+  )
+}

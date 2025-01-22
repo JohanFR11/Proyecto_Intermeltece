@@ -7,6 +7,7 @@ import {
   HumanIcon,
   AccountingIcon,
   ReportIcon,
+  DocumentIcon
 } from "@/Components/icons/Icons";
 import Sidebar, { SidebarItem } from "./partials/Sidebar";
 import DevMessage from "./partials/DevMessage";
@@ -94,7 +95,7 @@ export default function Authenticated({
           text="Area HSEQ"
         />
          <SidebarItem
-          icon={<HumanIcon size="32px" color="#395181" />}
+          icon={<DocumentIcon size="32px" color="#395181" />}
           href={route("auditoria")}
           text="Auditorias"
         />
