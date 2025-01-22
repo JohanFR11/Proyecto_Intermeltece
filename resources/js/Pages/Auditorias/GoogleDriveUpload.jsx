@@ -10,7 +10,7 @@ const GoogleDriveUpload = ({refreshAccessToken}) => {
 
   // Función para redirigir al usuario para autenticarse
   const handleAuthClick = async () => {
-    const clientId = '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com';
+    const clientId = 'clientid';
     const redirectUri = 'http://127.0.0.1:8000/auditoria';  // URL donde el usuario es redirigido después de autenticarse
     const scope = 'https://www.googleapis.com/auth/drive';
 
