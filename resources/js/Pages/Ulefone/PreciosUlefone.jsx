@@ -8,8 +8,6 @@ const PreciosUlefone = ({ data, odata }) => {
     const [stockData, setStockData] = useState({});
     const [odataData, setOdataData] = useState(odata.data || []);
     const [loading, setLoading] = useState(false);
-    /*     const [isModalOpen, setIsModalOpen] = useState(false);
-        const [DatosModelo, setDatosModelo] = useState(false); */
     const precioGold = "PRECIO_UNITARIO_CANAL_GOLD_Facturacion_entre_50-99_Millones";
     const precioSilver = "PRECIO_UNITARIO_CANAL_SILVER_Facturacion_Mayor_a_0-49_Millones";
 

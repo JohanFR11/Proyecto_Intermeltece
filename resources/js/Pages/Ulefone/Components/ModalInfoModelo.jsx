@@ -1,7 +1,9 @@
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@nextui-org/react';
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Image } from '@nextui-org/react';
 import React, { useState, useEffect } from 'react';
+import { CCarousel, CCarouselItem, CImage } from '@coreui/react'
+import '@coreui/coreui/dist/css/coreui.min.css';
 
-export default function ModalDataModelo({ open, close, modeloUlefone }) {
+export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
 
     const [DatosModelo, setDatosModelo] = useState(false);
 
@@ -25,119 +27,186 @@ export default function ModalDataModelo({ open, close, modeloUlefone }) {
 
     console.log(DatosModelo)
 
+    //render primera url img
+    const getGoogleDriveImageURL = (driveUrl) => {
+        console.log('primera img',driveUrl)
+        const fileId = driveUrl.split('/d/')[1]?.split('/')[0]; // Extraer el fileId
+
+        console.log(fileId)
+
+        return `https://drive.google.com/thumbnail?id=${fileId}`; // Generar URL directa
+    };
+
+    //render segunda url img
+    const getGoogleDriveImageURLSegunda = (driveUrl) => {
+        const fileId = driveUrl.split('/d/')[1]?.split('/')[0]; // Extraer el fileId
+
+        console.log(fileId)
+
+        return `https://drive.google.com/thumbnail?id=${fileId}`; // Generar URL directa
+    };
+
+    //render tercera url img 
+    const getGoogleDriveImageURLTercera = (driveUrl) => {
+        const fileId = driveUrl.split('/d/')[1]?.split('/')[0]; // Extraer el fileId
+
+        console.log(fileId)
+
+        return `https://drive.google.com/thumbnail?id=${fileId}`; // Generar URL directa
+    };
+
+    //render cuarta url img
+    const getGoogleDriveImageURLCuarta = (driveUrl) => {
+        const fileId = driveUrl.split('/d/')[1]?.split('/')[0]; // Extraer el fileId
+
+        console.log(fileId)
+
+        return `https://drive.google.com/thumbnail?id=${fileId}`; // Generar URL directa
+    };
+
     return (
-        <Modal isOpen={open} onClose={close}>
-            <ModalContent className="bg-white rounded-lg shadow-xl p-8">
-                <ModalHeader className="text-lg font-semibold text-center text-gray-800">Especificaciones del Modelo Ulefone</ModalHeader>
-                <ModalBody className="max-h-[70vh] overflow-y-auto">
-                    <div className="mb-6 flex flex-wrap gap-4 justify-between items-center text-center">
-                        <p className='text-center text-lg'>
+        <Modal size={size} isOpen={open} onClose={close} className="inset-0 z-50 bg-black/50 backdrop-blur-sm">
+            <ModalContent className="bg-white rounded-xl shadow-2xl p-3">
+                <ModalHeader className="text-2xl font-bold text-center text-gray-800 border-b pb-4">
+                    Especificaciones del Modelo Ulefone
+                </ModalHeader>
+                <ModalBody className="max-h-[70vh] overflow-y-auto p-4">
+                    <div className="mb-6 flex flex-wrap gap-6 justify-center items-center">
+                        <p className='text-lg font-semibold text-gray-700'>
                             {modeloUlefone}
                         </p>
 
                         {/* Verificar si los datos del modelo están disponibles */}
                         {DatosModelo ? (
-                            <div>
-                                <div>
-                                    {DatosModelo && DatosModelo.length > 0 ? (
-                                        <div>
-                                            {DatosModelo.map((propiedad, index) => (
-                                                <Table key={index} className='text-center text-lg'>
-                                                    <TableHeader className='text-center'>
-                                                        <TableColumn>TIPO</TableColumn>
-                                                        <TableColumn>ESPECIFICAIÓN</TableColumn>
-                                                    </TableHeader>
-                                                    <TableBody className='text-center'>
-                                                        <TableRow key="1" className='text-center'>
-                                                            <TableCell>Categoria: </TableCell>
-                                                            <TableCell>{propiedad.CATEGORIA}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="2" className='text-center'>
-                                                            <TableCell>Descripcion: </TableCell>
-                                                            <TableCell>{propiedad.DESCRIPCION}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="3" className='text-center'>
-                                                            <TableCell> Network: </TableCell>
-                                                            <TableCell>{propiedad.NETWORK}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="4" className='text-center'>
-                                                            <TableCell>Screen: </TableCell>
-                                                            <TableCell>{propiedad.SCREEN}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="5" className='text-center' >
-                                                            <TableCell>Chipset: </TableCell>
-                                                            <TableCell>{propiedad.CHIPSET}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="6" className='text-center'>
-                                                            <TableCell>OS: </TableCell>
-                                                            <TableCell>{propiedad.OS}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="7" className='text-center'>
-                                                            <TableCell>RAM: </TableCell>
-                                                            <TableCell>{propiedad.RAM}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="8" className='text-center'>
-                                                            <TableCell>ROM: </TableCell>
-                                                            <TableCell>{propiedad.ROM}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="9" className='text-center'>
-                                                            <TableCell>Front camera: </TableCell>
-                                                            <TableCell>{propiedad.FRONT_CAMERA}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="10" className='text-center'>
-                                                            <TableCell>Rear camera: </TableCell>
-                                                            <TableCell>{propiedad.REAR_CAMERA}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="11" className='text-center'>
-                                                            <TableCell>Battery: </TableCell>
-                                                            <TableCell>{propiedad.BATTERY}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="12" className='text-center'>
-                                                            <TableCell>Fingerprint sensor: </TableCell>
-                                                            <TableCell>{propiedad.FINGERPRINT_SENSOR}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="13" className='text-center'>
-                                                            <TableCell>wireless charging: </TableCell>
-                                                            <TableCell>{propiedad.WIRELESS_CHARGING}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="14" className='text-center'>
-                                                            <TableCell>NFC: </TableCell>
-                                                            <TableCell>{propiedad.NFC}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="15" className='text-center'>
-                                                            <TableCell>Colors: </TableCell>
-                                                            <TableCell>{propiedad.COLORS}</TableCell>
-                                                        </TableRow>
-                                                        <TableRow key="16" className='text-center'>
-                                                            <TableCell>Frecuencia Cotizacion: </TableCell>
-                                                            <TableCell>{propiedad.FRECUENCIA_COTIZACION}</TableCell>
-                                                        </TableRow>
-                                                    </TableBody>
-                                                </Table>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <Table>
-                                            <TableHeader>
-                                                <TableColumn>TIPO</TableColumn>
-                                                <TableColumn>ESPECIFICAIÓN</TableColumn>
-                                            </TableHeader>
-                                            <TableBody emptyContent={"No hay propiedades disponibles"}>{[]}</TableBody>
-                                        </Table>
-                                    )}
-                                </div>
+                            <div className="w-full">
+                                {DatosModelo && DatosModelo.length > 0 ? (
+                                    <div className="space-y-6">
+                                        {DatosModelo.map((propiedad, index) => (
+                                            <div key={index} className="flex flex-row gap-6 justify-center items-center">
+                                                <div className="w-full md:w-1/2 p-4">
+                                                    <Table className="text-center text-xl">
+                                                        <TableHeader className="bg-gray-100 text-gray-800">
+                                                            <TableColumn>TIPO</TableColumn>
+                                                            <TableColumn>ESPECIFICACIÓN</TableColumn>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            <TableRow>
+                                                                <TableCell>Categoria: </TableCell>
+                                                                <TableCell>{propiedad.CATEGORIA}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Descripcion: </TableCell>
+                                                                <TableCell>{propiedad.DESCRIPCION}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Network: </TableCell>
+                                                                <TableCell>{propiedad.NETWORK}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Screen: </TableCell>
+                                                                <TableCell>{propiedad.SCREEN}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Chipset: </TableCell>
+                                                                <TableCell>{propiedad.CHIPSET}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>OS: </TableCell>
+                                                                <TableCell>{propiedad.OS}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>RAM: </TableCell>
+                                                                <TableCell>{propiedad.RAM}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>ROM: </TableCell>
+                                                                <TableCell>{propiedad.ROM}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Front camera: </TableCell>
+                                                                <TableCell>{propiedad.FRONT_CAMERA}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Rear camera: </TableCell>
+                                                                <TableCell>{propiedad.REAR_CAMERA}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Battery: </TableCell>
+                                                                <TableCell>{propiedad.BATTERY}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Fingerprint sensor: </TableCell>
+                                                                <TableCell>{propiedad.FINGERPRINT_SENSOR}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Wireless charging: </TableCell>
+                                                                <TableCell>{propiedad.WIRELESS_CHARGING}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>NFC: </TableCell>
+                                                                <TableCell>{propiedad.NFC}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Colors: </TableCell>
+                                                                <TableCell>{propiedad.COLORS}</TableCell>
+                                                            </TableRow>
+                                                            <TableRow>
+                                                                <TableCell>Frecuencia Cotización: </TableCell>
+                                                                <TableCell>{propiedad.FRECUENCIA_COTIZACION}</TableCell>
+                                                            </TableRow>
+                                                        </TableBody>
+                                                    </Table>
+                                                </div>
+                                                <div className="w-full md:w-1/2 p-4">
+                                                    {/* <img
+                                                        className="rounded-lg shadow-lg w-[650px] h-[500px]"
+                                                        src={getGoogleDriveImageURL(propiedad.URL_IMG)}
+                                                        alt="Modelo Ulefone"
+                                                    /> */}
+                                                    <CCarousel controls transition="crossfade">
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURL(propiedad.URL_IMG)} alt="Ulefone Armor Pad 2" />
+                                                        </CCarouselItem>
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURLSegunda(propiedad.URL_IMG_dos)} alt="Ulefone Armor Pad 2" />
+                                                        </CCarouselItem>
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURLTercera(propiedad.URL_IMG_tres)} alt="Ulefone Armor Pad 2" />
+                                                        </CCarouselItem>
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURLCuarta(propiedad.URL_IMG_cuatro)} alt="Ulefone Armor Pad 2" />
+                                                        </CCarouselItem>
+                                                    </CCarousel>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <Table>
+                                        <TableHeader>
+                                            <TableColumn>TIPO</TableColumn>
+                                            <TableColumn>ESPECIFICACIÓN</TableColumn>
+                                        </TableHeader>
+                                        <TableBody emptyContent={"No hay propiedades disponibles"}>{[]}</TableBody>
+                                    </Table>
+                                )}
                             </div>
                         ) : (
-                            <p>Cargando datos...</p>
+                            <p className="text-gray-500">Cargando datos...</p>
                         )}
                     </div>
                 </ModalBody>
-                <ModalFooter className="flex justify-between">
-                    <Button color="danger" variant="light" onPress={close} className="w-full sm:w-auto">
+                <ModalFooter className="flex justify-end border-t">
+                    <Button
+                        color="danger"
+                        variant="light"
+                        onPress={close}
+                        className="w-full sm:w-auto"
+                    >
                         Cerrar
                     </Button>
                 </ModalFooter>
             </ModalContent>
-        </Modal >
+        </Modal>
     );
 }
