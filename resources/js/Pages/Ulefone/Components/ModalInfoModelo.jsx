@@ -1,7 +1,6 @@
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Image } from '@nextui-org/react';
 import React, { useState, useEffect } from 'react';
-import { CCarousel, CCarouselItem, CImage } from '@coreui/react'
-import '@coreui/coreui/dist/css/coreui.min.css';
+import { Carousel,IconButton } from "@material-tailwind/react";
 
 export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
 
@@ -29,12 +28,12 @@ export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
 
     //render primera url img
     const getGoogleDriveImageURL = (driveUrl) => {
-        console.log('primera img',driveUrl)
+        console.log('primera img', driveUrl)
         const fileId = driveUrl.split('/d/')[1]?.split('/')[0]; // Extraer el fileId
 
         console.log(fileId)
 
-        return `https://drive.google.com/thumbnail?id=${fileId}`; // Generar URL directa
+        return `https://lh3.googleusercontent.com/d/${fileId}`; // Generar URL directa
     };
 
     //render segunda url img
@@ -43,7 +42,7 @@ export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
 
         console.log(fileId)
 
-        return `https://drive.google.com/thumbnail?id=${fileId}`; // Generar URL directa
+        return `https://lh3.googleusercontent.com/d/${fileId}`; // Generar URL directa
     };
 
     //render tercera url img 
@@ -52,7 +51,7 @@ export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
 
         console.log(fileId)
 
-        return `https://drive.google.com/thumbnail?id=${fileId}`; // Generar URL directa
+        return `https://lh3.googleusercontent.com/d/${fileId}`; // Generar URL directa
     };
 
     //render cuarta url img
@@ -61,7 +60,7 @@ export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
 
         console.log(fileId)
 
-        return `https://drive.google.com/thumbnail?id=${fileId}`; // Generar URL directa
+        return `https://lh3.googleusercontent.com/d/${fileId}`; // Generar URL directa
     };
 
     return (
@@ -161,9 +160,9 @@ export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
                                                     {/* <img
                                                         className="rounded-lg shadow-lg w-[650px] h-[500px]"
                                                         src={getGoogleDriveImageURL(propiedad.URL_IMG)}
-                                                        alt="Modelo Ulefone"
+                                                        alt="Modelo Ulefone" 
                                                     /> */}
-                                                    <CCarousel controls transition="crossfade">
+                                                    {/* <CCarousel  controls transition="crossfade">
                                                         <CCarouselItem>
                                                             <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURL(propiedad.URL_IMG)} alt="Ulefone Armor Pad 2" />
                                                         </CCarouselItem>
@@ -176,7 +175,80 @@ export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
                                                         <CCarouselItem>
                                                             <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURLCuarta(propiedad.URL_IMG_cuatro)} alt="Ulefone Armor Pad 2" />
                                                         </CCarouselItem>
-                                                    </CCarousel>
+                                                    </CCarousel> */}
+                                                    <Carousel
+                                                        className="rounded-xl overflow-hidden w-full h-[400px]"
+                                                        prevArrow={({ handlePrev }) => (
+                                                            <IconButton
+                                                                variant="text"
+                                                                color="#00FFFF"
+                                                                size="lg"
+                                                                onClick={handlePrev}
+                                                                className="!absolute top-2/4 left-4 -translate-y-2/4"
+                                                            >
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    strokeWidth={2}
+                                                                    stroke="currentColor"
+                                                                    className="h-6 w-6"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+                                                                    />
+                                                                </svg>
+                                                            </IconButton>
+                                                        )}
+                                                        nextArrow={({ handleNext }) => (
+                                                            <IconButton
+                                                                variant="text"
+                                                                color="#00FFFF"
+                                                                size="lg"
+                                                                onClick={handleNext}
+                                                                className="!absolute top-2/4 !right-4 -translate-y-2/4"
+                                                            >
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    strokeWidth={2}
+                                                                    stroke="currentColor"
+                                                                    className="h-6 w-6"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                                                                    />
+                                                                </svg>
+                                                            </IconButton>
+                                                        )}
+                                                    >
+                                                        <img
+                                                            src={getGoogleDriveImageURL(propiedad.URL_IMG)}
+                                                            alt="image 1"
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                        <img
+                                                            src={getGoogleDriveImageURLSegunda(propiedad.URL_IMG_dos)}
+                                                            alt="image 2"
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                        <img
+                                                            src={getGoogleDriveImageURLTercera(propiedad.URL_IMG_tres)}
+                                                            alt="image 3"
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                        <img
+                                                            src={getGoogleDriveImageURLCuarta(propiedad.URL_IMG_cuatro)}
+                                                            alt="image 3"
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    </Carousel>
+
                                                 </div>
                                             </div>
                                         ))}
