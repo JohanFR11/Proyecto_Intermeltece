@@ -230,22 +230,22 @@ export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
                                                         <img
                                                             src={getGoogleDriveImageURL(propiedad.URL_IMG)}
                                                             alt="image 1"
-                                                            className="h-full w-full object-cover"
+                                                            className="h-full w-full object-cover transition-transform duration-300 ease-in-out transform hover:translate-y-2 mb-36"
                                                         />
                                                         <img
                                                             src={getGoogleDriveImageURLSegunda(propiedad.URL_IMG_dos)}
                                                             alt="image 2"
-                                                            className="h-full w-full object-cover"
+                                                            className="h-full w-full object-cover transition-transform duration-300 ease-in-out transform hover:translate-y-2"
                                                         />
                                                         <img
                                                             src={getGoogleDriveImageURLTercera(propiedad.URL_IMG_tres)}
                                                             alt="image 3"
-                                                            className="h-full w-full object-cover"
+                                                            className="h-full w-full object-cover transition-transform duration-300 ease-in-out transform hover:translate-y-2"
                                                         />
                                                         <img
                                                             src={getGoogleDriveImageURLCuarta(propiedad.URL_IMG_cuatro)}
                                                             alt="image 3"
-                                                            className="h-full w-full object-cover"
+                                                            className="h-full w-full object-cover transition-transform duration-300 ease-in-out transform hover:translate-y-2"
                                                         />
                                                     </Carousel>
 

@@ -2,8 +2,10 @@
 
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\HseqController;
+use App\Http\Controllers\ModuloAprendizaje;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DirectorsController;
 use App\Http\Controllers\Admin\RolsController;
@@ -57,6 +59,16 @@ Route::get('/formulario-de-pagos', function() {
 
 Route::middleware('auth')->group(function () {
 
+    Route::middleware('auth')->get('/user', function() {
+        $user = Auth::user();  // Utiliza el método Auth::user() para obtener el usuario autenticado
+    
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
+    });
+
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
     Route::get('/auditoria', function () {
@@ -105,6 +117,8 @@ Route::middleware('auth')->group(function () {
     Route::post('hseq', [HseqController::class, 'store'])->name('resources.hseq.store');
     Route::get('/hseq/{id}', [HseqController::class, 'download'])->name('resources.hseq.download');
     Route::delete('/hseq/delete/{id}', [HseqController::class, 'destroy'])->name('resources.hseq.destroy');
+
+    Route::get('/modulo', [ModuloAprendizaje::class, 'index'])->name('resources.modulo.index');
 
     Route::post('/uploadFile', UploadFilesController::class);
 
