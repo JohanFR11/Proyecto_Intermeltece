@@ -13,4 +13,10 @@ class ModuloAprendizaje extends Controller
     {
         return Inertia::render('Modulo_Aprendizaje/Index');
     }
+
+    /* Funcion para renderizar el modulo de capacitaciones */
+    public function capacitaciones()
+    {
+        return Inertia::render('Modulo_Aprendizaje/Fragments/Capacitaciones');
+    }
 }

@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
+            'avatar' => $user->avatar,
         ]);
     });
 
@@ -118,7 +119,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/hseq/{id}', [HseqController::class, 'download'])->name('resources.hseq.download');
     Route::delete('/hseq/delete/{id}', [HseqController::class, 'destroy'])->name('resources.hseq.destroy');
 
+    /* Modulos de prendizaje */
     Route::get('/modulo', [ModuloAprendizaje::class, 'index'])->name('resources.modulo.index');
+    Route::get('/modulo/capacitaciones', [ModuloAprendizaje::class, 'capacitaciones'])->name('resources.modulo.capacitaciones');
+    Route::get('/modulo/cursos', [ModuloAprendizaje::class, 'cursos'])->name('resources.modulo.cursos');
 
     Route::post('/uploadFile', UploadFilesController::class);
 
