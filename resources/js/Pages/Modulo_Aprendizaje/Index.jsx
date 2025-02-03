@@ -80,10 +80,10 @@ const Index = ({ auth, unreadNotifications }) => {
                                 {/* Modulos de aprendizaje */}
                                 <div className="flex text-center flex-col sm:flex-row">
                                     {/* Imagen  integracion*/}
-                                    <div className="w-[200px] mr-5 ">
+                                    <div className=" mr-5">
                                         <Image
                                             src={getGoogleDriveImageURL('https://drive.google.com/file/d/1GmoMvai6xay3ta_cxm92Irh0yflnIw0x/view?usp=drive_link')}
-                                            width={480}
+                                            width={550}
                                             height={480}
                                         />
                                     </div>

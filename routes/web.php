@@ -29,6 +29,7 @@ use App\Http\Controllers\PreciosUlefoneController;
 use App\Http\Controllers\CotizadorZebraController;
 use App\Http\Controllers\ControladorAuditoria;
 use App\Http\Controllers\GoogleDriveController;
+use App\Http\Controllers\TestEmailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +73,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
+
+    /* Modulo de Auditorias */
     Route::get('/auditoria', function () {
         return Inertia::render('Auditorias/Index');
     })->name('auditoria');
@@ -79,10 +82,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/exchange-token', [GoogleDriveController::class, 'exchangeCodeForToken']);
     Route::post('/refresh-token', [GoogleDriveController::class, 'refreshAccessToken']);
     Route::post('/remove-token', [GoogleDriveController::class, 'revokeAuthorization']);
-    Route::post('/upload-file', [GoogleDriveController::class, 'uploadFile']);
+
+    /* Modulo Auditoria */
+    Route::post('/list-folders', [GoogleDriveController::class, 'listarCarpetas']);
+    Route::post('/upload-file/{subFolderId}', [GoogleDriveController::class, 'uploadFile']);
     Route::post('/list-files', [GoogleDriveController::class, 'listFiles']);
     Route::post('/comentarios', [GoogleDriveController::class, 'SubirComentario'])->name('auditoria.subir.comentario');
     Route::get('/comentarios/{fileId}', [GoogleDriveController::class, 'obtenerComentarios']);
+    Route::get('/list-folders/subcarpetas/{Id_carpeta}', [GoogleDriveController::class, 'ListarSubCarpetas'])->name('auditoria.folders.subcarpetas');
+    Route::get('/send-test-email', [TestEmailController::class, 'sendTestEmail']);
+
     
     Route::get('/salesToday', [MasterDataController::class, 'salesToday'])->name('masterdata.salestoday');
 

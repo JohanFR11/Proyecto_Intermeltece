@@ -1,21 +1,17 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import {
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Button,
-    useDisclosure,
-  } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/react";
+
 
 function DocumentList({ refreshAccessToken }) {
     const [listedFiles, setListedFiles] = useState([]);
-    const [selectedFile, setSelectedFile] = useState(null); // Estado para el archivo seleccionado
-    const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar la visibilidad del modal
-    const [comment, setComment] = useState(""); // Estado para el comentario ingresado
-    const [comments, setComments] = useState([]); // Estado para los comentarios del archivo seleccionado
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [comment, setComment] = useState("");
+    const [comments, setComments] = useState([]);
+
+
 
     const listFiles = async () => {
         let token;
@@ -64,27 +60,13 @@ function DocumentList({ refreshAccessToken }) {
         listFiles();
     }, []);
 
-    const getFileIcon = (mimeType) => {
-        // Puedes personalizar los íconos según el tipo de archivo
-        if (mimeType.includes('pdf')) {
-            return '📄';
-        } else if (mimeType.includes('image')) {
-            return '🖼️';
-        } else if (mimeType.includes('spreadsheet')) {
-            return '📊';
-        } else if (mimeType.includes('document')) {
-            return '📝';
-        }
-        return '📁';
-    };
-
     const openModal = async (file) => {
         setSelectedFile(file);
         setComments([]); // Asumimos que cada archivo puede tener comentarios
         setIsModalOpen(true);
 
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/comentarios/${file.id}`);
+            const response = await axios.get(`http://127.0.0.1:8000/comentarios/${file}`);
             console.log(response.data)
             setComments(response.data); // Establecer comentarios desde la base de datos
         } catch (error) {
@@ -108,18 +90,18 @@ function DocumentList({ refreshAccessToken }) {
 
             // Extraer las partes de la fecha
             const year = now.getFullYear(); // Año
-            const month = String(now.getMonth() + 1).padStart(2, '0'); 
-            const day = String(now.getDate()).padStart(2, '0'); 
-            const hours = String(now.getHours()).padStart(2, '0'); 
-            const minutes = String(now.getMinutes()).padStart(2, '0'); 
-            const seconds = String(now.getSeconds()).padStart(2, '0'); 
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
             const formattedDate = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
             console.log(formattedDate);
 
-            const fileId = selectedFile?.id;
+            const fileId = selectedFile;
             console.log(fileId)
 
-            await axios.post('/comentarios', { comentario: comment, fecha: formattedDate, file_id: selectedFile.id}, {
+            await axios.post('/comentarios', { comentario: comment, fecha: formattedDate, file_id: fileId }, {
                 headers: { 'Content-Type': 'application/json' },
             }).then(response => {
                 console.log(response.data);
@@ -135,64 +117,67 @@ function DocumentList({ refreshAccessToken }) {
     return (
         <div>
             {/* Lista de archivos */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-                {listedFiles.map((file, index) => (
-                    <div
-                        key={index}
-                        className="border rounded-lg p-4 shadow hover:shadow-lg transition-shadow"
-                    >
-                        {/* Vista previa o ícono */}
-                        <div className="aspect-square mb-2">
-                            {file.thumbnailLink ? (
-                                <img
-                                    src={file.thumbnailLink}
-                                    alt={file.file_name}
-                                    className="w-full h-full object-cover rounded"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-4xl bg-gray-100 rounded">
-                                    {getFileIcon(file.mimeType)}
-                                </div>
-                            )}
-                        </div>
+            <div className="">
+                <div
+                    className="border rounded-lg p-4 shadow hover:shadow-lg transition-shadow"
+                >
+                    {/* Nombre del archivo */}
 
-                        {/* Nombre del archivo */}
-                        <h3 className="font-medium truncate">{file.file_name}</h3>
-
-                        {/* Botones de acción */}
-                        <div className="mt-2 flex gap-2">
-                            <a
-                                href={file.webViewLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-                            >
-                                Ver
-                            </a>
-                            <button
-                                onClick={() => window.open(file.webViewLink, '_blank')}
-                                className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
-                            >
-                                Descargar
-                            </button>
-                            <button
-                                onClick={() => openModal(file)} // Abre el modal con el archivo seleccionado
-                                className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
-                            >
-                                Comentar
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    <Table aria-label="Example static collection table">
+                        <TableHeader>
+                            <TableColumn>ID</TableColumn>
+                            <TableColumn>Usuario</TableColumn>
+                            <TableColumn>Correo</TableColumn>
+                            <TableColumn>Area</TableColumn>
+                            <TableColumn>Documento requerido</TableColumn>
+                            <TableColumn>Documento Cargado</TableColumn>
+                            <TableColumn>Fecha del documento</TableColumn>
+                            <TableColumn>Observaciones</TableColumn>
+                            <TableColumn>Estado de auditoria</TableColumn>
+                        </TableHeader>
+                        {listedFiles ? (
+                            <TableBody>
+                                {listedFiles.length > 0 ? (
+                                    listedFiles.map((file, index) => (
+                                        <TableRow className='text-center' key={index}>
+                                            <TableCell>{file.id_documento}</TableCell>
+                                            <TableCell>{file.usuario}</TableCell>
+                                            <TableCell>{file.correo}</TableCell>
+                                            <TableCell>{file.area_usuario}</TableCell>
+                                            <TableCell>{file.documento}</TableCell>
+                                            <TableCell>{file.documento_cargado}</TableCell>
+                                            <TableCell>{file.fecha_cargue}</TableCell>
+                                            <TableCell><button className='bg-[#395181] text-white p-2 rounded-lg border border-separate cursor-pointer transition duration-250 ease-in-out hover:-translate-y-2 hover:scale-11 hover:bg-[#5b80ca]' onClick={()=> openModal(file.archivo_id)}>Ver Observaciones</button></TableCell>
+                                            <TableCell>{file.estado_auditoria}</TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell className="text-center">No se encuentran docuemntos</TableCell>
+                                        <TableCell className="text-center">No se encuentran docuemntos</TableCell>
+                                        <TableCell className="text-center">No se encuentran docuemntos</TableCell>
+                                        <TableCell className="text-center">No se encuentran docuemntos</TableCell>
+                                        <TableCell className="text-center">No se encuentran docuemntos</TableCell>
+                                        <TableCell className="text-center">No se encuentran docuemntos</TableCell>
+                                        <TableCell className="text-center">No se encuentran docuemntos</TableCell>
+                                        <TableCell className="text-center">No se encuentran docuemntos</TableCell>
+                                        <TableCell className="text-center">No se encuentran docuemntos</TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        ) : (
+                            <p>Cargando archivos ...</p>
+                        )}
+                    </Table>
+                </div>
             </div>
 
             {/* Modal */}
             {isModalOpen && selectedFile && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
-                        <h2 className="text-xl font-bold mb-4">{selectedFile.file_name}</h2>
+                        <h2 className="text-xl font-bold mb-4">Observaciones del director de auditoria</h2>
 
-                        {/* Formulario para agregar comentarios */}
                         <form onSubmit={handleCommentBBDD} className="mt-4">
                             <textarea
                                 value={comment}
@@ -205,24 +190,21 @@ function DocumentList({ refreshAccessToken }) {
                                 type="submit"
                                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
                             >
-                                Agregar comentario
+                                Agregar observación
                             </button>
                         </form>
 
-                        {/* Mostrar comentarios */}
                         <div className="mt-4" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
-                            <h3 className="font-bold mb-2">Comentarios:</h3>
+                            <h3 className="font-bold mb-2">Observaciones:</h3>
                             <ul className="space-y-4">
                                 {comments.map((comment, index) => (
                                     <li key={index} className="p-4 border border-gray-300 rounded-md">
                                         <p>{comment.comentario}</p>
-                                        <small className="text-gray-500">{comment.create_time}</small>
+                                        <small className="text-gray-500">{comment.fecha_comentario}</small>
                                     </li>
                                 ))}
                             </ul>
                         </div>
-
-                        {/* Cerrar el modal */}
                         <button
                             onClick={closeModal}
                             className="mt-6 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"

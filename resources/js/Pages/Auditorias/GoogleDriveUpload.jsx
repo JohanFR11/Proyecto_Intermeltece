@@ -1,26 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Alert } from "@nextui-org/react";
+import { Alert, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
 import { SnackbarProvider, useSnackbar } from 'notistack';
+import AuditoriasUsers from './Fragments/AuditoriasUsers';
 
 const GoogleDriveUpload = () => {
-  const [file, setFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState('Esperando archivo...');
   const [accessToken, setAccessToken] = useState(null);
-  const [refreshToken, setRefreshToken] = useState(null);
-  const [fileName, setFileName] = useState('');
-  const fileInputRef = useRef(null);
   const { enqueueSnackbar } = useSnackbar();
 
+  const [listedFolders, setListedFolders] = useState([]);
+  const [subFolders, setSubFolders] = useState(false);
+  const [showFileUploadComponent, setShowFileUploadComponent] = useState(false); 
+  const [subfolderId, setSubFolderId] = useState(null);
+
+
   // Función para redirigir al usuario para autenticarse
-  const handleAuthClick = async () => {
-    const clientId = '';
+  /* const handleAuthClick = async () => {
+    const clientId = '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com';
     const redirectUri = 'http://127.0.0.1:8000/auditoria';  // URL donde el usuario es redirigido después de autenticarse
     const scope = 'https://www.googleapis.com/auth/drive.file';
 
     const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent&scope=${scope}`;
     window.location.href = authUrl;
-  };
+  }; */
 
   // Función para extraer el access_token de la URL
   const extractTokenFromUrl = async () => {
@@ -128,77 +130,19 @@ const GoogleDriveUpload = () => {
   // UseEffect para cargar el token desde el almacenamiento local
   useEffect(() => {
     const storedAccessToken = localStorage.getItem('access_token');
-    localStorage.setItem('refresh_token','1//058OGBxklT9XOCgYIARAAGAUSNwF-L9IrM24Hx4DgYBbfETA5qRHZdB2nySgdcMjvTHtSR3iQbElR_i7n-_3oyfveUak9XbDLutk');
+    localStorage.setItem('refresh_token', '1//058OGBxklT9XOCgYIARAAGAUSNwF-L9IrM24Hx4DgYBbfETA5qRHZdB2nySgdcMjvTHtSR3iQbElR_i7n-_3oyfveUak9XbDLutk');
     console.log(localStorage.getItem('refresh_token'))
     if (storedAccessToken) {
       setAccessToken(storedAccessToken);
-      setUploadStatus('Token encontrado en almacenamiento local.');
     } else {
       extractTokenFromUrl(); // Intentar extraer el token desde la URL
     }
+
+    listFolders();
+
   }, []);
 
-  // Función para manejar el cambio de archivo
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile && selectedFile.size > 0) {
-      setFile(selectedFile);
-      setFileName(selectedFile.name);
-    }
-  };
-
-  const handleRemoveFile = () => {
-    setFile(null);
-    setFileName('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const showToast = () => {
-    console.log("Toast se está ejecutando");
-    enqueueSnackbar('Añade un archivo para realizar esta accion.', {
-      variant: 'warning',
-      anchorOrigin: {
-        vertical: 'top',
-        horizontal: 'center'
-      },
-      autoHideDuration: 2100,
-      style: {
-        fontSize: 17,
-        color: 'rgb(0, 0, 0)',
-        marginTop: 30,
-        background: 'rgba(255, 238, 0, 0.52)',
-      }
-    });
-  };
-
-  const ErrorTocken1 = () => {
-    console.log("Toast se está ejecutando");
-    enqueueSnackbar('No se pudo obtener un token válido.', {
-      variant: 'error',
-      anchorOrigin: {
-        vertical: 'top',
-        horizontal: 'center'
-      },
-      autoHideDuration: 2100,
-      style: {
-        fontSize: 17,
-        color: 'rgb(255, 255, 255)',
-        marginTop: 30,
-        background: 'rgba(255, 0, 0, 0.52)',
-      }
-    });
-  };
-
-  // Función para subir el archivo
-  const handleFileUpload = async () => {
-    if (!file) {
-      showToast();
-      return;
-    }
-
-    const refreshToken = localStorage.getItem('refresh_token');
+  const listFolders = async () => {
     let token;
     const tokenExpiry = 3599;
 
@@ -212,7 +156,7 @@ const GoogleDriveUpload = () => {
         token = localStorage.getItem('access_token'); // Recuperar el nuevo access token
 
         if (!token) {
-          ErrorTocken1();
+          alert('No se pudo obtener un token válido.');
           return;
         }
       } catch (error) {
@@ -220,35 +164,60 @@ const GoogleDriveUpload = () => {
         return;
       }
     }
-
-    setUploadStatus('Subiendo archivo...');
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      const response = await axios.post(
-        'http://127.0.0.1:8000/upload-file',
-        formData,
+      const response = await axios.post('http://127.0.0.1:8000/list-folders',
+        {},
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-          refresh_token: refreshToken
+            'Authorization': `Bearer ${token}`
+          }
         }
       );
 
-      if (response.data.success) {
-        setUploadStatus(`Archivo subido con éxito: ${response.data.name}`);
+      if (!response.data.folders) {
+        setListedFolders([]);
       } else {
-        setUploadStatus(`Error al subir el archivo: ${response.data.error}`);
+        setListedFolders(response.data.folders);
       }
     } catch (error) {
-      console.error('Error al subir el archivo:', error);
-      setUploadStatus('Error al subir el archivo.');
+      console.error('Error al listar archivos:', error);
     }
-  };
+  }
 
+  const enviarIdCarpeta = async (id_subfolder) => {
+    console.log('Esta es la id del folder seleccionado', id_subfolder)
+    const token = localStorage.getItem('access_token');
+
+    // Si no tienes el token, intenta obtenerlo o manejar el caso de error
+    if (!token) {
+      console.error('Token de acceso no encontrado');
+      enqueueSnackbar('Token de acceso no encontrado, por favor inicie sesión.', {
+        variant: 'error',
+        anchorOrigin: { vertical: 'top', horizontal: 'center' },
+        autoHideDuration: 2000
+      });
+      return;
+    }
+    setSubFolders([]);
+    try {
+      const response = await axios.get(`/list-folders/subcarpetas/${id_subfolder}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}` // Enviar el token en la cabecera
+          }
+        });
+      console.log('necesito', response.data.subfolders)
+      setSubFolders(response.data.subfolders);
+    } catch (error) {
+      console.error("Error al cargar los datos del modelo", error.response ? error.response.data : error.message);
+    }
+  }
+
+  const renderApartado = async (id_subfolder) =>{
+      setSubFolderId(id_subfolder);
+      setShowFileUploadComponent(true);
+  }
 
   return (
     <SnackbarProvider maxSnack={3}>
@@ -267,43 +236,44 @@ const GoogleDriveUpload = () => {
           )}
           {accessToken && (
             <>
-              <input
-                type="file"
-                className='hidden border-2 border-gray-300 rounded-lg p-3 mb-5 w-[500px] cursor-pointer hover:border-blue-500'
-                onChange={handleFileChange}
-                ref={fileInputRef}
-              />
-              <button
-                onClick={() => document.querySelector('input[type="file"]').click()}
-                className='px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none mb-3'
-              >
-                Seleccionar archivo
-              </button>
-              {fileName && (
-                <div className="flex flex-row mb-5 mt-2 text-lg text-gray-700">
-                  <p className='mt-2'>Archivo seleccionado: <span>{fileName}</span></p>
-                  <button
-                    onClick={handleRemoveFile}
-                    className='ml-3 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none'
+              {/* Lista de carpetas */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+                {listedFolders.map((folder, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-lg p-4 shadow duration-300 hover:shadow-lg transition-shadow"
                   >
-                    X
-                  </button>
-                </div>
-              )}
-              <button
-                className='px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none'
-                onClick={handleFileUpload}
-              >
-                Subir archivo
-              </button>
+                    {/* Nombre del archivo */}
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <button onClick={() => enviarIdCarpeta(folder.id)} variant='bordered'>{folder.folder_name}</button>
+                      </DropdownTrigger>
+                      {subFolders ? (
+                        <DropdownMenu aria-label="Static Actions">
+                          {subFolders.length > 0 ? (
+                            subFolders.map((subfolder, subIndex) => (
+                              <DropdownItem key={subIndex} onPress={() => renderApartado(subfolder.sub_id)}>
+                                {subfolder.subfolder_name}
+                              </DropdownItem>
+                            ))
+                          ) : (
+                            <DropdownItem >
+                              No se encuentran carpetas disponibles 
+                            </DropdownItem>
+                          )}
+                        </DropdownMenu>
+                      ) : (
+                        <p>Cargando carpetas ...</p>
+                      )}                     
+                    </Dropdown>
+                  </div>
+                ))}
+              </div>
             </>
           )}
-          <div className="flex items-center justify-center w-full mt-4 text-xl">
-            <Alert
-              description={<span className="text-lg">{uploadStatus}</span>}
-              title={<span className="text-xl">Estado Actual</span>}
-            />
-          </div>
+            {showFileUploadComponent && (
+              <AuditoriasUsers refreshAccessToken={refreshAccessToken} subFolderId={subfolderId}/>
+            )}        
         </div>
       </div>
     </SnackbarProvider>

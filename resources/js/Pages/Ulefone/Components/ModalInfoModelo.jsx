@@ -156,26 +156,7 @@ export default function ModalDataModelo({ open, close, size, modeloUlefone }) {
                                                         </TableBody>
                                                     </Table>
                                                 </div>
-                                                <div className="w-full md:w-1/2 p-4">
-                                                    {/* <img
-                                                        className="rounded-lg shadow-lg w-[650px] h-[500px]"
-                                                        src={getGoogleDriveImageURL(propiedad.URL_IMG)}
-                                                        alt="Modelo Ulefone" 
-                                                    /> */}
-                                                    {/* <CCarousel  controls transition="crossfade">
-                                                        <CCarouselItem>
-                                                            <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURL(propiedad.URL_IMG)} alt="Ulefone Armor Pad 2" />
-                                                        </CCarouselItem>
-                                                        <CCarouselItem>
-                                                            <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURLSegunda(propiedad.URL_IMG_dos)} alt="Ulefone Armor Pad 2" />
-                                                        </CCarouselItem>
-                                                        <CCarouselItem>
-                                                            <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURLTercera(propiedad.URL_IMG_tres)} alt="Ulefone Armor Pad 2" />
-                                                        </CCarouselItem>
-                                                        <CCarouselItem>
-                                                            <CImage className="d-block rounded-lg shadow-lg w-full h-full" src={getGoogleDriveImageURLCuarta(propiedad.URL_IMG_cuatro)} alt="Ulefone Armor Pad 2" />
-                                                        </CCarouselItem>
-                                                    </CCarousel> */}
+                                                <div className="w-full md:w-1/2 p-4">                                           
                                                     <Carousel
                                                         className="rounded-xl overflow-hidden w-full h-[400px]"
                                                         prevArrow={({ handlePrev }) => (

@@ -44,8 +44,8 @@ class GoogleDriveController extends Controller
         // Configuración de los parámetros para la solicitud
         $postFields = [
             'code' => $authCode,
-            'client_id' => '',
-            'client_secret' => '',
+            'client_id' => '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com',
+            'client_secret' => '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',
             'redirect_uri' => 'http://127.0.0.1:8000/auditoria',
             'grant_type' => 'authorization_code',
         ];
@@ -114,12 +114,12 @@ public function refreshAccessToken(request $request)
         $refresh_token = $refreshToken;
 
         // Configuración de los parámetros para la solicitud
-        $postFields = [
+        /* $postFields = [
             'refresh_token' => $refresh_token,
-            'client_id' => '',
-            'client_secret' => '',
+            'client_id' => '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com',
+            'client_secret' => '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',
             'grant_type' => 'refresh_token',
-        ];
+        ]; */
 
         // Configuración del cURL
         $ch = curl_init('https://oauth2.googleapis.com/token');
@@ -192,7 +192,7 @@ public function revokeAuthorization(Request $request)
 
 
     // Método para subir un archivo a Google Drive
-    public function uploadFile(Request $request)
+    public function uploadFile(Request $request, $subFolderId)
     {
         if (!$request->hasFile('file')) {
             return response()->json(['error' => 'No se proporcionó ningún archivo'], 400);
@@ -218,7 +218,7 @@ public function revokeAuthorization(Request $request)
 
         $fileMetadata = new Google_Service_Drive_DriveFile([
             'name' => $file->getClientOriginalName(),
-            'parents' => [""]
+            'parents' => [$subFolderId]
         ]);
 
         try {
@@ -231,6 +231,26 @@ public function revokeAuthorization(Request $request)
                     'uploadType' => 'media',
                 ]
             );
+
+            $user = auth()->user();
+
+            $userRole = auth()->user()->roles->first()->name;
+
+            $estado = 'Pendiente';
+            $docu = 'documento auditoria no1';
+
+            DB::insert('INSERT INTO auditoriadocs (usuario,correo,area_usuario,documento,documento_cargado,fecha_cargue,archivo_id,estado_auditoria) VALUES (?,?,?,?,?,?,?,?)',[
+                $user -> name,
+                $user ->email,
+                $userRole = auth()->user()->roles->first()->name,
+                $docu,
+                $uploadedFile->getName(),
+                Carbon::now('America/Bogota'),
+                $uploadedFile->getId(),
+                $estado,
+            ]);
+
+
             return response()->json(['success' => true, 'file_id' => $uploadedFile->id,'name' => $uploadedFile->name]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al subir el archivo: ' . $e->getMessage()], 500);
@@ -246,37 +266,13 @@ public function revokeAuthorization(Request $request)
 
     public function listFiles(Request $request)
     {
-        $authorizationHeader = $request->header('Authorization');
-            if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
-                return response()->json(['error' => 'Token de autorización no proporcionado o incorrecto'], 401);
-            }
-
-            $accessToken = str_replace('Bearer ', '', $authorizationHeader);
-
-            
-        $this->client->setAccessToken($accessToken);
-
-        $service = new Google_Service_Drive($this->client);
-
         try {
-            // Listar archivos
-            $files = $service->files->listFiles([
-                'q' => "'".''."' in parents",
-                'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
-            ]);
 
-            $fileList = [];
-            foreach ($files->getFiles() as $file) {
-                $fileList[] = [
-                    'file_name' => $file->getName(),
-                    'id' => $file->getId(),
-                    'mimeType' => $file->getMimeType(),
-                    'thumbnailLink' => $file->getThumbnailLink(),
-                    'webViewLink' => $file->getWebViewLink(),
-                ];
-            }
+            $userRole = auth()->user()->roles->first()->name;
 
-            return response()->json(['files' => $fileList]);
+            $datosPorArea =  DB::select('SELECT * FROM auditoriadocs WHERE area_usuario = ?', [$userRole]);
+
+            return response()->json(['files' => $datosPorArea]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al listar los archivos: ' . $e->getMessage()], 500);
         }
@@ -296,10 +292,10 @@ public function revokeAuthorization(Request $request)
 
             $formattedFecha = Carbon::parse($fecha)->format('Y-m-d H:i:s');
             // Sentencia SQL utilizando DB::insert para MySQL
-            DB::insert('INSERT INTO comentarios (comentario, create_time, archivo_id) VALUES (?, ?, ?)', [
+            DB::insert('INSERT INTO comentarios (archivo_id, comentario ,fecha_comentario) VALUES (?, ?, ?)', [
+                $fileId,
                 $comentario,
                 $formattedFecha,
-                $fileId
             ]);
     
             return response()->json(['success' => 'Comentario guardado con éxito.']);
@@ -313,12 +309,111 @@ public function revokeAuthorization(Request $request)
         try {
             $comentarios = DB::table('comentarios')
                 ->where('archivo_id', $fileId) // Suponiendo que cada comentario tiene un file_id
-                ->orderBy('create_time', 'desc')
+                ->orderBy('fecha_comentario', 'desc')
                 ->get();
 
             return response()->json($comentarios);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al obtener los comentarios: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function listarCarpetas(Request $request)
+    {
+        $authorizationHeader = $request->header('Authorization');
+            if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
+                return response()->json(['error' => 'Token de autorización no proporcionado o incorrecto'], 401);
+            }
+
+            $accessToken = str_replace('Bearer ', '', $authorizationHeader);
+
+            
+        $this->client->setAccessToken($accessToken);
+
+        $service = new Google_Service_Drive($this->client);
+
+        $userRole = auth()->user()->roles->first()->name;
+
+        $folderSegunRol = [
+            'Auditoria Almacen' => '1BqlewLXn0fERv887BeENRgMUI2zcJdKc',
+            'Auditoria Contabilidad' => '1d-W1q1sxQ8apkVYy7Nbh8KBsJgXYERyx',
+            'Auditoria HSEQ' => '16m0Zn3XNZ2wtVMBSI27HDxPG47F488Yk',
+            'Administrador' => '1Htykf-CVf03zRn4YToD8jvGFfjy7uJ-F',
+        ];
+
+        if(!isset($folderSegunRol[$userRole])){
+            return response()-json(['error'=>'Acceso Denegado'],403);
+        }
+
+        $FolderId = $folderSegunRol[$userRole];
+
+        try {
+            // Listar archivos
+            $folders = $service->files->listFiles([
+                'q' => "'$FolderId' in parents and mimeType='application/vnd.google-apps.folder'",
+                'fields' => 'files(id, name)',
+            ]);
+
+            $foldersList = [];
+
+            foreach ($folders->getFiles() as $folder) {
+                $foldersList[] = [
+                    'folder_name' => $folder->getName(),
+                    'id' => $folder->getId(),
+                ];
+            }
+
+            return response()->json(['folders' => $foldersList]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al listar los archivos: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function ListarSubCarpetas(Request $request, $Id_carpeta)
+    {
+            
+            if (!$Id_carpeta) {
+                return response()->json(['error' => 'Modelo no proporcionado'], 400);
+            }
+
+            $authorizationHeader = $request->header('Authorization');
+            if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
+                return response()->json(['error' => 'Token de autorización no proporcionado o incorrecto'], 401);
+            }
+
+            $accessToken = str_replace('Bearer ', '', $authorizationHeader);
+
+            
+        $this->client->setAccessToken($accessToken);
+
+        $service = new Google_Service_Drive($this->client);
+
+
+        try{
+        // Listar archivos
+        $subfolders = $service->files->listFiles([
+            'q' => "'$Id_carpeta' in parents and mimeType='application/vnd.google-apps.folder'",
+            'fields' => 'files(id, name)',
+        ]);
+
+        $subfoldersList = [];
+
+        foreach ($subfolders->getFiles() as $folder) {
+            $subfoldersList[] = [
+                'subfolder_name' => $folder->getName(),
+                'sub_id' => $folder->getId(),
+            ];
+        }
+
+        return response()->json(['subfolders' => $subfoldersList]);
+
+
+        }catch (\Exception $e) {
+            Log::error("Error al filtrar números de parte: {$e->getMessage()}");
+    
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
