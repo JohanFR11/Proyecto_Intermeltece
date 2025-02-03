@@ -11,6 +11,8 @@ use Google_Service_Drive_DriveFile;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use App\Mail\TestMail;
+use Mail;
 
 class GoogleDriveController extends Controller
 {
@@ -18,12 +20,12 @@ class GoogleDriveController extends Controller
 
     public function __construct()
     {
-        $this->client = new Google_Client();
+        /* $this->client = new Google_Client();
         $this->client->setClientId('714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com');
         $this->client->setClientSecret('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');
         $this->client->setRedirectUri("http://127.0.0.1:8000/auditoria");
         $this->client->setAccessType('offline');
-        $this->client->setPrompt('consent');
+        $this->client->setPrompt('consent'); */
     }
 
     public function generateAuthUrl(){
@@ -114,12 +116,12 @@ public function refreshAccessToken(request $request)
         $refresh_token = $refreshToken;
 
         // Configuración de los parámetros para la solicitud
-        /* $postFields = [
+        $postFields = [
             'refresh_token' => $refresh_token,
             'client_id' => '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com',
             'client_secret' => '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',
             'grant_type' => 'refresh_token',
-        ]; */
+        ];
 
         // Configuración del cURL
         $ch = curl_init('https://oauth2.googleapis.com/token');
@@ -249,6 +251,17 @@ public function revokeAuthorization(Request $request)
                 $uploadedFile->getId(),
                 $estado,
             ]);
+
+            $dia = Carbon::now('America/Bogota');
+            $area = auth()->user()->roles->first()->name;
+
+            $data = [
+                'name' => $user -> name,
+                'documento' => $uploadedFile->getName(),
+                'dia' => $dia,
+                'areaauditoria' => $area,
+            ];
+            Mail::to($user ->email)->send(new TestMail($data));
 
 
             return response()->json(['success' => true, 'file_id' => $uploadedFile->id,'name' => $uploadedFile->name]);

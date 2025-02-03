@@ -127,7 +127,7 @@ export default function AuditoriasUsers({ refreshAccessToken, subFolderId }) {
                         background: 'rgba(65, 255, 23, 0.52)',
                     }
                 });
-                /* window.location.reload(); */
+                window.location.reload();
             } else {
                 enqueueSnackbar(`Error al subir el archivo: ${response.data.error}`, {
                     variant: 'error',

@@ -1,25 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+/* namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Http\Request;
+use Mail; */
+/* use Illuminate\Support\Facades\Mail; */
+/* use Illuminate\Http\Request;
+use App\Mail\TestMail;
 
-
-class TestEmailController extends Controller
-{
+class TestEmailController extends Controller */
+/* {
     public function sendTestEmail()
     {
-        $data = [
-            'subject' => 'Correo de prueba',
-            'body' => 'Este es un correo de prueba enviado desde Laravel.',
-        ];
-
-        Mail::raw($data['body'], function($message) use ($data) {
-            $message->to('jeruiz@meltec.com.co')
-                    ->subject($data['subject']);
-        });
-
-        return 'Correo enviado exitosamente!';
+        $data = ['name' => 'Johan'];
+        Mail::to('jeruiz@meltec.com.co')->send(new TestMail($data));
     }
 }
+ */

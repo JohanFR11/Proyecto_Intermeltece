@@ -1,0 +1,1 @@
+Hola {{$name}}, se le informa que el documento "{{$documento}}"" ha sido subido exitosamente el dia {{$dia}} en el Modulo de {{$areaauditoria}} de la intranet.
