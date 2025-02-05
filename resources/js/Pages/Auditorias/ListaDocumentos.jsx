@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/react";
-
+import { SnackbarProvider, useSnackbar } from 'notistack';
 
 function DocumentList({ refreshAccessToken }) {
     const [listedFiles, setListedFiles] = useState([]);
@@ -80,40 +80,6 @@ function DocumentList({ refreshAccessToken }) {
         setSelectedFile(null);
     };
 
-    const handleCommentChange = (e) => {
-        setComment(e.target.value);
-    };
-
-    const handleCommentBBDD = async () => {
-        try {
-            const now = new Date();
-
-            // Extraer las partes de la fecha
-            const year = now.getFullYear(); // Año
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            const formattedDate = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
-            console.log(formattedDate);
-
-            const fileId = selectedFile;
-            console.log(fileId)
-
-            await axios.post('/comentarios', { comentario: comment, fecha: formattedDate, file_id: fileId }, {
-                headers: { 'Content-Type': 'application/json' },
-            }).then(response => {
-                console.log(response.data);
-            }).catch(error => {
-                console.error("Error al enviar los datos:", error);
-            });
-
-        } catch (error) {
-            console.error("Error al ingreasar los datos de comentarios:", error);
-        }
-    }
-
     return (
         <div>
             {/* Lista de archivos */}
@@ -177,23 +143,6 @@ function DocumentList({ refreshAccessToken }) {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
                         <h2 className="text-xl font-bold mb-4">Observaciones del director de auditoria</h2>
-
-                        <form onSubmit={handleCommentBBDD} className="mt-4">
-                            <textarea
-                                value={comment}
-                                onChange={handleCommentChange}
-                                className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                                placeholder="Escribe tu comentario..."
-                                rows="4"
-                            ></textarea>
-                            <button
-                                type="submit"
-                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                            >
-                                Agregar observación
-                            </button>
-                        </form>
-
                         <div className="mt-4" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
                             <h3 className="font-bold mb-2">Observaciones:</h3>
                             <ul className="space-y-4">

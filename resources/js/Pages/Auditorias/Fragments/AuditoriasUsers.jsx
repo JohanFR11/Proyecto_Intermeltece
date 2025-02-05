@@ -9,6 +9,7 @@ export default function AuditoriasUsers({ refreshAccessToken, subFolderId }) {
     const [file, setFile] = useState(null);
     const [refreshToken, setRefreshToken] = useState(null);
     const [fileName, setFileName] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
     const { enqueueSnackbar } = useSnackbar();
 
@@ -95,10 +96,12 @@ export default function AuditoriasUsers({ refreshAccessToken, subFolderId }) {
             }
         }
 
+        setIsUploading(true);
+
         /* setUploadStatus('Subiendo archivo...'); */
         const formData = new FormData();
         formData.append('file', file);
-
+        
         try {
             const response = await axios.post(
                 `http://127.0.0.1:8000/upload-file/${subFolderId}`,
@@ -160,6 +163,8 @@ export default function AuditoriasUsers({ refreshAccessToken, subFolderId }) {
                     background: 'rgba(255, 20, 20, 0.52)',
                 }
             });
+        }finally {
+            setIsUploading(false); // Termina la carga
         }
     };
 
@@ -197,8 +202,11 @@ export default function AuditoriasUsers({ refreshAccessToken, subFolderId }) {
                 </div>
 
                 <button
-                    className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none mt-3"
+                    className={`px-6 py-3 text-white rounded-lg mt-3 ${
+                        isUploading ? "bg-gray-500 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
+                    }`}
                     onClick={handleFileUpload}
+                    disabled={isUploading}
                 >
                     Subir archivo
                 </button>

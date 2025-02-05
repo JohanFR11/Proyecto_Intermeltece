@@ -20,12 +20,7 @@ class GoogleDriveController extends Controller
 
     public function __construct()
     {
-        /* $this->client = new Google_Client();
-        $this->client->setClientId('714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com');
-        $this->client->setClientSecret('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');
-        $this->client->setRedirectUri("http://127.0.0.1:8000/auditoria");
-        $this->client->setAccessType('offline');
-        $this->client->setPrompt('consent'); */
+        /*  */
     }
 
     public function generateAuthUrl(){
@@ -288,32 +283,6 @@ public function revokeAuthorization(Request $request)
             return response()->json(['files' => $datosPorArea]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al listar los archivos: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function SubirComentario(Request $request)
-    {
-        $comentario = $request->input('comentario');
-        $fecha = $request->input('fecha');
-        $fileId = $request->input('file_id');
-
-        if (!$comentario || !$fecha || !$fileId) {
-            return response()->json(['error' => 'Datos incompletos'], 400);
-        }
-
-        try {
-
-            $formattedFecha = Carbon::parse($fecha)->format('Y-m-d H:i:s');
-            // Sentencia SQL utilizando DB::insert para MySQL
-            DB::insert('INSERT INTO comentarios (archivo_id, comentario ,fecha_comentario) VALUES (?, ?, ?)', [
-                $fileId,
-                $comentario,
-                $formattedFecha,
-            ]);
-    
-            return response()->json(['success' => 'Comentario guardado con éxito.']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al guardar el comentario: ' . $e->getMessage()], 500);
         }
     }
 

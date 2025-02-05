@@ -15,14 +15,9 @@ const GoogleDriveUpload = () => {
 
 
   // Función para redirigir al usuario para autenticarse
-  /* const handleAuthClick = async () => {
-    const clientId = '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com';
-    const redirectUri = 'http://127.0.0.1:8000/auditoria';  // URL donde el usuario es redirigido después de autenticarse
-    const scope = 'https://www.googleapis.com/auth/drive.file';
-
-    const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&access_type=offline&prompt=consent&scope=${scope}`;
-    window.location.href = authUrl;
-  }; */
+  const handleAuthClick = async () => {
+    /*  */
+  };
 
   // Función para extraer el access_token de la URL
   const extractTokenFromUrl = async () => {

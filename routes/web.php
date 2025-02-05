@@ -30,6 +30,7 @@ use App\Http\Controllers\CotizadorZebraController;
 use App\Http\Controllers\ControladorAuditoria;
 use App\Http\Controllers\GoogleDriveController;
 use App\Http\Controllers\TestEmailController;
+use App\Http\Controllers\DrectorAuditoriaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,7 +93,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/list-folders/subcarpetas/{Id_carpeta}', [GoogleDriveController::class, 'ListarSubCarpetas'])->name('auditoria.folders.subcarpetas');
     Route::get('/send-test-email', [TestEmailController::class, 'sendTestEmail']);
 
-    
+    /* Director de Auditoria  */
+    Route::get('/director', [DrectorAuditoriaController::class, 'index'])->name('resources.director.index');
+    Route::post('/director/comentarios', [DrectorAuditoriaController::class, 'SubirComentarioDirector'])->name('director.subir.comentario');
+    Route::post('/director/estados', [DrectorAuditoriaController::class, 'ActualizarEstado'])->name('director.actualizar.estado');
+    Route::get('/director/comentarios/{fileId}', [DrectorAuditoriaController::class, 'obtenerComentariosDirector']);
+
+
     Route::get('/salesToday', [MasterDataController::class, 'salesToday'])->name('masterdata.salestoday');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

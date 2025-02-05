@@ -4,7 +4,7 @@ import DocumentList from './ListaDocumentos';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { SnackbarProvider } from 'notistack';
 
-const Index = ({auth, unreadNotifications}) => {
+const Index = ({ auth, unreadNotifications }) => {
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem('refresh_token');
     if (refreshToken) {
@@ -15,7 +15,7 @@ const Index = ({auth, unreadNotifications}) => {
 
         if (response.data.access_token) {
           localStorage.setItem('access_token', response.data.access_token);
-    
+
         } else {
           alert('No se pudo renovar el token de acceso.');
           console.log("datos recibidos al intentar renovar el token: ", response.data)
@@ -30,16 +30,16 @@ const Index = ({auth, unreadNotifications}) => {
   };
   return (
     <AuthenticatedLayout
-    auth={auth}
-    unreadNotifications={unreadNotifications}
-    header={
-      <h2 className="font-semibold text-xl text-gray-800 leading-tight">Subir Archivos de Auditorias</h2>
-    }>
+      auth={auth}
+      unreadNotifications={unreadNotifications}
+      header={
+        <h2 className="font-semibold text-xl text-gray-800 leading-tight">Subir Archivos de Auditorias</h2>
+      }>
       <SnackbarProvider maxSnack={3}>
-      <GoogleDriveUpload refreshAccessToken={refreshAccessToken}/>
-      
+        <GoogleDriveUpload refreshAccessToken={refreshAccessToken} />
+
       </SnackbarProvider>
-      <DocumentList refreshAccessToken={refreshAccessToken}/>
+      <DocumentList refreshAccessToken={refreshAccessToken} />
     </AuthenticatedLayout>
   );
 };
