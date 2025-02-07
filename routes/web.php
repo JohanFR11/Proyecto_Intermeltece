@@ -25,6 +25,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PreciosUlefoneController;
 use App\Http\Controllers\CotizadorZebraController;
 use App\Http\Controllers\GoogleDriveController;
+use App\Http\Controllers\ModuloAprendizajeController;
+use App\Http\Controllers\MoodleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +56,17 @@ Route::get('/formulario-de-pagos', function() {
 })->name('payments.form');
 
 Route::middleware('auth')->group(function () {
+
+    Route::middleware('auth')->get('/user', function() {
+        $user = Auth::user();  // Utiliza el método Auth::user() para obtener el usuario autenticado
+    
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'avatar' => $user->avatar,
+        ]);
+    });
 
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     
@@ -104,6 +117,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/hseq/filter/{folder_id}', [HseqController::class, 'filterDocuments'])->name('resources.hseq.filter');
     Route::post('hseq/CreateFolder', [HseqController::class, 'CreateFolder'])->name('resources.hseq.create');
     Route::get('/hseq/preview/{id}', [HseqController::class, 'previewFileUrl'])->name('resources.hseq.filepreview');
+    
+    /* Modulos de prendizaje */
+    Route::get('/modulo', [ModuloAprendizajeController::class, 'index'])->name('resources.modulo.index');
+    Route::get('/modulo/capacitaciones', [ModuloAprendizajeController::class, 'capacitaciones'])->name('resources.modulo.capacitaciones');
+    Route::get('/modulo/cursos', [ModuloAprendizajeController::class, 'cursos'])->name('resources.modulo.cursos');
+
+    // Rutas backend moodle 
+    Route::get('/moodle/cursos/{courseid}', [MoodleController::class, 'getUserCourses'])->name('moodle.get.courses');
+    Route::get('/moodle/cursos/contenido/{courseid}', [MoodleController::class, 'getCoursesContent'])->name('moodle.get.courses.content');
+
     
 
     Route::post('/uploadFile', UploadFilesController::class);

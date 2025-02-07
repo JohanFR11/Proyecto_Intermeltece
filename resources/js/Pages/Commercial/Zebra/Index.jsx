@@ -29,7 +29,7 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
             setMaData(MAData);
         }
     }, [MAData]);
-    //console.log('Datos recibidos: ', MAData);
+    
 
     const handleOpen = (size) => {
         setSize(size)
