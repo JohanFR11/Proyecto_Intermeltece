@@ -74,6 +74,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
+    /* Modulo de Cumpleaños */
+    Route::get('/cumpleaños', [HomeController::class, 'cumpleaños'])->name('resources.modulo.cumpleaños');
+
+    /* Modulo de Articulos */
+    Route::get('/articulos', [HomeController::class, 'articulos'])->name('resources.modulo.articulos');
+    Route::get('/articulos-archivos', [GoogleDriveController::class, 'archivosArticulos']);
+
 
     /* Modulo de Auditorias */
     Route::get('/auditoria', function () {
@@ -91,7 +98,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/comentarios', [GoogleDriveController::class, 'SubirComentario'])->name('auditoria.subir.comentario');
     Route::get('/comentarios/{fileId}', [GoogleDriveController::class, 'obtenerComentarios']);
     Route::get('/list-folders/subcarpetas/{Id_carpeta}', [GoogleDriveController::class, 'ListarSubCarpetas'])->name('auditoria.folders.subcarpetas');
-    Route::get('/send-test-email', [TestEmailController::class, 'sendTestEmail']);
 
     /* Director de Auditoria  */
     Route::get('/director', [DrectorAuditoriaController::class, 'index'])->name('resources.director.index');

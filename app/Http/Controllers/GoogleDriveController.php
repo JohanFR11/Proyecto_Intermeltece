@@ -20,7 +20,7 @@ class GoogleDriveController extends Controller
 
     public function __construct()
     {
-        /*  */
+       
     }
 
     public function generateAuthUrl(){
@@ -336,6 +336,19 @@ public function revokeAuthorization(Request $request)
                 'fields' => 'files(id, name)',
             ]);
 
+            $AñoActual = date('Y');
+
+            $habilitadas = [
+                "Trimestre Uno" => "$AñoActual-01-01",
+                "Trimestre Dos" => "$AñoActual-04-01",
+                "Trimestre Tres" => "$AñoActual-07-01",
+                "Trimestre Cuatro" => "$AñoActual-10-01",
+                "Semestre Uno" => "$AñoActual-01-01",
+                "Semestre Dos" => "$AñoActual-07-01",
+                "Anual" => "$AñoActual-01-01",
+            ];
+
+
             $foldersList = [];
 
             foreach ($folders->getFiles() as $folder) {
@@ -399,4 +412,41 @@ public function revokeAuthorization(Request $request)
         }
     }
 
+    public function archivosArticulos(Request $request)
+    {
+        $authorizationHeader = $request->header('Authorization');
+        if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
+            return response()->json(['error' => 'Token de autorización no proporcionado o incorrecto'], 401);
+        }
+
+        $accessToken = str_replace('Bearer ', '', $authorizationHeader);
+
+        
+    $this->client->setAccessToken($accessToken);
+
+    $service = new Google_Service_Drive($this->client);
+
+    try {
+        // Listar archivos
+        $files = $service->files->listFiles([
+            'q' => "'".'1td58nj24FCs35iKNlSjlyJkBd-9hZFuY'."' in parents",
+            'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
+        ]);
+
+        $fileList = [];
+        foreach ($files->getFiles() as $file) {
+            $fileList[] = [
+                'file_name' => $file->getName(),
+                'id' => $file->getId(),
+                'mimeType' => $file->getMimeType(),
+                'thumbnailLink' => $file->getThumbnailLink(),
+                'webViewLink' => $file->getWebViewLink(),
+            ];
+        }
+
+        return response()->json(['files' => $fileList]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al listar los archivos: ' . $e->getMessage()], 500);
+    }
+    }
 }

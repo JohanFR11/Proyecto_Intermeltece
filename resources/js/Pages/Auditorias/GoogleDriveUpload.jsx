@@ -15,9 +15,7 @@ const GoogleDriveUpload = () => {
 
 
   // Función para redirigir al usuario para autenticarse
-  const handleAuthClick = async () => {
-    /*  */
-  };
+
 
   // Función para extraer el access_token de la URL
   const extractTokenFromUrl = async () => {

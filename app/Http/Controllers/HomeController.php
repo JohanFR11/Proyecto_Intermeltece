@@ -140,4 +140,13 @@ class HomeController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function cumpleaños()
+    {
+        return Inertia::render('HomeIntranet/Fragments/ModuloCumpleaños');
+    }
+    public function articulos()
+    {
+        return Inertia::render('HomeIntranet/Fragments/ModuloArticulos');
+    }
 }
