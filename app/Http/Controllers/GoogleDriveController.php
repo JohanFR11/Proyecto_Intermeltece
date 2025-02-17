@@ -96,29 +96,25 @@ class GoogleDriveController extends Controller
     }
 }
 
-public function refreshAccessToken(request $request)
+public function refreshAccessToken(Request $request)
 {
     try {
+        $refreshToken = $request->input('refresh_token');
 
-        $refreshToken=$request->input('refresh_token');
-        // Obtener el refresh token del usuario autenticado
-        // $user = DB::table('users')->where('external_id', auth()->id())->first();
+        \Log::info('token: ' . $refreshToken);
 
-        // if (!$user || !$user->google_refresh_token) {
-        //     return response()->json(['error' => 'No se encontró un refresh token para el usuario'], 400);
-        // }
+        if (empty($refreshToken)) {
+            return response()->json(['error' => 'refresh_token is required'], 400);
+        }
 
-        $refresh_token = $refreshToken;
-
-        // Configuración de los parámetros para la solicitud
         $postFields = [
-            'refresh_token' => $refresh_token,
-            'client_id' => '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com',
-            'client_secret' => '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',
+            'refresh_token' => $refreshToken,
+            'client_id' => '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com', 
+            'client_secret' => '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', 
             'grant_type' => 'refresh_token',
         ];
 
-        // Configuración del cURL
+        // Configuración de cURL
         $ch = curl_init('https://oauth2.googleapis.com/token');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -127,17 +123,19 @@ public function refreshAccessToken(request $request)
             'Content-Type: application/x-www-form-urlencoded',
         ]);
 
-        // Ejecución de la solicitud
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if (curl_errno($ch)) {
-            throw new \Exception('Error en la solicitud cURL: ' . curl_error($ch));
+            throw new \Exception('cURL Error: ' . curl_error($ch));
         }
 
         curl_close($ch);
 
-        // Decodificar la respuesta JSON
+        // Log response for debugging
+        \Log::info('Google API Response: ' . $response);
+
+        // Decodificar respuesta JSON
         $token = json_decode($response, true);
 
         if ($httpCode !== 200 || isset($token['error'])) {
@@ -147,12 +145,6 @@ public function refreshAccessToken(request $request)
             ], $httpCode);
         }
 
-        // Actualizar el token en la base de datos
-        // DB::table('users')->where('id', auth()->id())->update([
-        //     'google_access_token' => $token['access_token'],
-        //     'expires_in' => now()->addSeconds($token['expires_in']),
-        // ]);
-
         return response()->json([
             'access_token' => $token['access_token'],
             'expires_in' => $token['expires_in'] ?? 3600,
@@ -161,6 +153,7 @@ public function refreshAccessToken(request $request)
         return response()->json(['error' => 'Error al renovar el token: ' . $e->getMessage()], 500);
     }
 }
+
 
 
 public function revokeAuthorization(Request $request)

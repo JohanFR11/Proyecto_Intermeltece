@@ -84,7 +84,7 @@ export default function AuditoriasUsers({ refreshAccessToken, subFolderId }) {
             // Si no hay token o está vencido, intentar refrescarlo
             try {
                 await refreshAccessToken(); // Refrescar el token
-                token = localStorage.getItem('access_token'); // Recuperar el nuevo access token
+                token = localStorage.getItem('access_token'); // Recuperar el nuevo access token              
 
                 if (!token) {
                     ErrorTocken1();
@@ -97,6 +97,8 @@ export default function AuditoriasUsers({ refreshAccessToken, subFolderId }) {
         }
 
         setIsUploading(true);
+
+        console.log('el token',token)
 
         /* setUploadStatus('Subiendo archivo...'); */
         const formData = new FormData();

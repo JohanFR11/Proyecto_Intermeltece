@@ -123,11 +123,14 @@ export default function CarruselArt({ refreshAccessToken }) {
                     {fileChunks.map((chunk, index) => (
                         <div key={index} className="flex justify-center gap-4 items-center h-full">
                             {chunk.map((file, index) => (
-                                <img
-                                    key={index}
-                                    src={file.thumbnailLink}
-                                    className="h-[250px] w-[250px] object-cover rounded-lg"
-                                />
+                                <a href={file.webViewLink} className=" flex flex-col items-center bg-gradient-to-b from-[#395181] via-[#446099] to-[#5072b6] p-3 rounded-md">
+                                    <img
+                                        key={index}
+                                        src={file.thumbnailLink}
+                                        className="h-[250px] w-[250px] object-cover rounded-lg"
+                                    />
+                                    <p className="mt-3 font-bold text-sm max-w-full line-clamp-3 text-white w-[210px]">{file.file_name}</p>
+                                </a>
                             ))}
                         </div>
                     ))}

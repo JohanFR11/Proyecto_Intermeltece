@@ -6,7 +6,9 @@ export default function ListadoArticulos({ refreshAccessToken }) {
     const [listedFiles, setListedFiles] = useState([]);
 
     const listFiles = async () => {
+
         const refreshToken = localStorage.getItem("refresh_token");
+
         let token;
         const tokenExpiry = 3599;
 
@@ -48,7 +50,6 @@ export default function ListadoArticulos({ refreshAccessToken }) {
             console.error("Error al listar archivos:", error);
         }
     };
-
     useEffect(() => {
         listFiles();
     }, []);
@@ -58,10 +59,10 @@ export default function ListadoArticulos({ refreshAccessToken }) {
             {listedFiles.length > 0 ? (
                 listedFiles.map((file, index) => (
                     <Card key={index} className="max-w-xs mx-auto">
-                        <CardHeader className="items-start bg-gradient-to-b from-[#18171c] via-[#191919] to-[#242424] text-white p-4">
+                        <CardHeader className="items-start bg-gradient-to-b from-[#395181] via-[#395181] to-[#395181] text-white p-4">
                             <h4 className="font-bold text-sm max-w-full line-clamp-2">{file.file_name}</h4>
                         </CardHeader>
-                        <CardBody className="overflow-visible items-center bg-gradient-to-b from-[#242424] to-[#333333] p-4">
+                        <CardBody className="overflow-visible items-center bg-gradient-to-b from-[#395181] via-[#446099] to-[#5072b6] p-4">
                             {file.thumbnailLink ? (
                                 <a href={file.webViewLink}>
                                     <Image

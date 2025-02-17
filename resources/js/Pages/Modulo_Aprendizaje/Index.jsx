@@ -8,19 +8,22 @@ const Index = ({ auth, unreadNotifications }) => {
     const [user, setUser] = useState(null);  // Almacena los datos del usuario
     const [loading, setLoading] = useState(true);  // Indicador de carga
 
+    console.log(user)
+
     useEffect(() => {
         axios
-            .get("/user", { withCredentials: true })  // Llamada a la API
+            .get("/user", { withCredentials: true }) // Llamada a la API
             .then((res) => {
-                setUser(res.data);  // Guarda la respuesta de la API en el estado
+                const accessTokenDB = res.data.google_access_token; // Extrae directamente el token
+                console.log("Access Token desde DB:", accessTokenDB);
+                setUser(accessTokenDB); // Guarda el token en el estado
             })
-            .catch(() => {
-                setUser(null);  // Si hay error, no hay usuario
+            .catch((error) => {
+                console.error("Error al obtener el usuario:", error);
+                setUser(null); // Si hay error, no hay usuario
             })
-            .finally(() => {
-                setLoading(false);  // Marca como "no cargando" después de la solicitud
-            });
     }, []);
+    
 
     const redirectTo = (ruta) => {
         window.location.href = ruta;

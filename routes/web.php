@@ -31,6 +31,7 @@ use App\Http\Controllers\ControladorAuditoria;
 use App\Http\Controllers\GoogleDriveController;
 use App\Http\Controllers\TestEmailController;
 use App\Http\Controllers\DrectorAuditoriaController;
+use App\Http\Controllers\AuthGoogleDrive;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,8 +70,25 @@ Route::middleware('auth')->group(function () {
             'name' => $user->name,
             'email' => $user->email,
             'avatar' => $user->avatar,
+            'google_access_token' => $user->google_access_token,
         ]);
     });
+
+    Route::middleware('auth')->get('/user/google', function() {
+        $user = Auth::user();
+        return response()->json($user);
+    });
+
+    Route::get('/authgoogle', function () {
+        return Inertia::render('Auth/AutenticGoogle');
+    })->name('authgoogle');
+
+    Route::get('/cotizadores', function () {
+        return Inertia::render('Modulo_cotizadores/Index');
+    })->name('modulo.cotizadores.index');
+
+    Route::get('/auth/exchange-token', [AuthGoogleDrive::class, 'exchangeCodeForToken']);
+    Route::post('/auth/refresh-token', [AuthGoogleDrive::class, 'refreshAccessToken']);
 
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
@@ -86,6 +104,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/auditoria', function () {
         return Inertia::render('Auditorias/Index');
     })->name('auditoria');
+    
     Route::get('/auditoria/token',  [GoogleAuthenticationController::class, 'getGoogleDriveClient'])->name('auditoria.token');
     Route::get('/exchange-token', [GoogleDriveController::class, 'exchangeCodeForToken']);
     Route::post('/refresh-token', [GoogleDriveController::class, 'refreshAccessToken']);

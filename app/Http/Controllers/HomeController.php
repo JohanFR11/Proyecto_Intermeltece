@@ -5,32 +5,40 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
     public function index() 
-    {
-        try {
-            // Obtener las credenciales de la API de SAP
-            $CREDENTIALS = [
-                'url' => 'https://my345513.sapbydesign.com/',
-                'auth' => [
-                    'username' => 'SEIDORFUNCIONAL',
-                    'password' => 'S31d0r*2o24_',
-                ]
-            ];
+{
+    try {
+        // Obtener las credenciales de la API de SAP
+        $CREDENTIALS = [
+            'url' => 'https://my345513.sapbydesign.com/',
+            'auth' => [
+                'username' => 'SEIDORFUNCIONAL',
+                'password' => 'S31d0r*2o24_',
+            ]
+        ];
 
-            // Establecer la zona horaria de Colombia
-            date_default_timezone_set('America/Bogota');
+        // Establecer la zona horaria de Colombia
+        date_default_timezone_set('America/Bogota');
 
-            // Obtener la fecha actual en el formato adecuado (YYYY-MM-DDTHH:MM:SS)
-            $currentDate = date('Y-m-d\TH:i:s'); // Esta es la fecha actual en formato correcto
+        // Obtener la fecha actual en el formato adecuado (YYYY-MM-DDTHH:MM:SS)
+        $currentDate = date('Y-m-d\TH:i:s'); // Esta es la fecha actual en formato correcto
 
-            // Asegurémonos de que la URL esté correctamente formada
-            $url = $CREDENTIALS['url'] . 'sap/byd/odata/ana_businessanalytics_analytics.svc/RPCRMCIVIB_MQ0001QueryResults?$select=TIP_SAL_EMP,CDOC_INV_DATE,TDOC_YEAR_MONTH,TIP_SALES_UNIT,KCNT_REVENUE,CIP_SALES_UNIT,TIPR_PROD_UUID,TIPR_REFO_CATCP,CIPR_REFO_CATCP,CIP_SAL_EMP&$top=99999&$filter=(CDOC_INV_DATE%20ge%20datetime%27' . urlencode($currentDate) . '%27)&$format=json';
+        // Asegurémonos de que la URL esté correctamente formada
+        $url = $CREDENTIALS['url'] . 'sap/byd/odata/ana_businessanalytics_analytics.svc/RPCRMCIVIB_MQ0001QueryResults?$select=TIP_SAL_EMP,CDOC_INV_DATE,TDOC_YEAR_MONTH,TIP_SALES_UNIT,KCNT_REVENUE,CIP_SALES_UNIT,TIPR_PROD_UUID,TIPR_REFO_CATCP,CIPR_REFO_CATCP,CIP_SAL_EMP&$top=99999&$filter=(CDOC_INV_DATE%20ge%20datetime%27' . urlencode($currentDate) . '%27)&$format=json';
 
-            // Registrar la URL generada
-            Log::info('URL generada para la API OData rankin: ' . $url);
+        // Registrar la URL generada
+        Log::info('URL generada para la API OData rankin: ' . $url);
+
+        // Verificar si ya tenemos los datos de la primera petición en caché
+        $cachedDataRanking = Cache::get('odata_sap_ranking_data');
+
+        if (!$cachedDataRanking) {
+            // Si no están en caché, hacer la solicitud a la API
+            Log::info('Realizando la consulta a la API SAP para el ranking');
 
             // Iniciar la sesión cURL
             $ch = curl_init($url);
@@ -51,38 +59,41 @@ class HomeController extends Controller
                 $error = curl_error($ch);
                 curl_close($ch);
                 Log::error('Error cURL: ' . $error);
-                return response()->json(['OdataClientes' => []], 400);
+                return response()->json(['OdataRanking' => []], 400);
             }
 
             // Obtener el código de estado HTTP
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
-            // Registrar la respuesta y el código de estado HTTP
-            Log::info('Código de estado HTTP: ' . $httpCode);
-            Log::info('Respuesta completa de la API: ' . $response);
-
-            // Inicializar el arreglo de datos OData
-            $odata = [];
-
+            // Si la respuesta es exitosa, decodificar los datos
             if ($httpCode == 200) {
-                // Decodificar la respuesta JSON
-                $odata = json_decode($response, true);
+                $odataRanking = json_decode($response, true);
+                Cache::put('odata_sap_ranking_data', $odataRanking, 60); // Guardar en caché por 1 hora
             } else {
-                Log::error('Error al obtener datos de OData: ' . $response);
+                Log::error('Error al obtener datos de OData para ranking: ' . $response);
+                return response()->json(['OdataRanking' => []], 400);
             }
+        } else {
+            // Si los datos están en caché, usar los datos guardados
+            $odataRanking = $cachedDataRanking;
+        }
 
-            // Verificar que la respuesta tenga la clave 'd' y 'results'
-            $results = $odata['d']['results'] ?? [];
+        // Verificar que la respuesta tenga la clave 'd' y 'results'
+        $resultsRanking = $odataRanking['d']['results'] ?? [];
 
+        // Segunda URL para obtener los datos de ventas
+        $urlx = $CREDENTIALS['url'] . 'sap/byd/odata/ana_businessanalytics_analytics.svc/RPCRMCIVIB_MQ0001QueryResults?$top=99999&$format=json&$select=TIP_SAL_EMP,CDOC_INV_DATE,TDOC_YEAR_MONTH,TIP_SALES_UNIT,KCNT_REVENUE,CIP_SALES_UNIT,TIPR_PROD_UUID,TIPR_REFO_CATCP,CIPR_REFO_CATCP,CIP_SAL_EMP';
 
+        // Registrar la URL generada
+        Log::info('URL generada para la API OData meta: ' . $urlx);
 
-            /* Esta es la odata para calcular el valor total de la meta*/
+        // Verificar si ya tenemos los datos de la segunda petición en caché
+        $cachedDataMeta = Cache::get('odata_sap_meta_data');
 
-            $urlx = $CREDENTIALS['url'] . 'sap/byd/odata/ana_businessanalytics_analytics.svc/RPCRMCIVIB_MQ0001QueryResults?$top=99999&$format=json&$select=TIP_SAL_EMP,CDOC_INV_DATE,TDOC_YEAR_MONTH,TIP_SALES_UNIT,KCNT_REVENUE,CIP_SALES_UNIT,TIPR_PROD_UUID,TIPR_REFO_CATCP,CIPR_REFO_CATCP,CIP_SAL_EMP';
-
-            // Registrar la URL generada
-            Log::info('URL generada para la API OData rankin: ' . $urlx);
+        if (!$cachedDataMeta) {
+            // Si no están en caché, hacer la solicitud a la API
+            Log::info('Realizando la consulta a la API SAP para los datos de meta');
 
             // Iniciar la sesión cURL
             $ch = curl_init($urlx);
@@ -110,36 +121,35 @@ class HomeController extends Controller
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
-            // Registrar la respuesta y el código de estado HTTP
-            Log::info('Código de estado HTTP: ' . $httpCode);
-            Log::info('Respuesta completa de la API: ' . $responsek);
-
-            // Inicializar el arreglo de datos OData
-            $odataVentas = [];
-
+            // Si la respuesta es exitosa, decodificar los datos
             if ($httpCode == 200) {
-                // Decodificar la respuesta JSON
-                $odataVentas = json_decode($responsek, true);
+                $odataMeta = json_decode($responsek, true);
+                Cache::put('odata_sap_meta_data', $odataMeta, 60); // Guardar en caché por 1 hora
             } else {
-                Log::error('Error al obtener datos de OData: ' . $responsek);
+                Log::error('Error al obtener datos de OData para meta: ' . $responsek);
+                return response()->json(['OdataMeta' => []], 400);
             }
-
-            // Verificar que la respuesta tenga la clave 'd' y 'results'
-            $resultsVentas = $odataVentas['d']['results'] ?? [];
-
-
-            // Pasar los datos al dashboard de Inertia
-            return Inertia::render('Dashboard', [
-                'OdataRanking' => $results, 
-                'OdataMeta' => $resultsVentas, 
-            ]);
-
-        } catch (\Exception $e) {
-            // Manejar excepciones
-            Log::error("Error al obtener datos de precios Zebra: {$e->getMessage()}");
-            return response()->json(['error' => $e->getMessage()], 500);
+        } else {
+            // Si los datos están en caché, usar los datos guardados
+            $odataMeta = $cachedDataMeta;
         }
+
+        // Verificar que la respuesta tenga la clave 'd' y 'results'
+        $resultsMeta = $odataMeta['d']['results'] ?? [];
+
+        // Pasar los datos al dashboard de Inertia
+        return Inertia::render('Dashboard', [
+            'OdataRanking' => $resultsRanking, 
+            'OdataMeta' => $resultsMeta, 
+        ]);
+
+    } catch (\Exception $e) {
+        // Manejar excepciones
+        Log::error("Error al obtener datos de precios Zebra: {$e->getMessage()}");
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
+
 
     public function cumpleaños()
     {

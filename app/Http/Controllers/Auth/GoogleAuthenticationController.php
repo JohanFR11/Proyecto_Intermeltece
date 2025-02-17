@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
-
+use App\Jobs\SendUserNotification;
 use App\Notifications\UserCreate;
 use Illuminate\Support\Facades\Notification;
 
@@ -21,6 +21,13 @@ class GoogleAuthenticationController extends Controller
         })->get();
         
         $user = Socialite::driver('google')->user();
+        
+        $validDomain = '@meltec.com.co';
+        if (!str_ends_with($user->email, $validDomain)) {
+            // Si el correo no pertenece al dominio de la empresa, rechazar el inicio de sesi贸n
+            return redirect()->route('login')->withErrors(['email' => 'Este correo electr贸nico no est谩 autorizado para acceder a esta aplicaci贸n.']);
+        }
+        
         $userExists = User::where('external_id', $user->id)->where('external_auth', 'google')->first();
 
         if (!$userExists) {
@@ -38,14 +45,16 @@ class GoogleAuthenticationController extends Controller
             $newUserByGoogleAuth->save();
             Auth::login($newUserByGoogleAuth);
 
-            Notification::send($admins, new UserCreate($newUserByGoogleAuth));
+            foreach ($admins as $admin) {
+            $admin->notify(new UserCreate($newUserByGoogleAuth));
+            }
 
             return redirect()->intended(RouteServiceProvider::HOME);
         }
 
         Auth::login($userExists);
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->intended(RouteServiceProvider::HomeDes);
     }
 
     public function RegisterGoogleCallback ()

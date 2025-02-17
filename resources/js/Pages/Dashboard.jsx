@@ -2,19 +2,19 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
 import { useTrm } from '@/hooks/useTrm'
-import { TrmGraph } from '@/Components/Trm'
 import SidebarMeta from './Home/Components/SideBarMeta'
 import { dateTimeFormatted } from '@/helpers/dateHelper'
 import { useSalesToday } from '@/hooks/useSalesToday'
 import SapLoader from '@/Components/SapLoader'
 import { Button, useDisclosure, Divider } from '@heroui/react'
-import Ranking from './HomeIntranet/Components/RankingVentas'
-import ModalDolar from './HomeIntranet/Components/ModalDolar';
-import HSEQHome from './HomeIntranet/Fragments/HSEQHome';
-import ArticuloHome from './HomeIntranet/Fragments/ArticuloHome';
-import NovedadesHome from './HomeIntranet/Fragments/NovedadesHome';
-import CarrouselArticulos from './HomeIntranet/Fragments/CarruselArticulos'
-import React from 'react'
+const Ranking = React.lazy(() => import('./HomeIntranet/Components/RankingVentas'));
+const ModalDolar = React.lazy(() => import('./HomeIntranet/Components/ModalDolar'));
+const HSEQHome = React.lazy(() => import('./HomeIntranet/Fragments/HSEQHome'));
+const ArticuloHome = React.lazy(() => import('./HomeIntranet/Fragments/ArticuloHome'));
+const NovedadesHome = React.lazy(() => import('./HomeIntranet/Fragments/NovedadesHome'));
+const CarrouselArticulos = React.lazy(() => import('./HomeIntranet/Fragments/CarruselArticulos'));
+const CotizadoresHome = React.lazy(() => import('./HomeIntranet/Fragments/CotizadoresHome'));
+import React, { useEffect, useState } from 'react'
 
 export default function Dashboard({ auth, unreadNotifications, OdataRanking, OdataMeta }) {
 
@@ -22,6 +22,8 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
   const { loaderKpiSap, error, kpi, getData } = useSalesToday();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isRankingOpen, onOpen: onRankingOpen, onClose: onRankingClose } = useDisclosure();
+
+  const [user, setUser] = useState(null);
 
   const [size, setSize] = React.useState('md');
   const [rankingSize, setRankingSize] = React.useState('md');
@@ -50,8 +52,17 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
     }, 0)
     : 0;
 
-  console.log('Total Ranking Revenue:', totalRankingRevenue);
-
+  useEffect(() => {
+    axios
+        .get("/user", { withCredentials: true })
+        .then((res) => {
+            const accessTokenDB = res.data.google_access_token;
+            setUser(accessTokenDB); 
+        })
+        .catch(() => {
+            setUser(null);
+        });
+}, []);
 
 
   return (
@@ -81,7 +92,9 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
                   Ranking de Ventas
                 </button>
               ))}
+
               <Ranking size={rankingSize} open={isRankingOpen} close={onRankingClose} OdataRanking={OdataRanking} totalRankingRevenue={totalRankingRevenue} />
+
             </div>
           </div>
 
@@ -114,6 +127,10 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
           </div>
           <Divider className='h-[10px] my-4' />
           <div>
+            <CotizadoresHome />
+          </div>
+          <Divider className='h-[10px] my-4' />
+          <div>
             <ArticuloHome />
           </div>
           <Divider className='h-[10px] my-4' />
@@ -122,7 +139,7 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
           </div>
           <Divider className='h-[10px] my-4' />
           <div>
-            <CarrouselArticulos />
+            {user && <CarrouselArticulos usertoken ={user}/>}
           </div>
         </div>
       </main>
