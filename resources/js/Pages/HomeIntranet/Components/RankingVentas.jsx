@@ -19,8 +19,8 @@ export default function Ranking({ open, close, size, OdataRanking, totalRankingR
   // Actualizar los datos del gráfico cuando OdataRanking cambia
   useEffect(() => {
     const groupedData = OdataRanking.reduce((acc, item) => {
-      const name = item.TIP_SAL_EMP;
-      const revenue = parseInt(item.KCNT_REVENUE.replace(/[^\d.-]/g, ''), 10); // Eliminar símbolos y convertir a entero
+      const name = item.responsable;
+      const revenue = item.valor_net; // Eliminar símbolos y convertir a entero
       if (acc[name]) {
         acc[name] += revenue; // Sumar si ya existe
       } else {

@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+const AuthenticatedLayout = React.lazy(() => import('@/Layouts/AuthenticatedLayout'));
 import { Head } from '@inertiajs/react'
 import { useTrm } from '@/hooks/useTrm'
-import SidebarMeta from './Home/Components/SideBarMeta'
+const SidebarMeta = React.lazy(() => import('./Home/Components/SideBarMeta'));
 import { dateTimeFormatted } from '@/helpers/dateHelper'
 import { useSalesToday } from '@/hooks/useSalesToday'
 import SapLoader from '@/Components/SapLoader'
@@ -15,15 +15,22 @@ const NovedadesHome = React.lazy(() => import('./HomeIntranet/Fragments/Novedade
 const CarrouselArticulos = React.lazy(() => import('./HomeIntranet/Fragments/CarruselArticulos'));
 const CotizadoresHome = React.lazy(() => import('./HomeIntranet/Fragments/CotizadoresHome'));
 import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
-export default function Dashboard({ auth, unreadNotifications, OdataRanking, OdataMeta }) {
+export default function Dashboard({ auth, unreadNotifications,OdataMeta,OdataRanking,TotalVentasHoy}) {
 
+  const totalRevenue = OdataMeta.map((item)=> item.total);
+  const totalRankingRevenue = TotalVentasHoy.map((item)=> item.totalVentas);
+  
   const { valores, loading, trmInCop } = useTrm();
   const { loaderKpiSap, error, kpi, getData } = useSalesToday();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isRankingOpen, onOpen: onRankingOpen, onClose: onRankingClose } = useDisclosure();
 
   const [user, setUser] = useState(null);
+/*   const [datas, setDatas] = useState([]);
+
+  console.log(datas); */
 
   const [size, setSize] = React.useState('md');
   const [rankingSize, setRankingSize] = React.useState('md');
@@ -40,29 +47,30 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
     onRankingOpen();
   }
 
-  const totalRevenue = OdataMeta.reduce((acc, item) => {
+  /* const totalRevenue = OdataMeta.reduce((acc, item) => {
     const revenue = parseInt(item.KCNT_REVENUE.replace(/[^\d.-]/g, ''), 10);  // Extrae y convierte a número
     return acc + (isNaN(revenue) ? 0 : revenue);  // Evita sumar valores NaN
-  }, 0);
+  }, 0); */
 
-  const totalRankingRevenue = OdataRanking?.length > 0
-    ? OdataRanking.reduce((acc, item) => {
-      const revenue = parseInt(item.KCNT_REVENUE?.replace(/[^\d.-]/g, ''), 10); // Limpia y convierte a número
+ /*  const totalRankingRevenue = OdataRanking?.length > 0 */
+    /* ? OdataRanking.reduce((acc, item) => { */
+      /* const revenue = parseInt(item.KCNT_REVENUE?.replace(/[^\d.-]/g, ''), 10); // Limpia y convierte a número
       return acc + (isNaN(revenue) ? 0 : revenue); // Maneja valores NaN
     }, 0)
-    : 0;
+    : 0; */
 
   useEffect(() => {
+
     axios
-        .get("/user", { withCredentials: true })
-        .then((res) => {
-            const accessTokenDB = res.data.google_access_token;
-            setUser(accessTokenDB); 
-        })
-        .catch(() => {
-            setUser(null);
-        });
-}, []);
+      .get("/user", { withCredentials: true })
+      .then((res) => {
+        const accessTokenDB = res.data.google_access_token;
+        setUser(accessTokenDB);
+      })
+      .catch(() => {
+        setUser(null);
+      });
+  }, []);
 
 
   return (
@@ -139,7 +147,7 @@ export default function Dashboard({ auth, unreadNotifications, OdataRanking, Oda
           </div>
           <Divider className='h-[10px] my-4' />
           <div>
-            {user && <CarrouselArticulos usertoken ={user}/>}
+            {user && <CarrouselArticulos usertoken={user} />}
           </div>
         </div>
       </main>
