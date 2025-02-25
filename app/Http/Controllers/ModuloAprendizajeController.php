@@ -9,14 +9,19 @@ use Illuminate\Support\Facades\DB;
 
 class ModuloAprendizajeController extends Controller
 {
+    public function logIn()
+    {
+        return Inertia::render('Aprendizaje/Components/LoginMoodle');
+    }
+
+    public function register()
+    {
+        return Inertia::render('Aprendizaje/Components/RegisterMoodle');
+    }
+
     public function index()
     {
         return Inertia::render('Aprendizaje/Index');
     }
 
-    /* Funcion para renderizar el modulo de capacitaciones */
-    public function capacitaciones()
-    {
-        return Inertia::render('Aprendizaje/Fragments/Capacitaciones');
-    }
 }

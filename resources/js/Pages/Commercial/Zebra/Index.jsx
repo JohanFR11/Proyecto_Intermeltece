@@ -3,7 +3,6 @@ import { useDisclosure, Button } from '@nextui-org/react'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import CategoryComponent from "./Components/CategoryComponent";
 import PartNumComponent from "./Components/PartNumComponent";
-import ModalZebra from "./Fragments/ModalZebra";
 import axios from "axios";
 import ModalMesaAyuda from "./Fragments/ModalMesaAyuda";
 
@@ -408,22 +407,7 @@ export default function Index({ auth, unreadNotifications, data, partNumData, MA
                     </table>
                 </div>
             </div>
-            {/* Botón para abrir el modal */}
-            {sizes.map((size) => (
-                <Button key={size} onPress={() => handleOpen(size)} color="primary">
-                    Factura
-                </Button>
-            ))}
-
-            {/* Aquí se integra el ModalZebra con useDisclosure */}
-            <ModalZebra
-                size={size}
-                open={isOpen}
-                close={onClose}
-                partDetails={partDetails}
-                quantities={quantities}
-                selectedDataMA={selectedDataMA}
-            />
+        
         </AuthenticatedLayout>
     );
 }

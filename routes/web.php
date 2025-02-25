@@ -3,6 +3,7 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\MoodleAuthMiddleware;
 use App\Http\Controllers\HseqController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DirectorsController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\CotizadorZebraController;
 use App\Http\Controllers\GoogleDriveController;
 use App\Http\Controllers\ModuloAprendizajeController;
 use App\Http\Controllers\MoodleController;
+use App\Http\Controllers\MoodleAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -119,15 +121,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/hseq/preview/{id}', [HseqController::class, 'previewFileUrl'])->name('resources.hseq.filepreview');
     
     /* Modulos de prendizaje */
-    Route::get('/modulo', [ModuloAprendizajeController::class, 'index'])->name('resources.modulo.index');
-    Route::get('/modulo/capacitaciones', [ModuloAprendizajeController::class, 'capacitaciones'])->name('resources.modulo.capacitaciones');
-    Route::get('/modulo/cursos', [ModuloAprendizajeController::class, 'cursos'])->name('resources.modulo.cursos');
-
-    // Rutas backend moodle 
-    Route::get('/moodle/cursos/{courseid}', [MoodleController::class, 'getUserCourses'])->name('moodle.get.courses');
-    Route::get('/moodle/cursos/contenido/{courseid}', [MoodleController::class, 'getCoursesContent'])->name('moodle.get.courses.content');
-
+    Route::get('/modulo', [ModuloAprendizajeController::class, 'logIn'])->name('resources.modulo.login');
+    Route::get('/modulo/register', [ModuloAprendizajeController::class, 'register'])->name('resources.modulo.register');
+    Route::middleware([MoodleAuthMiddleware::class])->group(function () {
+        Route::get('/modulo/index', [ModuloAprendizajeController::class, 'index'])->name('resources.modulo.index');
+        // Route::get('/{any}', function () {
+        //     return redirect()->route('resources.modulo.index');
+        // })->where('any', '.*');
     
+        /* Backend moodle authenticated */
+        Route::get('/moodle/user/{userid}', [MoodleController::class, 'getUserInfo'])->name('moodle.get.user.info');
+        Route::get('/moodle/cursos_disponibles/{userid}', [MoodleController::class, 'getUserCourses'])->name('moodle.get.courses');
+        Route::get('/moodle/cursos/{courseid}', [MoodleController::class, 'getUserContent'])->name('moodle.get.content');
+        Route::get('/moodle/cursos/contenido/{courseid}', [MoodleController::class, 'getPagesContent'])->name('moodle.get.pages.content');
+        Route::get('/moodle/cursos/contenido/asignaciones/{courseid}', [MoodleController::class, 'getAssignContent'])->name('moodle.get.courses.assign');
+        Route::get('/moodle/quiz/{courseid}', [MoodleController::class, 'getQuizInfo'])->name('moodle.get.quiz.info');
+        Route::get('/moodle/quiz/data/{attemptid}', [MoodleController::class, 'getQuizContent'])->name('moodle.get.quiz.content');
+        Route::get('/moodle/quiz/attempt/{quizid}', [MoodleController::class, 'startQuizAttempt'])->name('moodle.start.quiz.attp');
+    });
+    // Rutas backend moodle
+    Route::post('/moodle/login', [MoodleAuthController::class, 'login']); 
+    Route::post('/moodle/register', [MoodleAuthController::class, 'register']); 
 
     Route::post('/uploadFile', UploadFilesController::class);
 
