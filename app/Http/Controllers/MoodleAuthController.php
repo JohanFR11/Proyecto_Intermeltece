@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\RequestException;
@@ -20,29 +21,44 @@ class MoodleAuthController extends Controller
             'password' => 'required',
         ]);
 
-        $moodleUrlLogin = "http://127.0.0.1/moodle/login/index.php";
+        $moodleUrl= "http://127.0.0.1/moodle";
         $client= new Client();
         $cookieJar = new CookieJar(); 
         
-        $response =$client->request('POST', $moodleUrlLogin,[
+        $getResponse =$client->request('GET', "$moodleUrl/login/index.php",[ 
+            'cookies' => $cookieJar, 
+        ]);
+
+        // Extrae el logintoken del HTML recibido
+        preg_match('/name="logintoken" value="(.+?)"/', $getResponse->getBody(), $matches);
+        $logintoken = $matches[1] ?? null;
+        
+        if (!$logintoken) {
+            return response()->json(['error' => 'No se pudo obtener el logintoken'], 400);
+        }    
+
+        $response = $client->request('POST',"$moodleUrl/login/index.php", [
             'form_params' => [
+                'logintoken' => $logintoken,
                 'username' => $request->username,
                 'password' => $request->password,
             ],
             'headers' => [
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ],
-            'cookies' => $cookieJar, // Para manejar la sesión correctamente
+            'cookies' => $cookieJar,
             'allow_redirects' => true,
         ]);
         
         $cookies = $cookieJar->toArray();
-        $responseToken = $client->request('GET', 'http://127.0.0.1/moodle/login/token.php', [
+
+        $responseToken = $client->request('GET', "$moodleUrl/login/token.php", [
             'query' => [
                 'username' => $request->username,
                 'password' => $request->password,
                 'service'  => 'pruebas'
-            ]
+            ],
+            'cookies' => $cookieJar,
         ]);
 
         $data =json_decode($responseToken->getBody(), true);
@@ -52,36 +68,67 @@ class MoodleAuthController extends Controller
             Session::put('moodle_token', $data['token']);
             Session::save();
             
-            $userResponse =$client->request('GET', 'http://127.0.0.1/moodle/webservice/rest/server.php',[
+            $userResponse =$client->request('GET', "$moodleUrl/webservice/rest/server.php",[
                 'query'=> [
                     'wstoken' => $data['token'],
                     'wsfunction' => 'core_webservice_get_site_info',
                     'moodlewsrestformat' => 'json'
-                    ]
+                    ],
+                    'cookies' => $cookieJar,
             ]);
             
             $userData= json_decode($userResponse->getBody(), true);
 
-            $moodleSession = $cookies[0];
+            // Extrae las cookies de la sesión de Moodle
+            $moodleSession = null;
+            $moodleID = null;
+
+            foreach ($cookieJar->toArray() as $cookie) {
+                if (strpos($cookie['Name'], 'MOODLEID1_') !== false) {
+                    $moodleID = $cookie;
+                }
+                if ($cookie['Name'] === 'MoodleSession') {
+                    $moodleSession = $cookie;
+                }
+            }
+
+            // Verifica que ambas cookies existan antes de devolverlas
+            $response = response()->json([
+                'message' => 'Login exitoso en Moodle',
+                'cookies' => $cookies, 
+                'token' => $data,
+                'userData' => $userData,
+            ]);
 
             if ($moodleSession) {
-                return response()->json([
-                    'message' => 'Login exitoso en Moodle',
-                    'cookies' => $moodleSession,
-                    'token' => $data,
-                    'userData'=>$userData,
-                ])->cookie(
-                    'MoodleSession',
+                $response->withCookie(cookie(
+                    $moodleSession['Name'],
                     $moodleSession['Value'],
                     0,
                     '/',
                     '127.0.0.1',
                     false, // Secure=false en local, debe ser true en producción con HTTPS
-                    true, // HttpOnly=true para mayor seguridad
-                    'None' // Para que funcione en iframes
-                );
-                
+                    false, // HttpOnly=true para mayor seguridad
+                    'None'
+                ));
             }
+    
+            if ($moodleID) {
+                $response->withCookie(Cookie(
+                    $moodleID['Name'],
+                    $moodleID['Value'],
+                    0,
+                    '/',
+                    '127.0.0.1',
+                    true, 
+                    false,
+                    false, 
+                    'None'
+                ));
+            }
+    
+            return $response;
+
         } else {
             return response()->json(['error' => $data['error'] ?? 'Autenticación fallida'], 401);
         }

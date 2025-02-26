@@ -21,7 +21,9 @@ export default function Contenido (){
 
         const getProfileInfo = async () => {
             try {
-                const response = await axios.get(`/moodle/user/${userid}`)
+                const response = await axios.get(`/moodle/user/${userid}`, {
+                    withCredentials: true
+                })
                 setUserMoodle(response.data[0])
             } catch (error) {
                 console.error("error al traer la informacion del usuario: ", error)

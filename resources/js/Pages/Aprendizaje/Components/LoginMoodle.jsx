@@ -2,41 +2,50 @@ import React, { useEffect, useState } from "react";
 import { Card, CardBody, Button, Input } from "@heroui/react";
 import axios from "axios";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import Cookies from 'js-cookie';
 
 export default function LoginMoodle({ auth, unreadNotifications }) {
+
+    const [error, setError] = useState("");
     const [formData, setFormData] = useState({
+
         username: "",
         password: "",
     });
-    const [error, setError] = useState("");
-    const [cookies, setCookie] = useState({});
-
+    
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const setCookie = (name, value, options = {}) => {
+        Cookies.set(name, value, options);
+      };
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setError("")
+
         const formData = new FormData(e.target);
 
         try {
+
             const response = await axios.post("/moodle/login", Object.fromEntries(formData), {
                 withCredentials: true
             });
-            
+
             const dataToken = response.data.token;
             const dataUser = response.data.userData;
-            const cookies = response.data.cookies;
+            const cookies= response.data.cookies
+
 
             console.log(response.data)
 
+            console.log('cookies del documento', document.cookie)
             if (dataToken.token) {
                 localStorage.setItem("moodle_token", dataToken.token);
                 localStorage.setItem("user_id", dataUser.userid);
                 localStorage.setItem("user_name", dataUser.fullname);
-                setCookie(cookies)
-                window.location.href='/modulo/index';
+                //window.location.href='/modulo/index';
             } else {
                 setError("Credenciales incorrectas o servicio no disponible.");
             }
@@ -82,6 +91,7 @@ export default function LoginMoodle({ auth, unreadNotifications }) {
                     </CardBody>
                 </Card>
             </div>
+
         </AuthenticatedLayout>
     );
 }

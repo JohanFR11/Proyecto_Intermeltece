@@ -12,6 +12,7 @@ class EncryptCookies extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'MoodleSession', // ❌ No encriptar esta cookie
+        'MOODLEID1_' // ❌ También asegúrate de que esta no se encripte
     ];
 }
