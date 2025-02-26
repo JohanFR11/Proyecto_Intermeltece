@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 
 namespace App\Http\Controllers;
 
@@ -86,4 +86,5 @@ class FlokzuFormularioController extends Controller
 
 
     }*/
-}
+    }}
+ 

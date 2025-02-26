@@ -44,12 +44,24 @@ class HomeController extends Controller
 }
 
 
-    public function cumpleaños()
+    public function cumpleanos()
     {
-        return Inertia::render('HomeIntranet/Fragments/ModuloCumpleaños');
+        return Inertia::render('HomeIntranet/Fragments/ModuloCumpleanos');
     }
     public function articulos()
     {
         return Inertia::render('HomeIntranet/Fragments/ModuloArticulos');
+    }
+
+    public function dataHappyBirthday()
+    {
+        try {
+
+            $Users = DB::select("SELECT * FROM cumple_ani");
+
+            return response()->json(['users' => $Users]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error en la peticon de la tabla cumpleaños: ' . $e->getMessage()], 500);
+        }
     }
 }

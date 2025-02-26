@@ -1,10 +1,13 @@
 import React from "react";
+import { Divider } from '@heroui/react'
+
 
 export default function CotizadoresHome() {
 
     return (
         <div className="p-5">
-            <p className="mb-5 p-2 bg-gray-400 w-full sm:w-64 text-center font-bold"> Cotizadores Web </p>
+            <Divider className='h-[10px]' />
+            <p className="mb-5 p-2 bg-[#dcdcdc] w-full sm:w-64 text-center font-bold"> Cotizadores Web </p>
             <div className="w-full relative">
                 <img
                     className="w-full object-cover rounded-md"

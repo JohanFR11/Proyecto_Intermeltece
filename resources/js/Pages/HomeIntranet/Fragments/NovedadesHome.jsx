@@ -3,6 +3,7 @@ import { Carousel, IconButton } from "@material-tailwind/react";
 import { useDisclosure } from '@heroui/react'
 import ModalRenderImg from "../Components/ModalRenderImg";
 import ModalRenderHref from "../Components/ModalRenderHref";
+import { Divider } from '@heroui/react'
 
 export default function ImageModalUI() {
     const [isImageOpen, setIsImageOpen] = useState(false);
@@ -17,7 +18,7 @@ export default function ImageModalUI() {
 
     const sizes = ["full"];
 
-    const handleOpen = (size, accion, img = "",route) => {
+    const handleOpen = (size, accion, img = "", route) => {
 
         if (accion === 0) {
             setSize(size);
@@ -53,7 +54,8 @@ export default function ImageModalUI() {
 
     return (
         <div className="p-5">
-            <p className="mb-3 p-2 bg-gray-400 w-full sm:w-64 text-center font-bold">
+            <Divider className='h-[10px]' />
+            <p className="mb-3 p-2 bg-[#dcdcdc] w-full sm:w-64 text-center font-bold">
                 Novedades
             </p>
             <div>
@@ -128,8 +130,19 @@ export default function ImageModalUI() {
                                 src="https://lh3.googleusercontent.com/d/1QGwaDu4g9f9X-5fQEJ5DwAmjllx4iJLC"
                                 alt="image 3"
                                 className="h-[250px] w-[250px] object-cover rounded-lg cursor-pointer"
-                                onClick={() => handleOpen(size, 2, "https://lh3.googleusercontent.com/d/1QGwaDu4g9f9X-5fQEJ5DwAmjllx4iJLC",'resources.modulo.cumpleaños')}
+                                onClick={() => handleOpen(size, 2, "https://lh3.googleusercontent.com/d/1QGwaDu4g9f9X-5fQEJ5DwAmjllx4iJLC", 'resources.modulo.cumpleanos')}
                             />
+                        </div>
+                    ))}
+                    {sizes.map((size) => (
+                        <div className="flex justify-center gap-4 items-center h-full">
+                            <img
+                                src="https://lh3.googleusercontent.com/d/1EdgWZvTyxCdmdi-g2GJjK-cbvVs-cHSw"
+                                alt="image 1"
+                                className="h-[250px] w-[250px] object-cover rounded-lg cursor-pointer"
+                                onClick={() => handleOpen(size, 0, "https://lh3.googleusercontent.com/d/1EdgWZvTyxCdmdi-g2GJjK-cbvVs-cHSw")}
+                            />
+
                         </div>
                     ))}
                 </Carousel>

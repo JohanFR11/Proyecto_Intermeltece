@@ -25,10 +25,12 @@ use App\Http\Controllers\Api\Sap\MasterDataController;
 use App\Http\Controllers\Auth\PersonalAccessTokensController;
 use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RepositorioEmpresarialController;
 use App\Http\Controllers\PreciosUlefoneController;
 use App\Http\Controllers\CotizadorZebraController;
 use App\Http\Controllers\ControladorAuditoria;
 use App\Http\Controllers\GoogleDriveController;
+use App\Http\Controllers\InformeSeguimientoController;
 use App\Http\Controllers\TestEmailController;
 use App\Http\Controllers\DrectorAuditoriaController;
 use App\Http\Controllers\AuthGoogleDrive;
@@ -56,15 +58,15 @@ Route::get('/sigue-tus-envios', function () {
     ]);
 })->name('shipments');
 
-Route::get('/formulario-de-pagos', function() {
+Route::get('/formulario-de-pagos', function () {
     return Inertia::render('Payments/FormPayment');
 })->name('payments.form');
 
 Route::middleware('auth')->group(function () {
 
-    Route::middleware('auth')->get('/user', function() {
+    Route::middleware('auth')->get('/user', function () {
         $user = Auth::user();  // Utiliza el método Auth::user() para obtener el usuario autenticado
-    
+
         return response()->json([
             'id' => $user->id,
             'name' => $user->name,
@@ -74,7 +76,7 @@ Route::middleware('auth')->group(function () {
         ]);
     });
 
-    Route::middleware('auth')->get('/user/google', function() {
+    Route::middleware('auth')->get('/user/google', function () {
         $user = Auth::user();
         return response()->json($user);
     });
@@ -92,20 +94,31 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
+    Route::get('/informe-seguimiento', [InformeSeguimientoController::class, 'index'])->name('informe.seguimiento');
+
     /* Modulo de Cumpleaños */
-    Route::get('/cumpleaños', [HomeController::class, 'cumpleaños'])->name('resources.modulo.cumpleaños');
+    Route::get('/cumpleanos', [HomeController::class, 'cumpleanos'])->name('resources.modulo.cumpleanos');
+    Route::get('/cumpleanos/happybirthday', [HomeController::class, 'dataHappyBirthday']);
 
     /* Modulo de Articulos */
     Route::get('/articulos', [HomeController::class, 'articulos'])->name('resources.modulo.articulos');
     Route::get('/articulos-archivos', [GoogleDriveController::class, 'archivosArticulos']);
 
 
+    /* Modulo Repositorio Empresarial */
+    Route::get('/empresarial', [RepositorioEmpresarialController::class, 'index'])->name('index.empresarial');
+    Route::post('/empresarial/refresh-token', [RepositorioEmpresarialController::class, 'refreshAccessToken']);
+    Route::get('/empresarial/carpetas', [RepositorioEmpresarialController::class, 'listarCarpetas']);
+    Route::get('/empresarial/lista/{id_folder}', [RepositorioEmpresarialController::class, 'ListarFiles']);
+    Route::get('/empresarial/archivo/{id_archivo}', [RepositorioEmpresarialController::class, 'urlView']);
+
+
     /* Modulo de Auditorias */
     Route::get('/auditoria', function () {
         return Inertia::render('Auditorias/Index');
     })->name('auditoria');
-    
-    Route::get('/auditoria/token',  [GoogleAuthenticationController::class, 'getGoogleDriveClient'])->name('auditoria.token');
+
+    Route::get('/auditoria/token', [GoogleAuthenticationController::class, 'getGoogleDriveClient'])->name('auditoria.token');
     Route::get('/exchange-token', [GoogleDriveController::class, 'exchangeCodeForToken']);
     Route::post('/refresh-token', [GoogleDriveController::class, 'refreshAccessToken']);
     Route::post('/remove-token', [GoogleDriveController::class, 'revokeAuthorization']);
@@ -170,7 +183,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kpis', [KpiReportsController::class, 'index'])->name('kpi.reports.index');
     Route::post('/kpis', [KpiReportsController::class, 'store'])->name('kpi.reports.store');
     Route::get('/kpis/{kpi}', [KpiReportsController::class, 'show'])->name('kpi.reports.show');
-    Route::delete('/kpis/delete/{kpi}',[KpiReportsController::class, 'destroy'])->name('kpi.reports.destroy');
+    Route::delete('/kpis/delete/{kpi}', [KpiReportsController::class, 'destroy'])->name('kpi.reports.destroy');
 
     Route::post('/revokePermission', [UserController::class, 'revokePermission'])->name('api.permission.revoke');
     Route::post('/storePermission', [UserController::class, 'storePermission'])->name('api.permission.sync');
@@ -189,7 +202,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/epayco-payments', [EpaycoController::class, 'index'])->name('payments.index');
     Route::post('/transactions-epayco', [EpaycoController::class, 'getTransactions']);
     Route::get('/transactions-epayco/{id}', [EpaycoController::class, 'getTransactionsById'])->name('payment.details');
-    
+
 });
 
 require __DIR__ . '/auth.php';

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import CarruselArt from "../Components/CarruselArt";
+import { Divider } from '@heroui/react'
 
 export default function CarrouselArticulos({ usertoken }) {
 
@@ -42,7 +43,8 @@ export default function CarrouselArticulos({ usertoken }) {
 
     return (
         <div className="p-5">
-            <p className="mb-5 p-2 bg-gray-400 w-full sm:w-64 text-center font-bold">
+            <Divider className='h-[10px]' />
+            <p className="mb-5 p-2 bg-[#dcdcdc] w-full sm:w-64 text-center font-bold">
                 Artículos - Reflexiones para Crecer
             </p>
 

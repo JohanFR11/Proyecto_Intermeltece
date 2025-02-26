@@ -10,27 +10,28 @@ import { Button, useDisclosure, Divider } from '@heroui/react'
 const Ranking = React.lazy(() => import('./HomeIntranet/Components/RankingVentas'));
 const ModalDolar = React.lazy(() => import('./HomeIntranet/Components/ModalDolar'));
 const HSEQHome = React.lazy(() => import('./HomeIntranet/Fragments/HSEQHome'));
+const HSEQencuesta = React.lazy(() => import('./HomeIntranet/Fragments/HSEQencuesta'));
 const ArticuloHome = React.lazy(() => import('./HomeIntranet/Fragments/ArticuloHome'));
 const NovedadesHome = React.lazy(() => import('./HomeIntranet/Fragments/NovedadesHome'));
 const CarrouselArticulos = React.lazy(() => import('./HomeIntranet/Fragments/CarruselArticulos'));
 const CotizadoresHome = React.lazy(() => import('./HomeIntranet/Fragments/CotizadoresHome'));
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { ChevronDown } from "lucide-react";
 
-export default function Dashboard({ auth, unreadNotifications,OdataMeta,OdataRanking,TotalVentasHoy}) {
+export default function Dashboard({ auth, unreadNotifications, OdataMeta, OdataRanking, TotalVentasHoy }) {
 
-  const totalRevenue = OdataMeta.map((item)=> item.total);
-  const totalRankingRevenue = TotalVentasHoy.map((item)=> item.totalVentas);
-  
+  const totalRevenue = OdataMeta.map((item) => item.total);
+  const totalRankingRevenue = TotalVentasHoy.map((item) => item.totalVentas);
+
   const { valores, loading, trmInCop } = useTrm();
   const { loaderKpiSap, error, kpi, getData } = useSalesToday();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isRankingOpen, onOpen: onRankingOpen, onClose: onRankingClose } = useDisclosure();
 
   const [user, setUser] = useState(null);
-/*   const [datas, setDatas] = useState([]);
-
-  console.log(datas); */
 
   const [size, setSize] = React.useState('md');
   const [rankingSize, setRankingSize] = React.useState('md');
@@ -47,17 +48,25 @@ export default function Dashboard({ auth, unreadNotifications,OdataMeta,OdataRan
     onRankingOpen();
   }
 
-  /* const totalRevenue = OdataMeta.reduce((acc, item) => {
-    const revenue = parseInt(item.KCNT_REVENUE.replace(/[^\d.-]/g, ''), 10);  // Extrae y convierte a número
-    return acc + (isNaN(revenue) ? 0 : revenue);  // Evita sumar valores NaN
-  }, 0); */
+  const Section = ({ children }) => {
+    const { ref, inView } = useInView({
+      triggerOnce: false, // Permite que se active múltiples veces
+      threshold: 0.2, // Se activa cuando el 20% de la sección es visible
+    });
 
- /*  const totalRankingRevenue = OdataRanking?.length > 0 */
-    /* ? OdataRanking.reduce((acc, item) => { */
-      /* const revenue = parseInt(item.KCNT_REVENUE?.replace(/[^\d.-]/g, ''), 10); // Limpia y convierte a número
-      return acc + (isNaN(revenue) ? 0 : revenue); // Maneja valores NaN
-    }, 0)
-    : 0; */
+    return (
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, y: 50 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+        exit={{ opacity: 0, y: 50 }} // Oculta cuando ya no es visible
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="rounded-lg shadow-lg mt-10"
+      >
+        {children}
+      </motion.div>
+    );
+  };
 
   useEffect(() => {
 
@@ -71,7 +80,13 @@ export default function Dashboard({ auth, unreadNotifications,OdataMeta,OdataRan
         setUser(null);
       });
   }, []);
-
+  
+  const scrollToSection = () => {
+    const section = document.getElementById("Home"); // ID de la sección a la que queremos bajar
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" }); // Desplazamiento suave
+    }
+  };
 
   return (
     <AuthenticatedLayout
@@ -129,26 +144,38 @@ export default function Dashboard({ auth, unreadNotifications,OdataMeta,OdataRan
               </Button>
             </div>
           </div>
-          <Divider className='h-[10px] my-4' />
-          <div>
+
+          <motion.div
+            animate={{ y: [0, 10, 0] }} // Movimiento de arriba a abajo
+            transition={{
+              duration: 1, // Duración de la animación
+              repeat: Infinity, // Se repite infinitamente
+              ease: "easeInOut", // Suaviza el movimiento
+            }}
+            className="flex justify-center mt-5"
+          >
+            <ChevronDown onClick={scrollToSection} size={40} className="text-gray-700" />
+          </motion.div>
+
+          <div id='Home'></div>
+          <Section>
+            <HSEQencuesta />
+          </Section>
+          <Section>
             <HSEQHome />
-          </div>
-          <Divider className='h-[10px] my-4' />
-          <div>
+          </Section>
+          <Section>
             <CotizadoresHome />
-          </div>
-          <Divider className='h-[10px] my-4' />
-          <div>
+          </Section>
+          <Section>
             <ArticuloHome />
-          </div>
-          <Divider className='h-[10px] my-4' />
-          <div>
+          </Section>
+          <Section>
             <NovedadesHome />
-          </div>
-          <Divider className='h-[10px] my-4' />
-          <div>
+          </Section>
+          <Section>
             {user && <CarrouselArticulos usertoken={user} />}
-          </div>
+          </Section>
         </div>
       </main>
     </AuthenticatedLayout>

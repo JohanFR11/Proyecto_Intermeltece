@@ -98,8 +98,6 @@ export default function AuditoriasUsers({ refreshAccessToken, subFolderId }) {
 
         setIsUploading(true);
 
-        console.log('el token',token)
-
         /* setUploadStatus('Subiendo archivo...'); */
         const formData = new FormData();
         formData.append('file', file);
