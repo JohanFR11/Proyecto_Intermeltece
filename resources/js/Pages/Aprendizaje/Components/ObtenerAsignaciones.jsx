@@ -1,14 +1,16 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Card, CardBody } from "@heroui/react";
+import { usePage } from "@inertiajs/react";
+import { Inertia } from "@inertiajs/inertia";
 
-export default function ObtenerAsignaciones({ token }) {
+export default function ObtenerAsignaciones({ auth, unreadNotifications }) {
 
     const [assignContent, setAssignContent] = useState([])
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { courseid, moduleid } = location.state || {};
+    const courseid = Number(usePage().props.courseid);
+    const moduleid = Number(usePage().props.moduleid);
+    const token = localStorage.getItem('moodle_token')
 
 
     useEffect(() => {
@@ -35,13 +37,21 @@ export default function ObtenerAsignaciones({ token }) {
     }, [courseid]);
     const handleBack = () => {
         if (window.history.length > 1) {
-            navigate(-1); // Vuelve atrás en la navegación
+            Inertia.visit(window.history.back()); // Regresa a la página anterior
         } else {
-            navigate("/modulo/index"); // Si no hay historial, redirige a una página específica
+            Inertia.visit(route("modulo.index")); // Redirige a una página específica si no hay historial
         }
     };
 
     return (
+        <AuthenticatedLayout
+            auth={auth}
+            unreadNotifications={unreadNotifications}
+            header={
+                <h2 className="font-semibold text-xl text-gray-800 leading-tight">Modulo de aprendizaje</h2>
+            }
+        >
+
         <div className="p-6 bg-white min-h-screen flex flex-col items-center">
 
             {assignContent ? (
@@ -85,5 +95,6 @@ export default function ObtenerAsignaciones({ token }) {
                 <p className="text-gray-500 text-lg">Cargando contenido...</p>
             )}
         </div>
+        </AuthenticatedLayout>
     );
 }

@@ -124,11 +124,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/modulo', [ModuloAprendizajeController::class, 'logIn'])->name('resources.modulo.login');
     Route::get('/modulo/register', [ModuloAprendizajeController::class, 'register'])->name('resources.modulo.register');
     Route::middleware([MoodleAuthMiddleware::class])->group(function () {
-        Route::get('/modulo/index', [ModuloAprendizajeController::class, 'index'])->name('resources.modulo.index');
-        // Route::get('/{any}', function () {
-        //     return redirect()->route('resources.modulo.index');
-        // })->where('any', '.*');
-    
+        Route::get('/modulo/index', [ModuloAprendizajeController::class, 'index'])->name('modulo.index');
+        Route::get('/modulo/cursos/{id}', [ModuloAprendizajeController::class, 'contenido'])->name('modulo.curso.contenido');
+        Route::get('/modulo/cursos/contenido/paginas', [ModuloAprendizajeController::class, 'obtenerContenidoPaginas'])->name('modulo.curso.contenido.paginas');
+        Route::get('/modulo/cursos/contenido/asignaciones', [ModuloAprendizajeController::class, 'obtenerContenidoAsignaciones'])->name('modulo.curso.contenido.asignaciones');
+        Route::get('/modulo/cursos/contenido/quiz', [ModuloAprendizajeController::class, 'obtenerContenidoQuiz'])->name('modulo.curso.contenido.quiz');
+        
         /* Backend moodle authenticated */
         Route::get('/moodle/user/{userid}', [MoodleController::class, 'getUserInfo'])->name('moodle.get.user.info');
         Route::get('/moodle/cursos_disponibles/{userid}', [MoodleController::class, 'getUserCourses'])->name('moodle.get.courses');

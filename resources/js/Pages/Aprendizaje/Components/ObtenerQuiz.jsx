@@ -1,15 +1,15 @@
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import {usePage } from "@inertiajs/react";
+import { Inertia } from "@inertiajs/inertia";
 
-export default function ObtenerQuiz() {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { courseid, moduleid } = location.state || {};
+export default function ObtenerQuiz({ auth, unreadNotifications }) {
+
+    const courseid = Number(usePage().props.courseid);
+    const moduleid = Number(usePage().props.moduleid);
     const [quiz, setQuiz] = useState([]);
     const [loading, setLoading] = useState(true); // Estado de carga
-    const token = localStorage.getItem('moodle_token')
 
     useEffect(() => {
         const obtenerCursosMoodle = async () => {
@@ -41,23 +41,31 @@ export default function ObtenerQuiz() {
         };
 
         obtenerCursosMoodle();
-        
+
     }, [courseid]);
 
 
     const handleBack = () => {
         if (window.history.length > 1) {
-            navigate(-1); // Vuelve atrás en la navegación
+            Inertia.visit(window.history.back()); // Regresa a la página anterior
         } else {
-            navigate("/modulo/index"); // Si no hay historial, redirige a una página específica
+            Inertia.visit(route("modulo.index")); // Redirige a una página específica si no hay historial
         }
     };
 
     return (
+        <AuthenticatedLayout
+            auth={auth}
+            unreadNotifications={unreadNotifications}
+            header={
+                <h2 className="font-semibold text-xl text-gray-800 leading-tight">Modulo de aprendizaje</h2>
+            }
+        >
+
         <div className="relative flex flex-col items-center justify-center min-h-screen bg-white text-blue-900">
-            { loading ? (
+            {loading ? (
                 <h1 className="text-2xl font-semibold">Cargando contenido...</h1>
-            ) :quiz ? (
+            ) : quiz ? (
                 <>
                     <button
                         onClick={handleBack}
@@ -73,17 +81,17 @@ export default function ObtenerQuiz() {
                     <div className="bg-blue-50 p-6 rounded-xl shadow-lg w-full max-w-3xl text-center">
                         {/* Iframe Responsivo */}
                         <div className="relative w-full overflow-hidden" style={{ paddingBottom: "75%" }}>
-                        {/* {iframeSrc ? ( */}
-                        <iframe 
-                        src={`http://127.0.0.1/moodle/mod/hvp/embed.php?id=${quiz.id}`}
-                        className="absolute top-0 left-0 w-full h-full rounded-lg"
-                        height="256"
-                        allowFullScreen
-                        title="Quiz de prueba en H5P">
-                        </iframe>
+                            {/* {iframeSrc ? ( */}
+                            <iframe
+                                src={`http://127.0.0.1/moodle/mod/hvp/embed.php?id=${quiz.id}`}
+                                className="absolute top-0 left-0 w-full h-full rounded-lg"
+                                height="256"
+                                allowFullScreen
+                                title="Quiz en H5P">
+                            </iframe>
                             {/* ) : (
                                 <h1 className="text-xl font-semibold">No se pudo cargar la actividad</h1>
-                            )} */}
+                                )} */}
                         </div>
                     </div>
                 </>
@@ -91,6 +99,7 @@ export default function ObtenerQuiz() {
                 <h1 className="text-2xl font-semibold">no se encontró contenido disponible</h1>
             )}
         </div>
+            </AuthenticatedLayout>
 
     );
 }

@@ -24,4 +24,56 @@ class ModuloAprendizajeController extends Controller
         return Inertia::render('Aprendizaje/Index');
     }
 
+    public function contenido($id)
+    {
+        return Inertia::render('Aprendizaje/Components/ObtenerContenidoCursos',[
+            'courseid' => $id
+        ]);
+    }
+
+    public function obtenerContenidoPaginas(Request $request)
+    {
+        $request->validate([
+            'courseid' => 'required|int',
+            'moduleid'=> 'required|int'
+        ]);
+
+        return Inertia::render('Aprendizaje/Components/ObtenerPaginas',
+            [
+                'courseid' => $request->courseid,
+                'moduleid'=>$request->moduleid
+            ]
+        );
+    }
+
+    public function obtenerContenidoAsignaciones(Request $request)
+    {
+        $request->validate([
+            'courseid' => 'required|int',
+            'moduleid'=> 'required|int'
+        ]);
+
+        return Inertia::render('Aprendizaje/Components/ObtenerAsignaciones',
+            [
+                'courseid' => $request->courseid,
+                'moduleid'=>$request->moduleid
+            ]
+        );
+    }
+
+    public function obtenerContenidoQuiz(Request $request)
+    {
+        $request->validate([
+            'courseid' => 'required|int',
+            'moduleid'=> 'required|int'
+        ]);
+
+        return Inertia::render('Aprendizaje/Components/ObtenerQuiz',
+            [
+                'courseid' => $request->courseid,
+                'moduleid'=>$request->moduleid
+            ]
+        );
+    }
+
 }

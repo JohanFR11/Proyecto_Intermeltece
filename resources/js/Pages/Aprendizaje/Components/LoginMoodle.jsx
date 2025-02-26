@@ -35,17 +35,12 @@ export default function LoginMoodle({ auth, unreadNotifications }) {
 
             const dataToken = response.data.token;
             const dataUser = response.data.userData;
-            const cookies= response.data.cookies
 
-
-            console.log(response.data)
-
-            console.log('cookies del documento', document.cookie)
             if (dataToken.token) {
                 localStorage.setItem("moodle_token", dataToken.token);
                 localStorage.setItem("user_id", dataUser.userid);
                 localStorage.setItem("user_name", dataUser.fullname);
-                //window.location.href='/modulo/index';
+                window.location.href='/modulo/index';
             } else {
                 setError("Credenciales incorrectas o servicio no disponible.");
             }

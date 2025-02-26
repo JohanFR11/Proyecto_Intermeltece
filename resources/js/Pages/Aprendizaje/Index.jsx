@@ -1,7 +1,7 @@
 import React from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Contenido from "./Fragments/Contenido";
-import { BrowserRouter as Router } from "react-router-dom";
+import AprendizajeLayout from "./Layout/AprendizajeLayout";
 
 const Index = ({ auth, unreadNotifications }) => {
 
@@ -13,9 +13,9 @@ const Index = ({ auth, unreadNotifications }) => {
                 <h2 className="font-semibold text-xl text-gray-800 leading-tight">Modulo de aprendizaje</h2>
             }
         >
-            <Router>
+        <AprendizajeLayout>
                 <Contenido />
-            </Router>
+        </AprendizajeLayout>
 
         </AuthenticatedLayout>
     );
