@@ -20,12 +20,7 @@ class AuthGoogleDrive extends Controller
 
     public function __construct()
     {
-        $this->client = new Google_Client();
-        $this->client->setClientId('714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com');
-        $this->client->setClientSecret('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');
-        $this->client->setRedirectUri("http://127.0.0.1:8000/dashboard");
-        $this->client->setAccessType('offline');
-        $this->client->setPrompt('consent');
+        
     }
 
     public function generateAuthUrl(){
@@ -46,8 +41,8 @@ class AuthGoogleDrive extends Controller
         // Configuración de los parámetros para la solicitud
         $postFields = [
             'code' => $authCode,
-            'client_id' => '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com',
-            'client_secret' => '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',
+            'client_id' => 'id-client',
+            'client_secret' => 'id-secret',
             'redirect_uri' => 'http://127.0.0.1:8000/dashboard',
             'grant_type' => 'authorization_code',
         ];
