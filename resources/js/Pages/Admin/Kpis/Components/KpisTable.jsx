@@ -9,8 +9,6 @@ export default function KpisTable () {
 
   const { auth, reports, reportsData2 } = usePage().props
 
-  /* console.log(reportsData2) */
-
   return (
     <Table
       aria-label='Tabla de informes de PowerBy' bottomContent={<Paginator paginate={reports.links} />}
@@ -28,8 +26,6 @@ export default function KpisTable () {
           : (
             <TableBody>
               {reportsData2.map(({ id, name, roles }) => {
-
-                /* console.log(id) */
 
                 const userHasRole = roles.find(role => role.name === auth.userRole[0])
 
