@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, CardBody, Button, Input } from "@heroui/react";
 import axios from "axios";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import Cookies from 'js-cookie';
 
 export default function LoginMoodle({ auth, unreadNotifications }) {
 
@@ -16,10 +15,6 @@ export default function LoginMoodle({ auth, unreadNotifications }) {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
-    const setCookie = (name, value, options = {}) => {
-        Cookies.set(name, value, options);
-      };
 
     const handleLogin = async (e) => {
         e.preventDefault();
