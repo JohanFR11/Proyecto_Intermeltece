@@ -1,0 +1,12 @@
+{
+    "Failure to Win the Opportunity" : "Error al Ganar la oportunidad",
+    "Error getting data from SAP": "Error al obtener los datos de SAP",
+    "SAP HTTP Request Error" : "Error en la Solicitud HTTP SAP ",
+    "Error saving server": "Error al guardar el servidor",
+    "Error Creating the Client" : "Error al Crear el Cliente",
+    "Error saving quote" : "Error al guardar la Cotización",
+    "Server Quote Created" : "Cotizacion de servidor Creada",
+    "You are not authorized to access this resource, please contact IT to request access" : "No estás Autorizado para entrar a este recurso, comunícate con IT para solicitar Acceso",
+    "Error getting the Access Token" : "Error al obtener el Token de acceso",
+    "Error getting transaction data" : "Error al obtener los datos de la transacción"
+}

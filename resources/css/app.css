@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#app2 {
+    display: grid;
+    grid-template-areas: 
+        "aside main main"
+        "footer footer footer" 
+    ;
+    
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
+}

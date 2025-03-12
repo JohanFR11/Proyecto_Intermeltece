@@ -1,0 +1,1 @@
+Hola {{$usuario}}, Se le informa que al documento "{{$documento}}" se le establecio el estado {{$estado}} el dia {{$dia}}, por {{$name}}, {{$areaauditoria}}. 
