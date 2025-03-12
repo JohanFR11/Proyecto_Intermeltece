@@ -8,6 +8,7 @@ import {
   AccountingIcon,
   ReportIcon,
   DocumentIcon,
+  LearnIcon,
 } from "@/Components/icons/Icons";
 import Sidebar, { SidebarItem } from "./partials/Sidebar";
 import DevMessage from "./partials/DevMessage";
@@ -40,6 +41,13 @@ export default function Authenticated({
           href={route("dashboard")}
           text="Inicio"
         />
+
+        <SidebarItem 
+          icon={<LearnIcon alt="Student Icon" size='32px' color='#395181'/>}
+          href={route('modulo.index')} 
+          text='Cursos y Capacitaciones' 
+        />
+
 
         {user.roles[0].name === "Administrador" ? (
           <SidebarItem
