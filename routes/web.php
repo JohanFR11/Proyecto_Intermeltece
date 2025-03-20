@@ -34,6 +34,10 @@ use App\Http\Controllers\InformeSeguimientoController;
 use App\Http\Controllers\TestEmailController;
 use App\Http\Controllers\DrectorAuditoriaController;
 use App\Http\Controllers\AuthGoogleDrive;
+use App\Http\Controllers\KpisFirmaController;
+use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\FirmaController;
+use App\Http\Controllers\KpisSuperios;
 
 /*
 |--------------------------------------------------------------------------
@@ -136,6 +140,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/director/comentarios', [DrectorAuditoriaController::class, 'SubirComentarioDirector'])->name('director.subir.comentario');
     Route::post('/director/estados', [DrectorAuditoriaController::class, 'ActualizarEstado'])->name('director.actualizar.estado');
     Route::get('/director/comentarios/{fileId}', [DrectorAuditoriaController::class, 'obtenerComentariosDirector']);
+
+    /* Modulo para la firma de los Kpi's */
+    Route::get('/KpisUser', [KpisFirmaController::class, 'index'])->name('resources.kpiuser.index');
+    Route::get('/KpisUser/kpis/{name}', [KpisFirmaController::class, 'kpisinfouser'])->name('kpis.user.email');
+    Route::post('/firma/kpis', [ReporteController::class, 'generarYEnviarPDF']);
+    Route::post('/guardar-firma', [FirmaController::class, 'guardarFirma']);
+    Route::get('/mostrar/{folderID}', [KpisFirmaController::class, 'PrevKpi'])->name('mostrar.kpiuser.pdf');
+
+    /* Modulo para el superior de kpis firma */
+    Route::get('/superior/kpis', [KpisSuperios::class, 'index'])->name('resources.superkpis.index');
+    Route::post('/superior/kpis/documentos', [KpisSuperios::class, 'archivosUser']);
+    Route::post('/superior/kpis/firmar_documentos', [KpisSuperios::class, 'firmaSuperior']);
+    Route::post('/guardar-firma/superior', [FirmaController::class, 'guardarFirmaSuperior']);
 
 
     Route::get('/salesToday', [MasterDataController::class, 'salesToday'])->name('masterdata.salestoday');

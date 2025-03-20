@@ -6,11 +6,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "barryvdh/laravel-dompdf": "^2.0",
+        "barryvdh/laravel-dompdf": "^2.1",
         "beyondcode/laravel-websockets": "^1.14",
         "google/apiclient": "^2.18",
         "guzzlehttp/guzzle": "^7.8",
         "inertiajs/inertia-laravel": "^0.6.3",
+        "intervention/image": "^3.11",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
         "laravel/socialite": "^5.8",
@@ -18,8 +19,12 @@
         "laravel/vapor-cli": "^1.59",
         "laravel/vapor-core": "^2.32",
         "nesbot/carbon": "^2.70",
+        "phpmailer/phpmailer": "^6.9",
         "pusher/pusher-php-server": "^7.2",
+        "setasign/fpdi": "^2.6",
+        "setasign/fpdi-tcpdf": "^2.3",
         "spatie/laravel-permission": "^5.10",
+        "tecnickcom/tcpdf": "^6.8",
         "tightenco/ziggy": "^1.0"
     },
     "require-dev": {

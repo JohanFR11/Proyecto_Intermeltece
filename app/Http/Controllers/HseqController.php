@@ -56,7 +56,6 @@ class HseqController extends Controller
                 'code' => $e->getCode(),
             ], 500);
         }
-        dd($request->all());
     }
 
     /**
