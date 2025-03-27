@@ -5,8 +5,8 @@ const DocEmpleados = React.lazy(() => import("./Components/DocumentosEmpleados")
 const Index = ({ auth, unreadNotifications }) => {
 
     const [user, setUser] = useState(null);  // Almacena los datos del usuario
-    
-console.log('user',user);
+    const [statusFile, setStatusfile] = useState(null);
+    const [secondStatus, setSecondStatus] = useState(null);
 
     const refreshAccessToken = async () => {
         const refreshToken = localStorage.getItem('refresh_token');
@@ -20,7 +20,6 @@ console.log('user',user);
                 if (response.data.access_token) {
                     localStorage.setItem('access_token', response.data.access_token);
                 } else {
-                    console.error("No se pudo renovar el token de acceso. Datos recibidos:", response.data);
                     alert('No se pudo renovar el token de acceso.');
                 }
             } catch (error) {
@@ -33,18 +32,50 @@ console.log('user',user);
     };
 
     useEffect(() => {
+        axios
+            .get("/user", { withCredentials: true }) // Llamada a la API
+            .then((res) => {
+                const accessTokenDB = res.data.name; // Extrae directamente el token
+                setUser(accessTokenDB); // Guarda el token en el estado
+            })
+            .catch((error) => {
+                console.error("Error al obtener el usuario:", error);
+                setUser(null); // Si hay error, no hay usuario
+            })
+    }, []);
+
+    useEffect(() => {
+        if (user) { // Verifica que `user` tenga un valor antes de hacer la llamada
             axios
-                .get("/user", { withCredentials: true }) // Llamada a la API
-                .then((res) => {
-                    const accessTokenDB = res.data.name; // Extrae directamente el token
-                    console.log("Access Token desde DB:", accessTokenDB);
-                    setUser(accessTokenDB); // Guarda el token en el estado
+                .get(`/estado/superior/${user}`)
+                .then((response) => {
+                    // Verificar que response.data no sea undefined o vacío antes de acceder a índices
+                    if (response.data && response.data.length > 0) {
+                        const estado_empleado = response.data; // Accede de manera segura
+
+                        // Comparación y lógica condicional
+                        setStatusfile(estado_empleado[0]);
+
+                        const segundo_estado_empleado = response.data; // Accede de manera segura
+
+                        // Extraer el valor 'primer_estado' del objeto si existe
+                        const extactor_estado_dos = segundo_estado_empleado['segundo_estado'];
+
+                        // Comparación y lógica condicional
+                        if (extactor_estado_dos === 0) {
+                            setSecondStatus(false)
+                        } else {
+                            setSecondStatus(true)
+                        }
+                    } else {
+                        console.error("La respuesta no contiene datos.");
+                    }
                 })
                 .catch((error) => {
-                    console.error("Error al obtener el usuario:", error);
-                    setUser(null); // Si hay error, no hay usuario
-                })
-        }, []);
+                    console.error("Error al obtener el estado del usuario:", error);
+                });
+        }
+    }, [user]);
 
     return (
         <AuthenticatedLayout
@@ -56,7 +87,7 @@ console.log('user',user);
         >
             <div className="mt-5 bg-white flex items-start overflow-hidden shadow-lg sm:rounded-lg p-4">
                 {user && (
-                    <DocEmpleados refreshAccessToken={refreshAccessToken} name={user}/>
+                    <DocEmpleados refreshAccessToken={refreshAccessToken} name={user} statusFile={statusFile} />
                 )}
             </div>
         </AuthenticatedLayout>

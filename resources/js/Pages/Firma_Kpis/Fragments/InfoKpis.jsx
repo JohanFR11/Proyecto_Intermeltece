@@ -1,21 +1,29 @@
 import axios from "axios";
-import React, { useEffect, useState, Suspense} from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/table";
 import { motion } from "framer-motion";
 const FirmaUsuario = React.lazy(() => import("./firmausuario"));
 
-export default function InfoUser({ name, refreshAccessToken }) {
+export default function InfoUser({ secondStatus, status, name, refreshAccessToken }) {
+
+    useEffect(() => {
+        if (status === false) {
+            setstatus(false);
+        } else if (status === true) {
+            setstatus(true);
+        } else {
+            setstatus(true);
+        }
+    }, [status]);
+    
+
     const [mostrarFirma, setMostrarFirma] = useState(false);
     const [firmaBase64, setFirmaBase64] = useState(null);
     const [kpisIde, setKpisIde] = useState([]);
     const [folderID, setIdFolder] = useState('');
-    /* const [mostrarTodo, setMostrarTodo] = useState(() => {
-        // Obtener el estado almacenado en localStorage
-        return localStorage.getItem("finalizado") !== "true";
-    }); */
-    const [mostrarTodo, setMostrarTodo] = useState(true); // Nuevo estado para ocultar todo después de finalizar
-    const [mostrarPrevisualizacion, setMostrarPrev] = useState(false); // Nuevo estado para ocultar todo después de finalizar
-    const [datos, setDatos] = useState([]);// Nuevo estado para ocultar todo después de finalizar
+    const [mostratstatus, setstatus] = useState(true); 
+    const [mostrarPrevisualizacion, setMostrarPrev] = useState(false); 
+    const [datos, setDatos] = useState([]);
 
     const listarKpis = async () => {
         try {
@@ -74,10 +82,11 @@ export default function InfoUser({ name, refreshAccessToken }) {
 
             console.log(response.data.mensaje);
             console.log(response.data.Superior);
-
             setIdFolder(response.data.folder_id);
-            // Ocultar todo excepto la tabla después de finalizar
-            setMostrarTodo(false);
+
+            window.location.reload();
+           
+            estado({ estado: false, estado_prev: true, nombre: name });
 
         } catch (error) {
             console.error("Error al generar PDF:", error.response ? error.response.data : error.message);
@@ -85,41 +94,68 @@ export default function InfoUser({ name, refreshAccessToken }) {
     };
 
     useEffect(() => {
-        const obtenerPrevisualizacion = async () => {
-            if (!folderID) return; // Si folderID no está definido, no hacer nada
+        if (secondStatus === true) {
+            const obtenerPrevisualizacion = async () => {
+                if (!kpisIde) return; // Si folderID no está definido, no hacer nada
 
-            let token = localStorage.getItem('access_token');
-            const tokenExpiry = 3599;
+                let token = localStorage.getItem('access_token');
+                const tokenExpiry = 3599;
 
-            // Verificar si el token está vencido
-            const isTokenExpired = tokenExpiry && Date.now() > parseInt(tokenExpiry, 10);
+                // Verificar si el token está vencido
+                const isTokenExpired = tokenExpiry && Date.now() > parseInt(tokenExpiry, 10);
 
-            if (!token || isTokenExpired) {
-                await refreshAccessToken();
-                token = localStorage.getItem('access_token');
-            }
+                if (!token || isTokenExpired) {
+                    await refreshAccessToken();
+                    token = localStorage.getItem('access_token');
+                }
 
-            if (!token) {
-                console.error('No se pudo obtener un token válido.');
-                return;
-            }
-            try {
-                const response = await axios.get(`http://127.0.0.1:8000/mostrar/${folderID}`, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                if (!token) {
+                    console.error('No se pudo obtener un token válido.');
+                    return;
+                }
+                try {
 
-                setDatos(response.data.files);
-                setMostrarPrev(true);
-            } catch (error) {
-                console.error("Error al generar PDF:", error.response ? error.response.data : error.message);
-            }
-        };
+                    const primerdato = kpisIde[0];
 
-        obtenerPrevisualizacion();
-    }, [folderID]);
+                    const response = await axios.post(`http://127.0.0.1:8000/mostrar`, primerdato, {
+                        headers: {
+                            "Content-Type": "application/json",
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    setDatos(response.data.files);
+                    /* setMostrarPrev(true); */
+                } catch (error) {
+                    console.error("Error:", error.response ? error.response.data : error.message);
+                }
+            };
+
+            obtenerPrevisualizacion();
+        }
+    }, [secondStatus]);
+
+    const estado = async ({ estado, estado_prev, nombre }) => {
+
+        const newstate = {
+            estado: estado,
+            estado_vista: estado_prev,
+            nombre_empleado: nombre,
+        }
+
+        console.log(newstate);
+
+        try {
+            await axios.post('http://127.0.0.1:8000/actualizar-estado', newstate, {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+
+        } catch (error) {
+            console.error("Error al generar PDF:", error.response ? error.response.data : error.message);
+        }
+    }
 
     const id_user = kpisIde.length > 0 ? kpisIde[0].identificacion_empleado : null;
 
@@ -167,7 +203,7 @@ export default function InfoUser({ name, refreshAccessToken }) {
                     )}
                 </Table>
 
-                {mostrarTodo && (
+                {mostratstatus && (
                     <>
                         <button onClick={() => setMostrarFirma(true)} className="mt-5 p-3 rounded-lg text-center text-white bg-[#395181] duration-150 hover:bg-[#4c6dad]">
                             Firmar
@@ -191,7 +227,7 @@ export default function InfoUser({ name, refreshAccessToken }) {
                     </>
                 )}
 
-                {mostrarPrevisualizacion && (
+                {secondStatus && (
                     <div className="flex itme-center justify-center mt-4">
                         {Array.isArray(datos) && datos.length > 0 ? (
                             datos.map((item, index) => (

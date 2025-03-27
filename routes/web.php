@@ -38,6 +38,7 @@ use App\Http\Controllers\KpisFirmaController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\FirmaController;
 use App\Http\Controllers\KpisSuperios;
+use App\Http\Controllers\EstadoFirma;
 
 /*
 |--------------------------------------------------------------------------
@@ -146,13 +147,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/KpisUser/kpis/{name}', [KpisFirmaController::class, 'kpisinfouser'])->name('kpis.user.email');
     Route::post('/firma/kpis', [ReporteController::class, 'generarYEnviarPDF']);
     Route::post('/guardar-firma', [FirmaController::class, 'guardarFirma']);
-    Route::get('/mostrar/{folderID}', [KpisFirmaController::class, 'PrevKpi'])->name('mostrar.kpiuser.pdf');
+    Route::post('/mostrar', [KpisFirmaController::class, 'PrevKpi'])->name('mostrar.kpiuser.pdf');
 
     /* Modulo para el superior de kpis firma */
     Route::get('/superior/kpis', [KpisSuperios::class, 'index'])->name('resources.superkpis.index');
     Route::post('/superior/kpis/documentos', [KpisSuperios::class, 'archivosUser']);
     Route::post('/superior/kpis/firmar_documentos', [KpisSuperios::class, 'firmaSuperior']);
     Route::post('/guardar-firma/superior', [FirmaController::class, 'guardarFirmaSuperior']);
+
+    /* Modulo empleado acutlizar estado */
+    Route::post('/actualizar-estado', [EstadoFirma::class, 'estadoempleado']);
+    Route::post('/actualizar-estado/superior', [EstadoFirma::class, 'estadosuperior']);
+    Route::get('/estado/{accessTokenDB}', [EstadoFirma::class, 'obtenerestado']);
+    Route::get('/estado/superior/{accessTokenDB}', [EstadoFirma::class, 'obtenerestadosuperior']);
 
 
     Route::get('/salesToday', [MasterDataController::class, 'salesToday'])->name('masterdata.salestoday');

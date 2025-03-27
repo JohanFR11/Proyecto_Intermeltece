@@ -7,6 +7,7 @@ use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 use Intervention\Image\Encoders\JpegEncoder;
 use Illuminate\Support\Facades\Storage;
 use Google\Service\Drive\DriveFile;
+use Illuminate\Support\Facades\View;
 
 class PdfSuperior
 {
@@ -27,27 +28,6 @@ class PdfSuperior
             $data_empleado = array_filter($data_empleado, 'is_array');
         } else {
             return null;
-        }
-
-        /* Mapeo del Data para la obtencion de cada uno de sus datos */
-        $rows = "";
-        foreach ($data_empleado as $item) {
-            \Log::error("El formato de los datos no es válido", ['item del forech' => $item]);
-            $identificacion = $item['identificacion_empleado'] ?? 'N/A';
-            $correo = $item['correo_empleado'] ?? 'N/A';
-            $nombre = $item['nombre_indicado'] ?? 'N/A';
-            $descripcion = $item['descripcion_kpi'] ?? 'N/A';
-            $peso = $item['peso_objetivo'] ?? 'N/A';
-
-            $rows .= "
-                <tr>
-                    <td>{$identificacion}</td>
-                    <td>{$correo}</td>
-                    <td>{$nombre}</td>
-                    <td>{$descripcion}</td>
-                    <td>{$peso}</td>
-                </tr>
-            ";
         }
 
         $rutaFirma = public_path("storage/firmas/" . basename($firmaempleado));
@@ -72,56 +52,14 @@ class PdfSuperior
             \Log::error("No se encontró la imagen de la firma: {$rutaFirma_superior}");
         }
 
-        $html = "
-            <style>
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    font-family: Arial, sans-serif;
-                    font-size: 13px;
-                }
-                th, td {
-                    border: 1px solid #000;
-                    padding: 10px;
-                    text-align: center;
-                }
-                th {
-                    background-color: #d6fdff;
-                    font-weight: bold;
-                }
-                h1 {
-                    text-align: center;
-                    font-size: 16px;
-                    margin-bottom: 5px;
-                }
-                .firma {
-                    text-align: center;
-                    margin-top: 20px;
-                }
-            </style>
-            <h1>Reporte de KPI's</h1>
-            <table>
-                <tr>
-                    <th>Identificación</th>
-                    <th>Correo</th>
-                    <th>Nombre Indicado</th>
-                    <th>Descripción KPI</th>
-                    <th>Peso Objetivo</th>
-                </tr>
-                {$rows}
-            </table>
-            <div class='firma'>
-                <div>
-                    <p>Firma del empleado</p>
-                    " . ($firmaBase64 ? "<img src='{$firmaBase64}' width='150' />" : "<p>No hay firma disponible</p>") . "
-                </div> 
-                <div>
-                    <p>Firma del Superior</p>
-                    " . ($firmaBase64__superior ? "<img src='{$firmaBase64__superior}' width='150' />" : "<p>No hay firma disponible</p>") . "
-                </div>         
-            </div>
-        ";
+        $html = View::make('pdfs.reportesuperior', [
+            'data' => $data_empleado,
+            'firmaBase64' => $firmaBase64,
+            'firmaBase64__superior' => $firmaBase64__superior,
+        ])->render();
 
+        set_time_limit(300);
+        ini_set('max_execution_time', 300);
         /* Crea el folder para los archivos de cada persona  */
         $pdf = Pdf::loadHTML($html);
         $timestamp = date('Ymd_His');

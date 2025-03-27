@@ -23,16 +23,18 @@ class KpisFirmaController extends Controller
         $this->client->setAccessType(accessType: 'offline');
         $this->client->setPrompt(prompt: 'consent');
     }
-    public function index(){
+    public function index()
+    {
         return Inertia::render('Firma_Kpis/Index');
     }
-    public function kpisinfouser($name){
-        
+    public function kpisinfouser($name)
+    {
+
         Log::info("respuesta:", ['email' => $name]);
 
         $mayusculas = strtoupper($name);
 
-        try{    
+        try {
 
             $kpisdata = DB::select('SELECT * FROM kpi_firma WHERE nombre_empleado = ?', [$mayusculas]);
 
@@ -40,7 +42,7 @@ class KpisFirmaController extends Controller
 
             return response()->json(['kpisuser' => $kpisdata]);
 
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             // Manejar excepciones
             Log::error("Error al obtener datos de los kpis {$e->getMessage()}");
             return response()->json(['error' => $e->getMessage()], 500);
@@ -48,7 +50,8 @@ class KpisFirmaController extends Controller
 
     }
 
-    public function PrevKpi(Request $request,$folderID){
+    public function PrevKpi(Request $request)
+    {
         $authorizationHeader = $request->header('Authorization');
         $accessToken = str_replace('Bearer', '', $authorizationHeader);
 
@@ -57,9 +60,37 @@ class KpisFirmaController extends Controller
 
         $service = new Google_Service_Drive($this->client);
 
+        $requestData = $request->all();
+        log::info('dataxxsxa', ['envia' => $requestData]);
+
+
         try {
+
+            $data = $requestData;
+
+            $nombre_empleado = $data['nombre_empleado'];
+            $id_empleado = $data['identificacion_empleado'];
+            $nombre_superior = $data['nombre_superior'];
+
+            $carpetaRaizId = '1nf_9Sd6KNfVoO4Qu0UNUCdZmKZztv9Lp';
+
+            $folderSuperiorId = $this->buscarCarpetaEnDrive($service, $nombre_superior, $carpetaRaizId);
+
+            log::info('fodler', ['superior' => $folderSuperiorId]);
+
+            if (!$folderSuperiorId) {
+                log::info('NO SE ENCONTRO NADA ');
+            }
+
+            $folderEmpleadoId = $this->buscarCarpetaEnDrive($service, "{$nombre_empleado}_{$id_empleado}", $folderSuperiorId);
+            log::info('folder_empleado', ['empleado' => $folderEmpleadoId]);
+
+            if (!$folderEmpleadoId) {
+                log::info('NO SE ENCONTRO NADA ');
+            }
+
             $filesfolders = $service->files->listFiles([
-                'q' => "'$folderID' in parents",
+                'q' => "'$folderEmpleadoId' in parents",
                 'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
             ]);
             $filesList = [];
@@ -78,5 +109,30 @@ class KpisFirmaController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al listar los archivos: ' . $e->getMessage()], 500);
         }
+    }
+
+    private function buscarCarpetaEnDrive($service, $nombreCarpeta, $parentId)
+    {
+
+        if (!$parentId) {
+            \Log::error("El parentId está vacío o incorrecto");
+            return null;
+        }
+
+        $query = "name contains '{$nombreCarpeta}' and mimeType = 'application/vnd.google-apps.folder' and '{$parentId}' in parents and trashed = false";
+
+        $results = $service->files->listFiles(['q' => $query, 'fields' => 'files(id)']);
+
+        \Log::info("Carpetas dentro de parentId", ['folders' => $results->getFiles()]);
+
+        $folders = $results->getFiles();
+
+        if (!empty($folders) && isset($folders[0])) {
+            return $folders[0]->getId();
+        } else {
+            \Log::error("No se encontraron carpetas en el parentId proporcionado.", ['parentId' => $parentId, 'nombreCarpeta' => $nombreCarpeta]);
+            return null; // Manejar el error de forma adecuada
+        }
+
     }
 }

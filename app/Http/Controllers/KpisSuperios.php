@@ -166,9 +166,12 @@ class KpisSuperios extends Controller
         /* if (!$requestData || !isset($requestData[0])) {
             return response()->json(['error' => 'Datos inválidos'], 400);
         } */
+        \Log::info('data generada:', ['datos' => $requestData]);
 
-        $id_empleado = $requestData['id_user'][0];
-        $id_carpeta_empleado = $requestData['id_archivo'][0];
+        $id_empleado = $requestData['id_user'];
+        \Log::info('data generada:', ['datos' => $id_empleado]);
+        $id_carpeta_empleado = $requestData['id_archivo'];
+        \Log::info('data generada:', ['datos' => $id_carpeta_empleado]);
 
         $data_empleado = DB::select('SELECT * FROM kpi_firma WHERE identificacion_empleado = ?', [$id_empleado]);
 

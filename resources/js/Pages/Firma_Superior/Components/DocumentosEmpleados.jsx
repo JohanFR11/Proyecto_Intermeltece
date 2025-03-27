@@ -4,7 +4,7 @@ const Preview = React.lazy(() => import('../Fragments/preview'));
 const FirmaSuperior = React.lazy(() => import('../Fragments/firmasuperior'));
 import axios from 'axios';
 
-export default function DocEmpleados({ refreshAccessToken, name}) {
+export default function DocEmpleados({ refreshAccessToken, name, statusFile }) {
 
     const [file, setFile] = useState([]); // Nuevo estado para ocultar todo después de finalizar
     const [folder, setFolder] = useState([]); // Nuevo estado para ocultar todo después de finalizar
@@ -17,9 +17,8 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
     const [size, setSize] = React.useState('md');
     const [fileID, setFileId] = useState(null);
 
-    const [mostrarTodo, setMostrarTodo] = useState(true);
     const [mostrarFirma, setMostrarFirma] = useState(false);
-    const [firmaBase64, setFirmaBase64] = useState(null);
+    const [firmas, setFirmas] = useState({});
 
     const sizes = ["full"];
     const handleOpen = (id, size) => {
@@ -29,9 +28,12 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
         onOpen();
     }
 
-    const handleGuardarFirma = (firma) => {
-        setFirmaBase64(firma);
-        setMostrarFirma(false);
+    const handleGuardarFirma = (archivoId, firma) => {
+        setFirmas((prevFirmas) => ({
+            ...prevFirmas,
+            [archivoId]: firma, // Guardar la firma específica del archivo
+        }));
+        setMostrarFirma(false); // Cerrar la firma una vez guardada
     };
 
     const handlearchivos = async () => {
@@ -57,7 +59,7 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
         }
 
         try {
-            const response = await axios.post(`http://127.0.0.1:8000/superior/kpis/documentos`,newdata,{
+            const response = await axios.post(`http://127.0.0.1:8000/superior/kpis/documentos`, newdata, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -65,22 +67,18 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
             });
             setFolder(response.data.folders);
             setFile(response.data.files);
-            /* console.log(response.data.folders)
-            console.log(response.data.files) */
 
         } catch (error) {
             console.error('Error al obtener los kpis:', error);
         }
     }
 
-    const nombre = folder.map((item) => item.folder_name);
-    const id_folder = folder.map((item) => item.id);
+/*     const nombre = folder.map((item) => item.folder_name);
 
-    console.log(id_folder);
+    const identificacion = nombre.map((name) => name.match(/\d+/g)?.join("") || ""); */
 
-    const identificacion = nombre.map((name) => name.match(/\d+/g)?.join("") || "");
 
-    const handleFiledit = async () => {
+    const handleFiledit = async (archivo_id,folder_id, folder_name) => {
 
         let token = localStorage.getItem('access_token');
         const tokenExpiry = 3599;
@@ -99,12 +97,16 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
         }
         try {
 
-            console.log(firmaBase64);
+            const identificacion = folder_name.replace(/\D+/g,"");
+            console.log(identificacion)
+            console.log(folder_id)
+            console.log(folder_name)
 
+            const firmaArchivo = firmas[archivo_id];
             const dataConFirma = {
-                id_archivo: id_folder,
+                id_archivo: folder_id,
                 id_user: identificacion,
-                firma_superior: firmaBase64
+                firma_superior: firmaArchivo
             };
 
             const response = await axios.post('http://127.0.0.1:8000/superior/kpis/firmar_documentos', dataConFirma, {
@@ -117,7 +119,9 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
             console.log(response.data.mensaje);
             console.log(response.data.Superior);
 
-            setMostrarTodo(false);
+            window.location.reload();
+
+            estado({ estado: false, estado_prev: true, nombre: name, file: archivo_id });
 
         } catch (error) {
             console.error('Error al obtener los kpis:', error);
@@ -128,8 +132,28 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
         handlearchivos();
     }, []);
 
-    console.log(file)
-    return (      
+    const estado = async ({ estado, estado_prev, nombre, file }) => {
+
+        const newstate = {
+            estado: estado,
+            estado_vista: estado_prev,
+            nombre_empleado: nombre,
+            file_id: file,
+        }
+
+        try {
+            await axios.post('http://127.0.0.1:8000/actualizar-estado/superior', newstate, {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+
+        } catch (error) {
+            console.error("Error al generar PDF:", error.response ? error.response.data : error.message);
+        }
+    }
+
+    return (
         <div className="m-4">
             {folder.length > 0 ? (
                 <Table aria-label="Lista de Kpi's">
@@ -141,46 +165,65 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
                         {folder.map((fodlers) => {
                             const filesfolder = file.filter((item) => {
                                 const folderId = item.folder_id;
-                                console.log('folderid',folderId)
                                 return folderId === fodlers.id;
                             });
 
                             return filesfolder.length > 0 ? (
-                                filesfolder.map((files) => (
-                                    <TableRow key={files.id} className="text-center">
-                                        <TableCell className="text-sm text-center p-2">{fodlers.folder_name}</TableCell>
-                                        <TableCell className="text-sm text-center p-2">
-                                            <button className="p-3 text-center bg-[#395181] rounded-xl text-white duration-200 hover:bg-[#4c6baa] mr-2"
-                                                onClick={() => handleOpen(files.id, sizes)}
-                                            >
-                                                Ver
-                                            </button>
-                                            {mostrarTodo && (
-                                                <>
-                                                    <button onClick={() => setMostrarFirma(true)}
-                                                        className="mt-5 p-3 rounded-lg text-center text-white bg-[#395181] duration-150 hover:bg-[#4c6dad]">
-                                                        Firmar
-                                                    </button>
+                                filesfolder.map((files) => {
 
-                                                    {firmaBase64 && (
-                                                        <div className="mt-4 flex flex-col items-center">
-                                                            <h3>Firma Guardada:</h3>
-                                                            <img src={firmaBase64} alt="Firma" className="border-white border-1" />
-                                                        </div>
-                                                    )}
-
-                                                    {firmaBase64 && (
-                                                        <button className="mt-5 p-3 rounded-lg text-center text-white bg-[#395181] duration-150 hover:bg-[#4c6dad]"
-                                                            onClick={() => handleFiledit()}
+                                    const filesStatus = statusFile.filter((item) => {
+                                        const idcomparation = item.folder_id;
+                                        console.log(idcomparation)
+                                        return idcomparation === files.id
+                                    });
+                                    console.log('filestatus', filesStatus)
+                                    return (
+                                        <TableRow key={files.id} className="text-center">
+                                            <TableCell className="text-sm text-center p-2">{fodlers.folder_name}</TableCell>
+                                            <TableCell className="text-sm text-center p-2">
+                                                <button
+                                                    className="p-3 text-center bg-[#395181] rounded-xl text-white duration-200 hover:bg-[#4c6baa] mr-2"
+                                                    onClick={() => handleOpen(files.id, sizes)}
+                                                >
+                                                    Ver
+                                                </button>
+                                                {filesStatus.length === 0 || !filesStatus.every((status) => status.folder_id === files.id) ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => {
+                                                                setFirmas((prev) => ({ ...prev, [files.id]: null }));
+                                                                setFileId(files.id);
+                                                                setMostrarFirma(true); // Mostrar firma
+                                                            }}
+                                                            className="mt-5 p-3 rounded-lg text-center text-white bg-[#395181] duration-150 hover:bg-[#4c6dad]"
                                                         >
-                                                            Finalizar
+                                                            Firmar
                                                         </button>
-                                                    )}
-                                                </>
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                ))
+
+                                                        {firmas[files.id] && (
+                                                            <div className="mt-4 flex flex-col items-center">
+                                                                <h3>Firma Guardada:</h3>
+                                                                <img src={firmas[files.id]} alt="Firma" className="border-white border-1" />
+                                                            </div>
+                                                        )}
+
+                                                        {firmas[files.id] && (
+                                                            <button
+                                                                className="mt-5 p-3 rounded-lg text-center text-white bg-[#395181] duration-150 hover:bg-[#4c6dad]"
+                                                                onClick={() => handleFiledit(files.id, files.folder_id, fodlers.folder_name)}
+                                                            >
+                                                                Finalizar
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <p>Firmado</p>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+
+                                })
                             ) : (
                                 <TableRow key={fodlers.id} className="text-center">
                                     <TableCell className="text-sm text-center p-2">{fodlers.folder_name}</TableCell>
@@ -196,9 +239,11 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
                 </Table>
             )}
 
+
+
             {mostrarFirma && (
                 <Suspense fallback={<p className="text-gray-500">Cargando firma...</p>}>
-                    <FirmaSuperior onSave={handleGuardarFirma} onClose={() => setMostrarFirma(false)} />
+                    <FirmaSuperior onSave={(firma) => handleGuardarFirma(fileID, firma)} />
                 </Suspense>
             )}
 
@@ -208,7 +253,7 @@ export default function DocEmpleados({ refreshAccessToken, name}) {
                 </Suspense>
             )}
 
-            
+
         </div>
     )
 }

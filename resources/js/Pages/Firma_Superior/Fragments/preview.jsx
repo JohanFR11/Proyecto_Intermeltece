@@ -44,9 +44,6 @@ export default function Preview({ fileID, refreshAccessToken, open, close, size 
     return (
         <Modal size={size} isOpen={open} onClose={close} className="inset-0 z-50 bg-black/50 backdrop-blur-sm">
             <ModalContent className="bg-white rounded-xl shadow-2xl p-3">
-                <ModalHeader className="text-2xl font-bold text-center text-gray-800 border-b pb-4">
-                    Especificaciones del Modelo Ulefone
-                </ModalHeader>
                 <ModalBody className="h-full w-full">
                     <div className="h-full w-full">
                         {fileBlob ? (

@@ -7,6 +7,7 @@ use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 use Intervention\Image\Encoders\JpegEncoder;
 use Google\Service\Drive\DriveFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 
 class PdfService
 {
@@ -23,27 +24,7 @@ class PdfService
             $data = array_filter($data, 'is_array');
         } else {
             return null;
-        }
-
-        // Construcción de las filas de la tabla
-        $rows = "";
-        foreach ($data as $item) {
-            $identificacion = $item['identificacion_empleado'] ?? 'N/A';
-            $correo = $item['correo_empleado'] ?? 'N/A';
-            $nombre = $item['nombre_indicado'] ?? 'N/A';
-            $descripcion = $item['descripcion_kpi'] ?? 'N/A';
-            $peso = $item['peso_objetivo'] ?? 'N/A';
-
-            $rows .= "
-                <tr>
-                    <td>{$identificacion}</td>
-                    <td>{$correo}</td>
-                    <td>{$nombre}</td>
-                    <td>{$descripcion}</td>
-                    <td>{$peso}</td>
-                </tr>
-            ";
-        }
+        }   
 
         // Procesamiento de la firma
         $rutaFirma = public_path("storage/firmas/" . basename($nombreFirma));
@@ -51,59 +32,21 @@ class PdfService
 
         if (file_exists($rutaFirma)) {
             $manager = new ImageManager(new ImagickDriver());
-            $img = $manager->read($rutaFirma)->encode(new JpegEncoder(100));
+            $img = $manager->read($rutaFirma)->resize(150, 150)->encode(new JpegEncoder(80)); // Reducción del tamaño y calidad
             $firmaBase64 = 'data:image/jpeg;base64,' . base64_encode($img->toString());
         } else {
             \Log::error("No se encontró la imagen de la firma: {$rutaFirma}");
         }
 
+        
         // Generación del HTML del PDF
-        $html = "
-            <style>
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    font-family: Arial, sans-serif;
-                    font-size: 13px;
-                }
-                th, td {
-                    border: 1px solid #000;
-                    padding: 10px;
-                    text-align: center;
-                }
-                th {
-                    background-color: #d6fdff;
-                    font-weight: bold;
-                }
-                h1 {
-                    text-align: center;
-                    font-size: 16px;
-                    margin-bottom: 5px;
-                }
-                .firma {
-                    text-align: center;
-                    margin-top: 20px;
-                }
-            </style>
-            <h1>Reporte de KPI's</h1>
-            <table>
-                <tr>
-                    <th>Identificación</th>
-                    <th>Correo</th>
-                    <th>Nombre Indicado</th>
-                    <th>Descripción KPI</th>
-                    <th>Peso Objetivo</th>
-                </tr>
-                {$rows}
-            </table>
-            <div class='firma'>
-                <div>
-                    <p>Firma del empleado</p>
-                    " . ($firmaBase64 ? "<img src='{$firmaBase64}' width='150' />" : "<p>No hay firma disponible</p>") . "
-                </div>              
-            </div>
-        ";
+        $html = View::make('pdfs.reporteempleado', [
+            'data' => $data,
+            'firmaBase64' => $firmaBase64,
+        ])->render();
 
+        set_time_limit(300);
+        ini_set('max_execution_time', 300);
         // Creación del PDF
         $pdf = Pdf::loadHTML($html);
 
