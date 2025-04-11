@@ -5,8 +5,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Inertia } from "@inertiajs/inertia";
 
-export default function CursosDisponibles() {
-    const userid = localStorage.getItem("user_id");
+export default function CursosDisponibles({ userid, token }) {
+
     const [cursosDisponibles, setCursosDisponibles] = useState([]);
 
     //funcion para llamar al ws de obtener cursos del usuario
@@ -30,36 +30,45 @@ export default function CursosDisponibles() {
     }, [userid]);
 
     const handleCourseClick = (id) => {
-        Inertia.visit(route('modulo.curso.contenido', { id }));
+
+        Inertia.visit(route('modulo.curso.contenido', id), {
+            method: 'get',
+            preserveState: false,
+            only: ['courseid', 'userid', 'token'], // opcional si quieres limitar los props que se actualizan
+            data: {
+                userid,
+                token
+            }
+        });
     }
 
     return (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
 
-                    {cursosDisponibles.map((curso, index) => (
-                        <Card key={curso.id} className="shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
-                            <CardHeader className="p-0">
-                                {/* Imagen aleatoria de Picsum Photos */}
-                                <img
-                                    src={`https://picsum.photos/400/250?random=${index}`}
-                                    alt="Imagen del curso"
-                                    className="w-full h-40 object-cover"
-                                />
+            {cursosDisponibles.map((curso, index) => (
+                <Card key={curso.id} className="shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                    <CardHeader className="p-0">
+                        {/* Imagen aleatoria de Picsum Photos */}
+                        <img
+                            src={`https://picsum.photos/400/250?random=${index}`}
+                            alt="Imagen del curso"
+                            className="w-full h-40 object-cover"
+                        />
 
 
-                            </CardHeader>
-                            <CardBody className="p-4">
-                                <h2 className="text-xl font-semibold text-blue-700">{curso.fullname}</h2>
-                                <div className="text-gray-600 text-sm mt-2" dangerouslySetInnerHTML={{ __html: curso.summary }} />
-                            </CardBody>
-                            <CardFooter className="p-4 flex justify-end">
-                                <Button color="primary" onPress={() => handleCourseClick(curso.id)}>
-                                    Ver Curso
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
+                    </CardHeader>
+                    <CardBody className="p-4">
+                        <h2 className="text-xl font-semibold text-blue-700">{curso.fullname}</h2>
+                        <div className="text-gray-600 text-sm mt-2" dangerouslySetInnerHTML={{ __html: curso.summary }} />
+                    </CardBody>
+                    <CardFooter className="p-4 flex justify-end">
+                        <Button color="primary" onPress={() => handleCourseClick(curso.id)}>
+                            Ver Curso
+                        </Button>
+                    </CardFooter>
+                </Card>
+            ))}
+        </div>
     )
 
 

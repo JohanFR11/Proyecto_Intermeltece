@@ -4,9 +4,9 @@ import { Card, CardBody, Image } from "@heroui/react";
 import CursosDisponibles from "../Components/CursosDisponibles";
 ;
 
-export default function Contenido (){
+export default function Contenido ({token, userid}){
 
     return (
-        <CursosDisponibles />
+        <CursosDisponibles userid={userid} token={token}/>
     );
 };

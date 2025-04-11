@@ -12,6 +12,8 @@ export default function ObtenerContenidoCursos({ auth, unreadNotifications }) {
     const [cursos, setCursos] = useState([]);
     const [cursoActivo, setCursoActivo] = useState(null);
     const courseid = Number(usePage().props.courseid);
+    const userid = Number(usePage().props.userid);
+    const token = usePage().props.token;
 
     useEffect(() => {
         const obtenerCursosMoodle = async () => {
@@ -56,7 +58,7 @@ export default function ObtenerContenidoCursos({ auth, unreadNotifications }) {
                 ruta = "modulo.curso.contenido.paginas";
                 break;
             }
-            Inertia.visit(route(ruta,{courseid, moduleid}))
+            Inertia.visit(route(ruta,{courseid, moduleid, userid, token}))
 
     };
 

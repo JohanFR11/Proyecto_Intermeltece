@@ -10,7 +10,7 @@ export default function ObtenerAsignaciones({ auth, unreadNotifications }) {
     const [assignContent, setAssignContent] = useState([])
     const courseid = Number(usePage().props.courseid);
     const moduleid = Number(usePage().props.moduleid);
-    const token = localStorage.getItem('moodle_token')
+    const token = usePage().props.token;
 
 
     useEffect(() => {

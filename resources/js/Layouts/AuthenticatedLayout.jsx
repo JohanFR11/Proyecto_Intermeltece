@@ -42,11 +42,11 @@ export default function Authenticated({
           text="Inicio"
         />
 
-        <SidebarItem 
+        {/* <SidebarItem 
           icon={<LearnIcon alt="Student Icon" size='32px' color='#395181'/>}
           href={route('modulo.index')} 
           text='Cursos y Capacitaciones' 
-        />
+        /> */}
 
 
         {user.roles[0].name === "Administrador" ? (

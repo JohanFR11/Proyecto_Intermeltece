@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardBody, Image } from "@heroui/react";
+import { usePage } from '@inertiajs/react';
 
-const AprendizajeLayout = ({ children }) => {
+const AprendizajeLayout = ({ children,userid }) => {
+
+    const { props } = usePage();
 
     const [user, setUser] = useState(null);  // Almacena los datos del usuario en google
     const [loading, setLoading] = useState(true);  // Indicador de carga
     const [userMoodle, setUserMoodle] = useState(null);  // Almacena los datos del usuario registrado en moodle
-    const userid = localStorage.getItem("user_id")
-
 
     useEffect(() => {
 
         const getProfileInfo = async () => {
+
+            const userId = props.userid || userid;
             try {
-                const response = await axios.get(`/moodle/user/${userid}`, {
+                const response = await axios.get(`/moodle/user/${userId}`, {
                     withCredentials: true
                 })
                 setUserMoodle(response.data[0])

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardBody, Button, Input } from "@heroui/react";
 import axios from "axios";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Inertia } from "@inertiajs/inertia";
 
 export default function LoginMoodle({ auth, unreadNotifications }) {
 
@@ -32,10 +33,14 @@ export default function LoginMoodle({ auth, unreadNotifications }) {
             const dataUser = response.data.userData;
 
             if (dataToken.token) {
-                localStorage.setItem("moodle_token", dataToken.token);
-                localStorage.setItem("user_id", dataUser.userid);
-                localStorage.setItem("user_name", dataUser.fullname);
-                window.location.href='/modulo/index';
+                Inertia.visit("modulo/index", {
+                    data: {
+                        userMoodle: dataUser,
+                        token: dataToken
+                    },
+                    method: 'get',
+                    preserveState: false,
+                });
             } else {
                 setError("Credenciales incorrectas o servicio no disponible.");
             }

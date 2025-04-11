@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class ModuloAprendizajeController extends Controller
 {
@@ -19,15 +20,22 @@ class ModuloAprendizajeController extends Controller
         return Inertia::render('Aprendizaje/Components/RegisterMoodle');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('Aprendizaje/Index');
+        Session::put('userMoodle', $request->get('userMoodle'));
+            Session::save();
+        return Inertia::render('Aprendizaje/Index', [
+            'userMoodle' => $request->get('userMoodle'),
+            'token' => Session::get('moodle_token'),
+        ]);
     }
 
-    public function contenido($id)
+    public function contenido(Request $request,$id)
     {
         return Inertia::render('Aprendizaje/Components/ObtenerContenidoCursos',[
-            'courseid' => $id
+            'courseid' => $id,
+            'userid' => $request->get('userid'),
+            'token' => Session::get('moodle_token'),
         ]);
     }
 
@@ -41,7 +49,8 @@ class ModuloAprendizajeController extends Controller
         return Inertia::render('Aprendizaje/Components/ObtenerPaginas',
             [
                 'courseid' => $request->courseid,
-                'moduleid'=>$request->moduleid
+                'moduleid'=>$request->moduleid,
+                'token'=>$request->token,
             ]
         );
     }
@@ -56,7 +65,8 @@ class ModuloAprendizajeController extends Controller
         return Inertia::render('Aprendizaje/Components/ObtenerAsignaciones',
             [
                 'courseid' => $request->courseid,
-                'moduleid'=>$request->moduleid
+                'moduleid'=>$request->moduleid,
+                'token'=>$request->token,
             ]
         );
     }

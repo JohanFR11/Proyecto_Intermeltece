@@ -7,12 +7,11 @@ import { Inertia } from "@inertiajs/inertia";
 
 export default function ObtenerPaginas({ auth, unreadNotifications }) {
     const [pageContent, setPageContent] = useState([]);
-    const token = localStorage.getItem('moodle_token')
+    const token = usePage().props.token;
     const [contentWithToken, setContentWithToken] = useState("");
     const [introWithToken, setIntroWithToken] = useState("");
     const courseid = Number(usePage().props.courseid);
     const moduleid = Number(usePage().props.moduleid);
-    console.log("id de curso y modulo ",typeof(courseid), typeof(moduleid))
 
     useEffect(() => {
 
