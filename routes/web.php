@@ -30,6 +30,7 @@ use App\Http\Controllers\PreciosUlefoneController;
 use App\Http\Controllers\CotizadorZebraController;
 use App\Http\Controllers\ControladorAuditoria;
 use App\Http\Controllers\GoogleDriveController;
+use App\Http\Controllers\AuditoriasControllers;
 use App\Http\Controllers\InformeSeguimientoController;
 use App\Http\Controllers\TestEmailController;
 use App\Http\Controllers\DrectorAuditoriaController;
@@ -78,6 +79,7 @@ Route::middleware('auth')->group(function () {
             'email' => $user->email,
             'avatar' => $user->avatar,
             'google_access_token' => $user->google_access_token,
+            'rol' => auth()->user()->roles->first()->name,
         ]);
     });
 
@@ -135,13 +137,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/comentarios', [GoogleDriveController::class, 'SubirComentario'])->name('auditoria.subir.comentario');
     Route::get('/comentarios/{fileId}', [GoogleDriveController::class, 'obtenerComentarios']);
     Route::get('/list-folders/subcarpetas/{Id_carpeta}', [GoogleDriveController::class, 'ListarSubCarpetas'])->name('auditoria.folders.subcarpetas');
+    Route::get('/habilitar/{rol}', [AuditoriasControllers::class, 'rolestado']);
+    Route::post('/upload/file', [GoogleDriveController::class, 'SubirArchivo']);
 
     /* Director de Auditoria  */
     Route::get('/director', [DrectorAuditoriaController::class, 'index'])->name('resources.director.index');
+    Route::post('/director/refresh-token', [DrectorAuditoriaController::class, 'refreshAccessToken']);
     Route::post('/director/comentarios', [DrectorAuditoriaController::class, 'SubirComentarioDirector'])->name('director.subir.comentario');
     Route::post('/director/estados', [DrectorAuditoriaController::class, 'ActualizarEstado'])->name('director.actualizar.estado');
     Route::get('/director/comentarios/{fileId}', [DrectorAuditoriaController::class, 'obtenerComentariosDirector']);
+    Route::get('/director/documentos-firmados', [DrectorAuditoriaController::class, 'DocumentosFirmados']);
+    Route::post('/director/actualizar_estados', [DrectorAuditoriaController::class, 'ActualizarEstados']);
 
+    
     /* Modulo para la firma de los Kpi's */
     Route::get('/KpisUser', [KpisFirmaController::class, 'index'])->name('resources.kpiuser.index');
     Route::get('/KpisUser/kpis/{name}', [KpisFirmaController::class, 'kpisinfouser'])->name('kpis.user.email');

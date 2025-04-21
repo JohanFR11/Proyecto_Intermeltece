@@ -13,6 +13,7 @@ use Inertia\Inertia;
 use Carbon\Carbon;
 use App\Mail\TestMail;
 use Mail;
+use Google\Service\Drive;
 
 class GoogleDriveController extends Controller
 {
@@ -20,165 +21,171 @@ class GoogleDriveController extends Controller
 
     public function __construct()
     {
-
+        $this->client = new Google_Client();
+        $this->client->setClientId(clientId: '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com');
+        $this->client->setClientSecret(clientSecret: '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');
+        $this->client->setRedirectUri(redirectUri: "http://127.0.0.1:8000/auditoria");
+        $this->client->setAccessType(accessType: 'offline');
+        $this->client->setPrompt(prompt: 'consent');
     }
 
-    public function generateAuthUrl(){
+    public function generateAuthUrl()
+    {
         $authUrl = $this->client->createAuthUrl();
         return response()->json(['auth_url' => $authUrl]);
-}
+    }
 
     // Método para intercambiar el código por un token de acceso
     public function exchangeCodeForToken(Request $request)
-{
-    $authCode = $request->query('code');
+    {
+        $authCode = $request->query('code');
 
-    if (!$authCode) {
-        return response()->json(['error' => 'Código de autorización no proporcionado'], 400);
-    }
-
-    try {
-        // Configuración de los parámetros para la solicitud
-        $postFields = [
-            'code' => $authCode,
-            'client_id' => '',
-            'client_secret' => '',
-            'redirect_uri' => 'http://127.0.0.1:8000/auditoria',
-            'grant_type' => 'authorization_code',
-        ];
-
-        // Configuración del cURL
-        $ch = curl_init('https://oauth2.googleapis.com/token');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postFields));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded',
-        ]);
-
-        // Ejecución de la solicitud
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if (curl_errno($ch)) {
-            throw new \Exception('Error en la solicitud cURL: ' . curl_error($ch));
+        if (!$authCode) {
+            return response()->json(['error' => 'Código de autorización no proporcionado'], 400);
         }
 
-        curl_close($ch);
+        try {
+            // Configuración de los parámetros para la solicitud
+            $postFields = [
+                'code' => $authCode,
+                'client_id' => '',
+                'client_secret' => '',
+                'redirect_uri' => 'http://127.0.0.1:8000/auditoria',
+                'grant_type' => 'authorization_code',
+            ];
 
-        // Decodificar la respuesta JSON
-        $token = json_decode($response, true);
+            // Configuración del cURL
+            $ch = curl_init('https://oauth2.googleapis.com/token');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postFields));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/x-www-form-urlencoded',
+            ]);
 
-        if ($httpCode !== 200 || isset($token['error'])) {
+            // Ejecución de la solicitud
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if (curl_errno($ch)) {
+                throw new \Exception('Error en la solicitud cURL: ' . curl_error($ch));
+            }
+
+            curl_close($ch);
+
+            // Decodificar la respuesta JSON
+            $token = json_decode($response, true);
+
+            if ($httpCode !== 200 || isset($token['error'])) {
+                return response()->json([
+                    'error' => $token['error'] ?? 'Error desconocido',
+                    'error_description' => $token['error_description'] ?? 'No se pudo obtener el token',
+                ], $httpCode);
+            }
+
+            // Guardar el token en la base de datos
+            // DB::table('users')->updateOrInsert(
+            //     ['external_id' => auth()->id()],
+            //     [
+            //         'google_access_token' => $token['access_token'],
+            //         'google_refresh_token' => $token['refresh_token'] ?? null,
+            //         'expires_in' => now()->addSeconds($token['expires_in']),
+            //     ]
+            // );
+
             return response()->json([
-                'error' => $token['error'] ?? 'Error desconocido',
-                'error_description' => $token['error_description'] ?? 'No se pudo obtener el token',
-            ], $httpCode);
+                'access_token' => $token['access_token'],
+                'refresh_token' => $token['refresh_token'] ?? null,
+                'expires_in' => $token['expires_in'] ?? 3600,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al intercambiar el código: ' . $e->getMessage()], 500);
         }
-
-        // Guardar el token en la base de datos
-        // DB::table('users')->updateOrInsert(
-        //     ['external_id' => auth()->id()],
-        //     [
-        //         'google_access_token' => $token['access_token'],
-        //         'google_refresh_token' => $token['refresh_token'] ?? null,
-        //         'expires_in' => now()->addSeconds($token['expires_in']),
-        //     ]
-        // );
-
-        return response()->json([
-            'access_token' => $token['access_token'],
-            'refresh_token' => $token['refresh_token'] ?? null,
-            'expires_in' => $token['expires_in'] ?? 3600,
-        ]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Error al intercambiar el código: ' . $e->getMessage()], 500);
     }
-}
 
-public function refreshAccessToken(Request $request)
-{
-    try {
-        $refreshToken = $request->input('refresh_token');
+    public function refreshAccessToken(Request $request)
+    {
+        try {
+            $refreshToken = $request->input('refresh_token');
 
-        \Log::info('token: ' . $refreshToken);
+            \Log::info('token: ' . $refreshToken);
 
-        if (empty($refreshToken)) {
-            return response()->json(['error' => 'refresh_token is required'], 400);
-        }
+            if (empty($refreshToken)) {
+                return response()->json(['error' => 'refresh_token is required'], 400);
+            }
 
-        $postFields = [
-            'refresh_token' => $refreshToken,
-            'client_id' => '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com', 
-            'client_secret' => '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', 
-            'grant_type' => 'refresh_token',
-        ];
+            $postFields = [
+                'refresh_token' => $refreshToken,
+                'client_id' => '714516731386-9av4nplhrj4ssu4j79psumo7pur8unpl.apps.googleusercontent.com',
+                'client_secret' => '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',
+                'grant_type' => 'refresh_token',
+            ];
 
-        // Configuración de cURL
-        $ch = curl_init('https://oauth2.googleapis.com/token');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postFields));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded',
-        ]);
+            // Configuración de cURL
+            $ch = curl_init('https://oauth2.googleapis.com/token');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postFields));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/x-www-form-urlencoded',
+            ]);
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if (curl_errno($ch)) {
-            throw new \Exception('cURL Error: ' . curl_error($ch));
-        }
+            if (curl_errno($ch)) {
+                throw new \Exception('cURL Error: ' . curl_error($ch));
+            }
 
-        curl_close($ch);
+            curl_close($ch);
 
-        // Log response for debugging
-        \Log::info('Google API Response: ' . $response);
+            // Log response for debugging
+            \Log::info('Google API Response: ' . $response);
 
-        // Decodificar respuesta JSON
-        $token = json_decode($response, true);
+            // Decodificar respuesta JSON
+            $token = json_decode($response, true);
 
-        if ($httpCode !== 200 || isset($token['error'])) {
+            if ($httpCode !== 200 || isset($token['error'])) {
+                return response()->json([
+                    'error' => $token['error'] ?? 'Error desconocido',
+                    'error_description' => $token['error_description'] ?? 'No se pudo renovar el token',
+                ], $httpCode);
+            }
+
             return response()->json([
-                'error' => $token['error'] ?? 'Error desconocido',
-                'error_description' => $token['error_description'] ?? 'No se pudo renovar el token',
-            ], $httpCode);
+                'access_token' => $token['access_token'],
+                'expires_in' => $token['expires_in'] ?? 3600,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al renovar el token: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+
+    public function revokeAuthorization(Request $request)
+    {
+        $token = $request->input('token'); // Puede ser access_token o refresh_token
+
+        if (!$token) {
+            return response()->json(['error' => 'Token no proporcionado'], 400);
         }
 
-        return response()->json([
-            'access_token' => $token['access_token'],
-            'expires_in' => $token['expires_in'] ?? 3600,
-        ]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Error al renovar el token: ' . $e->getMessage()], 500);
-    }
-}
+        try {
+            $client = new \GuzzleHttp\Client();
+            $response = $client->post('https://oauth2.googleapis.com/revoke', [
+                'form_params' => ['token' => $token],
+            ]);
 
-
-
-public function revokeAuthorization(Request $request)
-{
-    $token = $request->input('token'); // Puede ser access_token o refresh_token
-
-    if (!$token) {
-        return response()->json(['error' => 'Token no proporcionado'], 400);
-    }
-
-    try {
-        $client = new \GuzzleHttp\Client();
-        $response = $client->post('https://oauth2.googleapis.com/revoke', [
-            'form_params' => ['token' => $token],
-        ]);
-
-        if ($response->getStatusCode() === 200) {
-            return response()->json(['success' => 'Autorización revocada con éxito']);
-        } else {
-            return response()->json(['error' => 'No se pudo revocar la autorización'], 500);
+            if ($response->getStatusCode() === 200) {
+                return response()->json(['success' => 'Autorización revocada con éxito']);
+            } else {
+                return response()->json(['error' => 'No se pudo revocar la autorización'], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al revocar la autorización: ' . $e->getMessage()], 500);
         }
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Error al revocar la autorización: ' . $e->getMessage()], 500);
     }
-}
 
 
     // Método para subir un archivo a Google Drive
@@ -202,7 +209,7 @@ public function revokeAuthorization(Request $request)
         }
 
         $accessToken = str_replace('Bearer ', '', $authorizationHeader);
-        
+
         $this->client->setAccessToken($accessToken);
         $service = new Google_Service_Drive($this->client);
 
@@ -229,9 +236,9 @@ public function revokeAuthorization(Request $request)
             $estado = 'Pendiente';
             $docu = 'documento auditoria no1';
 
-            DB::insert('INSERT INTO auditoriadocs (usuario,correo,area_usuario,documento,documento_cargado,fecha_cargue,archivo_id,estado_auditoria) VALUES (?,?,?,?,?,?,?,?)',[
-                $user -> name,
-                $user ->email,
+            DB::insert('INSERT INTO auditoriadocs (usuario,correo,area_usuario,documento,documento_cargado,fecha_cargue,archivo_id,estado_auditoria) VALUES (?,?,?,?,?,?,?,?)', [
+                $user->name,
+                $user->email,
                 $userRole = auth()->user()->roles->first()->name,
                 $docu,
                 $uploadedFile->getName(),
@@ -244,15 +251,15 @@ public function revokeAuthorization(Request $request)
             $area = auth()->user()->roles->first()->name;
 
             $data = [
-                'name' => $user -> name,
+                'name' => $user->name,
                 'documento' => $uploadedFile->getName(),
                 'dia' => $dia,
                 'areaauditoria' => $area,
             ];
-            Mail::to($user ->email)->send(new TestMail($data));
+            Mail::to($user->email)->send(new TestMail($data));
 
 
-            return response()->json(['success' => true, 'file_id' => $uploadedFile->id,'name' => $uploadedFile->name]);
+            return response()->json(['success' => true, 'file_id' => $uploadedFile->id, 'name' => $uploadedFile->name]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al subir el archivo: ' . $e->getMessage()], 500);
         }
@@ -271,7 +278,7 @@ public function revokeAuthorization(Request $request)
 
             $userRole = auth()->user()->roles->first()->name;
 
-            $datosPorArea =  DB::select('SELECT * FROM auditoriadocs WHERE area_usuario = ?', [$userRole]);
+            $datosPorArea = DB::select('SELECT * FROM auditoriadocs WHERE area_usuario = ?', [$userRole]);
 
             return response()->json(['files' => $datosPorArea]);
         } catch (\Exception $e) {
@@ -296,13 +303,13 @@ public function revokeAuthorization(Request $request)
     public function listarCarpetas(Request $request)
     {
         $authorizationHeader = $request->header('Authorization');
-            if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
-                return response()->json(['error' => 'Token de autorización no proporcionado o incorrecto'], 401);
-            }
+        if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
+            return response()->json(['error' => 'Token de autorización no proporcionado o incorrecto'], 401);
+        }
 
-            $accessToken = str_replace('Bearer ', '', $authorizationHeader);
+        $accessToken = str_replace('Bearer ', '', $authorizationHeader);
 
-            
+
         $this->client->setAccessToken($accessToken);
 
         $service = new Google_Service_Drive($this->client);
@@ -316,8 +323,8 @@ public function revokeAuthorization(Request $request)
             'Administrador' => '1Htykf-CVf03zRn4YToD8jvGFfjy7uJ-F',
         ];
 
-        if(!isset($folderSegunRol[$userRole])){
-            return response()->json(['error'=>'Acceso Denegado'],403);
+        if (!isset($folderSegunRol[$userRole])) {
+            return response()->json(['error' => 'Acceso Denegado'], 403);
         }
 
         $FolderId = $folderSegunRol[$userRole];
@@ -359,46 +366,46 @@ public function revokeAuthorization(Request $request)
 
     public function ListarSubCarpetas(Request $request, $Id_carpeta)
     {
-            
-            if (!$Id_carpeta) {
-                return response()->json(['error' => 'Modelo no proporcionado'], 400);
-            }
 
-            $authorizationHeader = $request->header('Authorization');
-            if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
-                return response()->json(['error' => 'Token de autorización no proporcionado o incorrecto'], 401);
-            }
+        if (!$Id_carpeta) {
+            return response()->json(['error' => 'Modelo no proporcionado'], 400);
+        }
 
-            $accessToken = str_replace('Bearer ', '', $authorizationHeader);
+        $authorizationHeader = $request->header('Authorization');
+        if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
+            return response()->json(['error' => 'Token de autorización no proporcionado o incorrecto'], 401);
+        }
 
-            
+        $accessToken = str_replace('Bearer ', '', $authorizationHeader);
+
+
         $this->client->setAccessToken($accessToken);
 
         $service = new Google_Service_Drive($this->client);
 
 
-        try{
-        // Listar archivos
-        $subfolders = $service->files->listFiles([
-            'q' => "'$Id_carpeta' in parents and mimeType='application/vnd.google-apps.folder'",
-            'fields' => 'files(id, name)',
-        ]);
+        try {
+            // Listar archivos
+            $subfolders = $service->files->listFiles([
+                'q' => "'$Id_carpeta' in parents and mimeType='application/vnd.google-apps.folder'",
+                'fields' => 'files(id, name)',
+            ]);
 
-        $subfoldersList = [];
+            $subfoldersList = [];
 
-        foreach ($subfolders->getFiles() as $folder) {
-            $subfoldersList[] = [
-                'subfolder_name' => $folder->getName(),
-                'sub_id' => $folder->getId(),
-            ];
-        }
+            foreach ($subfolders->getFiles() as $folder) {
+                $subfoldersList[] = [
+                    'subfolder_name' => $folder->getName(),
+                    'sub_id' => $folder->getId(),
+                ];
+            }
 
-        return response()->json(['subfolders' => $subfoldersList]);
+            return response()->json(['subfolders' => $subfoldersList]);
 
 
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             Log::error("Error al filtrar números de parte: {$e->getMessage()}");
-    
+
             return response()->json([
                 'error' => $e->getMessage(),
             ], 500);
@@ -414,32 +421,140 @@ public function revokeAuthorization(Request $request)
 
         $accessToken = str_replace('Bearer ', '', $authorizationHeader);
 
-        
-    $this->client->setAccessToken($accessToken);
 
-    $service = new Google_Service_Drive($this->client);
+        $this->client->setAccessToken($accessToken);
 
-    try {
-        // Listar archivos
-        $files = $service->files->listFiles([
-            'q' => "'".'1td58nj24FCs35iKNlSjlyJkBd-9hZFuY'."' in parents",
-            'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
-        ]);
+        $service = new Google_Service_Drive($this->client);
 
-        $fileList = [];
-        foreach ($files->getFiles() as $file) {
-            $fileList[] = [
-                'file_name' => $file->getName(),
-                'id' => $file->getId(),
-                'mimeType' => $file->getMimeType(),
-                'thumbnailLink' => $file->getThumbnailLink(),
-                'webViewLink' => $file->getWebViewLink(),
-            ];
+        try {
+            // Listar archivos
+            $files = $service->files->listFiles([
+                'q' => "'" . '1td58nj24FCs35iKNlSjlyJkBd-9hZFuY' . "' in parents",
+                'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
+            ]);
+
+            $fileList = [];
+            foreach ($files->getFiles() as $file) {
+                $fileList[] = [
+                    'file_name' => $file->getName(),
+                    'id' => $file->getId(),
+                    'mimeType' => $file->getMimeType(),
+                    'thumbnailLink' => $file->getThumbnailLink(),
+                    'webViewLink' => $file->getWebViewLink(),
+                ];
+            }
+
+            return response()->json(['files' => $fileList]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al listar los archivos: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function SubirArchivo(Request $request)
+    {
+
+        $authorizationHeader = $request->header('Authorization');
+        $accessToken = str_replace('Bearer', '', $authorizationHeader);
+
+
+        $this->client->setAccessToken($accessToken);
+
+        $service = new Google_Service_Drive($this->client);
+
+        $requestData = $request->all();
+        log::info('dataxxsxa', ['envia' => $requestData]);
+
+        try {
+
+            $area = $requestData['folder_id'];
+            $file = $requestData['file'];
+            $carpetaRaizId = '1yZ1Fpoz0vGk2z9bXWv7q4fpVxrZxWSzI';
+
+            $folderSuperiorId = $this->buscarCarpetaEnDrive($service, $area, $carpetaRaizId);
+
+            if (!$folderSuperiorId) {
+                log::info('NO SE ENCONTRO NADA ');
+            }
+
+            $fileUpload = new Drive\DriveFile([
+                'name' => $file->getClientOriginalName(),
+                'parents' => [$folderSuperiorId],
+            ]);
+
+            $contenido = file_get_contents($file->getPathname());
+            $updata = $service->files->create($fileUpload, [
+                'data' => $contenido,
+                'mimeType' => 'application/pdf',
+                'uploadType' => 'multipart',
+            ]);
+
+            sleep(2);
+
+            $archivoCarpeta = $service->files->listFiles([
+                'q' => "'" . "{$folderSuperiorId}" . "' in parents",
+                'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
+            ]);
+
+            $fileList = [];
+            foreach ($archivoCarpeta->getFiles() as $file) {
+                $fileList[] = [
+                    'file_name' => $file->getName(),
+                    'id' => $file->getId(),
+                    'mimeType' => $file->getMimeType(),
+                    'thumbnailLink' => $file->getThumbnailLink(),
+                    'webViewLink' => $file->getWebViewLink(),
+                ];
+            }
+            \Log::info("fileList:", ['fileList' => $fileList]);
+
+            $estado = 0;
+            $estado_dos = 1;
+            $idfile = $fileList[0]['id'];
+            $idfolder = $folderSuperiorId;
+
+            DB::insert('INSERT INTO docSubido (area_auditoria,id_folder,id_file,estado_file,estado_file_dos) VALUES (?,?,?,?,?)',[$area,$idfile,$idfolder,$estado,$estado_dos]);
+
+            return response()->json([
+                'message' => 'Archivo subido exitosamente',
+                'link' => "https://drive.google.com/file/d/{$updata->id}/view"
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al listar los archivos: ' . $e->getMessage()], 500);
         }
 
-        return response()->json(['files' => $fileList]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Error al listar los archivos: ' . $e->getMessage()], 500);
     }
+
+    private function buscarCarpetaEnDrive($service, $nombreCarpeta, $parentId)
+    {
+
+        if (!$parentId) {
+            \Log::error("El parentId está vacío o incorrecto");
+            return null;
+        }
+
+        $query = "name contains '{$nombreCarpeta}' and mimeType = 'application/vnd.google-apps.folder' and '{$parentId}' in parents and trashed = false";
+
+
+        try {
+            $folders = $service->files->listFiles([
+                'q' => $query,
+                'spaces' => 'drive',
+                'fields' => 'files(id, name)'
+            ]);
+
+            if (count($folders->getFiles()) > 0) {
+                $folderId = $folders->getFiles()[0]->getId();
+                \Log::info("Carpeta encontrada", ['nombre' => $nombreCarpeta, 'id' => $folderId]);
+                return $folderId;
+            } else {
+                \Log::error("No se encontró la carpeta", ['nombreCarpeta' => $nombreCarpeta, 'parentId' => $parentId]);
+                return null;
+            }
+        } catch (\Exception $e) {
+            \Log::error("Error al buscar la carpeta", ['error' => $e->getMessage()]);
+            return null;
+        }
+
     }
 }
